@@ -2,8 +2,15 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import frc.robot.RobotMap;
 
 public class ExampleSubsystem extends Subsystem {
+
+    public ExampleSubsystem(final RobotMap map) { // NOPMD
+        super();
+        // Take values that the subsystem needs from the map, and store them in the
+        // class
+    }
 
     @Override
     public void initDefaultCommand() {
@@ -12,6 +19,7 @@ public class ExampleSubsystem extends Subsystem {
     }
 
     public Command sampleCommand() {
+        // The command is named "Sample Command" and requires this subsystem.
         return new Command("Sample Command", this) {
             @Override
             protected void initialize() {
