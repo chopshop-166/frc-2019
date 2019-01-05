@@ -1,0 +1,19 @@
+tasks.withType(SpotBugsTask) {
+    reports {
+        xml.enabled false
+        html.enabled true
+        html.stylesheet resources.text.fromFile('config/xsl/fancy.xsl')
+    }
+}
+
+spotbugs {
+    ignoreFailures = true
+    excludeFilter = file("$rootProject.projectDir/config/findbugs-ignore.xml")
+}
+
+pmd {
+    toolVersion = "6.10.0"
+    ignoreFailures = true
+    ruleSets = []
+    ruleSetFiles = files("$rootProject.projectDir/config/pmd-ruleset.xml")
+}

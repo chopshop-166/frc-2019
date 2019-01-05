@@ -1,0 +1,31 @@
+import java.text.SimpleDateFormat
+
+class VersionTask extends DefaultTask {
+    def runCommand = { String... args ->
+        def stdout = new ByteArrayOutputStream()
+        project.exec {
+            commandLine args
+            standardOutput = stdout
+        }
+        return stdout.toString().trim()
+    }
+
+    def getGitHash = { -> runCommand "git", "describe", "--always" }
+    def getGitBranch = { -> runCommand "git", "rev-parse", "--abbrev-ref", "HEAD" }
+    def getGitFilesChanged = { -> runCommand "git", "diff", "--name-only", "HEAD" }
+
+    @TaskAction
+    def generate() {
+        String resourcesDir = "${project.projectDir}/src/main/resources"
+        def logDirBase = project.file(resourcesDir)
+        logDirBase.mkdirs()
+        project.file("$resourcesDir/branch.txt").text = getGitBranch()
+        project.file("$resourcesDir/commit.txt").text = getGitHash()
+        project.file("$resourcesDir/changes.txt").text = getGitFilesChanged()
+        project.file("$resourcesDir/buildtime.txt").text =
+                new SimpleDateFormat("dd-MM-yyyy HH:mm:ss").format(new Date())
+    }
+}
+
+tasks.register("versionTxt", VersionTask)
+compileJava.dependsOn versionTxt
