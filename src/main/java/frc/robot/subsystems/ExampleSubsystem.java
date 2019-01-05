@@ -13,25 +13,25 @@ public class ExampleSubsystem extends Subsystem {
 
     public Command sampleCommand() {
         return new Command("Sample Command", this) {
-            // Called just before this Command runs the first time
             @Override
             protected void initialize() {
+                // Called just before this Command runs the first time
             }
 
-            // Called repeatedly when this Command is scheduled to run
             @Override
             protected void execute() {
+                // Called repeatedly when this Command is scheduled to run
             }
 
-            // Make this return true when this Command no longer needs to run execute()
             @Override
             protected boolean isFinished() {
+                // Make this return true when this Command no longer needs to run execute()
                 return false;
             }
 
-            // Called once after isFinished returns true
             @Override
             protected void end() {
+                // Called once after isFinished returns true
             }
 
             // Called when another command which requires one or more of the same

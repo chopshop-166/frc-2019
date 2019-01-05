@@ -1,3 +1,5 @@
+apply plugin: 'pmd'
+
 tasks.withType(SpotBugsTask) {
     reports {
         xml.enabled false
