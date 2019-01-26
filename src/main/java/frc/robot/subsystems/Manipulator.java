@@ -1,15 +1,40 @@
 package frc.robot.subsystems;
 
+import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
+import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
+
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.SpeedController;
+import edu.wpi.first.wpilibj.Ultrasonic;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import frc.robot.RobotMap;
+import frc.robot.RobotMap.ManipulatorMap;
 
 public class Manipulator extends Subsystem {
 
-    public Manipulator(final RobotMap map) { // NOPMD
+    private SendableSpeedController pivotPointsMotor;
+    private SendableSpeedController rollersMotor;
+    private DoubleSolenoid beaksPiston; 
+    private DigitalInput backPlateLimitSwitch;
+    private DigitalInput foldedBackLimitSwitch; 
+    private DigitalInput intakePositionLimitSwitch; 
+    //private Ultrasonic highDefinitionUltrasonicRangeFinder; 
+    
+    public Manipulator(final RobotMap.ManipulatorMap map) { // NOPMD
         super();
         // Take values that the subsystem needs from the map, and store them in the
         // class
+        pivotPointsMotor = map.getpivotPointsMotor();
+        rollersMotor = map.getrollersMotor();
+        beaksPiston  =map.getbeaksPiston();
+        backPlateLimitSwitch = map.getbackPlateLimitSw();
+        foldedBackLimitSwitch = map.getfoldedBackLimitSwitch();
+        intakePositionLimitSwitch = map.getintakePositionLimitSwitch();
+        
+
+
     }
 
     @Override
