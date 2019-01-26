@@ -1,18 +1,14 @@
 package frc.robot.subsystems;
 
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
-import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.SpeedController;
-import edu.wpi.first.wpilibj.Ultrasonic;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import frc.robot.RobotMap;
-import frc.robot.RobotMap.ManipulatorMap;
 
 public class Manipulator extends Subsystem {
 
@@ -48,14 +44,30 @@ public class Manipulator extends Subsystem {
             beaksPiston.set(Value.kForward);
         });
     }
-    
+
     public Command closeBeak() {
         return new InstantCommand("Close Beak", this, () -> {
             beaksPiston.set(Value.kReverse);
         });
     }
 
+    public Command rollerIntake() {
+        return new InstantCommand("Intake Rollers", this, () -> {
+            rollersMotor.set(.2);
+        });
+    }
 
+    public Command rollerEject() {
+        return new InstantCommand("Eject Rollers", this, () -> {
+            rollersMotor.set(-.2);
+        });
+    }
+
+    public Command rollerStop() {
+        return new InstantCommand("Stop Rollers",this,()->{
+            rollersMotor.set(0);
+    });
+}
 
     public Command CloseArms() {
         return new InstantCommand("Close Arms", this, () -> {
@@ -100,7 +112,6 @@ public class Manipulator extends Subsystem {
             }
         };
     }
-
 
     public Command pickUpBall() {
         // This command will pick up a ball
