@@ -4,7 +4,6 @@ import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.SpeedController;
 
 /**
  * The RobotMap is an interface that contains the instructions on how to make a
@@ -18,19 +17,19 @@ public interface RobotMap {
 
     ManipulatorMap getManipulatorMap();
 
-interface ManipulatorMap {
+    interface ManipulatorMap {
 
-     SendableSpeedController getpivotPointsMotor();
+        SendableSpeedController getpivotPointsMotor();
 
-     SendableSpeedController getrollersMotor();
+        SendableSpeedController getrollersMotor();
 
-     DoubleSolenoid getbeaksPiston(); 
+        DoubleSolenoid getbeaksPiston();
 
-     DigitalInput getbackPlateLimitSw();
+        DigitalInput getGamepieceLimitSwitch();
 
-     DigitalInput getfoldedBackLimitSwitch(); 
+        DigitalInput getfoldedBackLimitSwitch();
 
-     DigitalInput getintakePositionLimitSwitch(); 
-}
+        DigitalInput getintakePositionLimitSwitch();
+    }
 
 }

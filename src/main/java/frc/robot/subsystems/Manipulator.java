@@ -15,10 +15,9 @@ public class Manipulator extends Subsystem {
     private SendableSpeedController pivotPointsMotor;
     private SendableSpeedController rollersMotor;
     private DoubleSolenoid beaksPiston;
-    private DigitalInput backPlateLimitSwitch;
+    private DigitalInput gamepieceLimitSwitch;
     private DigitalInput foldedBackLimitSwitch;
     private DigitalInput intakePositionLimitSwitch;
-    // private Ultrasonic highDefinitionUltrasonicRangeFinder;
 
     public Manipulator(final RobotMap.ManipulatorMap map) { // NOPMD
         super();
@@ -27,7 +26,7 @@ public class Manipulator extends Subsystem {
         pivotPointsMotor = map.getpivotPointsMotor();
         rollersMotor = map.getrollersMotor();
         beaksPiston = map.getbeaksPiston();
-        backPlateLimitSwitch = map.getbackPlateLimitSw();
+        gamepieceLimitSwitch = map.getGamepieceLimitSwitch();
         foldedBackLimitSwitch = map.getfoldedBackLimitSwitch();
         intakePositionLimitSwitch = map.getintakePositionLimitSwitch();
 
@@ -103,7 +102,7 @@ public class Manipulator extends Subsystem {
 
             @Override
             protected boolean isFinished() {
-                return backPlateLimitSwitch.get();
+                return intakePositionLimitSwitch.get();
             }
 
             @Override
@@ -113,7 +112,7 @@ public class Manipulator extends Subsystem {
         };
     }
 
-    public Command pickUpBall() {
+    public Command gamepieceCheck() {
         // This command will pick up a ball
         return new Command("Pick up ball", this) {
             @Override
