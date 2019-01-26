@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.Ultrasonic;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.command.Subsystem;
@@ -41,6 +42,19 @@ public class Manipulator extends Subsystem {
         // Set the default command for a subsystem here.
         // setDefaultCommand(new MySpecialCommand());
     }
+
+    public Command openBeak() {
+        return new InstantCommand("Open Beak", this, () -> {
+            beaksPiston.set(Value.kForward);
+        });
+    }
+    
+    public Command closeBeak() {
+        return new InstantCommand("Close Beak", this, () -> {
+            beaksPiston.set(Value.kReverse);
+        });
+    }
+
 
 
     public Command CloseArms() {
@@ -94,6 +108,7 @@ public class Manipulator extends Subsystem {
             @Override
             protected void initialize() {
                 // Called just before this Command runs the first time
+
             }
 
             @Override
