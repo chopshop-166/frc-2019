@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import com.chopshop166.chopshoplib.commands.CommandChain;
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -38,6 +39,15 @@ public class Manipulator extends Subsystem {
         // setDefaultCommand(new MySpecialCommand());
     }
 
+    // #region Command Chains
+    public Command pickUpBall() {
+        CommandChain retValue = new CommandChain("Pick up a Ball");
+        retValue.then(openBeak()).then(rollerIntake()).then(closeArms()).then(gamepieceCheck()).then(rollerStop());
+        return retValue;
+    }
+    // #endregion
+
+    // #region Commands
     public Command openBeak() {
         return new InstantCommand("Open Beak", this, () -> {
             beaksPiston.set(Value.kForward);
@@ -63,21 +73,15 @@ public class Manipulator extends Subsystem {
     }
 
     public Command rollerStop() {
-        return new InstantCommand("Stop Rollers",this,()->{
+        return new InstantCommand("Stop Rollers", this, () -> {
             rollersMotor.set(0);
-    });
-}
-
-    public Command CloseArms() {
-        return new InstantCommand("Close Arms", this, () -> {
-            pivotPointsMotor.set(-.2);
         });
     }
 
     public Command openArms() {
         return new Command("Open Arms", this) {
             @Override
-            protected void initialize() {
+            protected void execute() {
                 pivotPointsMotor.set(.2);
             }
 
@@ -96,7 +100,7 @@ public class Manipulator extends Subsystem {
     public Command closeArms() {
         return new Command("Close Arms", this) {
             @Override
-            protected void initialize() {
+            protected void execute() {
                 pivotPointsMotor.set(-.2);
             }
 
@@ -114,134 +118,13 @@ public class Manipulator extends Subsystem {
 
     public Command gamepieceCheck() {
         // This command will pick up a ball
-        return new Command("Pick up ball", this) {
-            @Override
-            protected void initialize() {
-                // Called just before this Command runs the first time
-
-            }
-
-            @Override
-            protected void execute() {
-                // Called repeatedly when this Command is scheduled to run
-            }
+        return new Command("Check for Gamepiece", this) {
 
             @Override
             protected boolean isFinished() {
-                // Make this return true when this Command no longer needs to run execute()
-                return false;
-            }
-
-            @Override
-            protected void end() {
-                // Called once after isFinished returns true
-            }
-
-            // Called when another command which requires one or more of the same
-            // subsystems is scheduled to run
-            @Override
-            protected void interrupted() {
-                end();
+                return gamepieceLimitSwitch.get();
             }
         };
     }
-
-    public Command releaseBall() {
-        // This command will release a ball
-        return new Command("Release ball", this) {
-            @Override
-            protected void initialize() {
-                // Called just before this Command runs the first time
-            }
-
-            @Override
-            protected void execute() {
-                // Called repeatedly when this Command is scheduled to run
-            }
-
-            @Override
-            protected boolean isFinished() {
-                // Make this return true when this Command no longer needs to run execute()
-                return false;
-            }
-
-            @Override
-            protected void end() {
-                // Called once after isFinished returns true
-            }
-
-            // Called when another command which requires one or more of the same
-            // subsystems is scheduled to run
-            @Override
-            protected void interrupted() {
-                end();
-            }
-        };
-    }
-
-    public Command pickUpHatch() {
-        // This command will pick up a hatch
-        return new Command("Pick up Hatch", this) {
-            @Override
-            protected void initialize() {
-                // Called just before this Command runs the first time
-            }
-
-            @Override
-            protected void execute() {
-                // Called repeatedly when this Command is scheduled to run
-            }
-
-            @Override
-            protected boolean isFinished() {
-                // Make this return true when this Command no longer needs to run execute()
-                return false;
-            }
-
-            @Override
-            protected void end() {
-                // Called once after isFinished returns true
-            }
-
-            // Called when another command which requires one or more of the same
-            // subsystems is scheduled to run
-            @Override
-            protected void interrupted() {
-                end();
-            }
-        };
-    }
-
-    public Command releaseHatch() {
-        // This command will relase a hatch
-        return new Command("Release a Hatch", this) {
-            @Override
-            protected void initialize() {
-                // Called just before this Command runs the first time
-            }
-
-            @Override
-            protected void execute() {
-                // Called repeatedly when this Command is scheduled to run
-            }
-
-            @Override
-            protected boolean isFinished() {
-                // Make this return true when this Command no longer needs to run execute()
-                return false;
-            }
-
-            @Override
-            protected void end() {
-                // Called once after isFinished returns true
-            }
-
-            // Called when another command which requires one or more of the same
-            // subsystems is scheduled to run
-            @Override
-            protected void interrupted() {
-                end();
-            }
-        };
-    }
+    // #endregion
 }
