@@ -1,10 +1,41 @@
 package frc.robot.subsystems;
 
+import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
+
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.SpeedController;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
+import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.interfaces.Potentiometer;
+import frc.robot.Robot;
 import frc.robot.RobotMap;
 
 public class LiftSubsystem extends Subsystem {
+
+    private SendableSpeedController motor;
+    private DoubleSolenoid brake;
+    private SendableSpeedController armMotor;
+    private Encoder heightEncoder;
+    private DigitalInput lowerLimit;
+    private DigitalInput upperLimit;
+    private Potentiometer manipAngle;
+
+    public LiftSubsystem (final RobotMap.LiftMap map){
+        super();
+        motor = map.getMotor();
+        brake = map.getBrake();
+        armMotor = map.getArmMotor();
+        heightEncoder = map.getHeightEncoder();
+        lowerLimit = map.getLowerLimit();
+        upperLimit = map.getUpperLimit();
+        manipAngle = map.getManipAngle();
+    }
+
 enum Heights{
     kLoadingStation,
     kRocketCargoLow,
@@ -16,11 +47,6 @@ enum Heights{
     kCargoShip,
     
 }
-    public LiftSubsystem(final RobotMap map) { // NOPMD
-        super();
-        // Take values that the subsystem needs from the map, and store them in the
-        // class
-    }
 
     @Override
     public void initDefaultCommand() {
@@ -28,9 +54,19 @@ enum Heights{
         // setDefaultCommand(new MySpecialCommand());
     }
 
-    public Command raiseLift() {
-        // The command is named "Raise Lift" and requires this subsystem.
-        return new Command("Raise Lift", this) {
+    public Command engageBrake(){
+        return new InstantCommand("Engage Brake", this, () -> {
+            brake.set(Value.kForward);
+        });
+    }
+    public Command disengageBrake(){
+        return new InstantCommand("Disengage Brake", this, () -> {
+            brake.set(Value.kReverse);
+        });
+    }
+    public Command moveLift() {
+        // The command is named "Move Lift" and requires this subsystem.
+        return new Command("Move Lift", this) {
             @Override
             protected void initialize() {
                 // Called just before this Command runs the first time
@@ -38,7 +74,25 @@ enum Heights{
 
             @Override
             protected void execute() {
+                double liftSpeed;
+                liftSpeed = Robot.xBoxCoPilot.getY(Hand.kRight);
                 // Called repeatedly when this Command is scheduled to run
+                if(upperLimit.get())
+                {
+                    if(liftSpeed>0)
+                    {
+                        liftSpeed=0;
+                    }
+                    
+                }
+                if(lowerLimit.get())
+                {
+                    if(liftSpeed<0)
+                    {
+                        liftSpeed=0;
+                    }
+                }
+                motor.set(liftSpeed);
             }
 
             @Override
@@ -62,9 +116,9 @@ enum Heights{
     }
 
 
-    public Command lowerLift() {
-        // The command is named "Lower Lift" and requires this subsystem.
-        return new Command("Lower Lift", this) {
+    public Command moveArm() {
+        // The command is named "Move Arm" and requires this subsystem.
+        return new Command("Move Arm", this) {
             @Override
             protected void initialize() {
                 // Called just before this Command runs the first time
@@ -73,6 +127,7 @@ enum Heights{
             @Override
             protected void execute() {
                 // Called repeatedly when this Command is scheduled to run
+                armMotor.set(Robot.xBoxCoPilot.getY(Hand.kLeft));
             }
 
             @Override
@@ -94,8 +149,6 @@ enum Heights{
             }
         };
     }
-
-
     public Command flipOpp() {
         // The command is named "Lift to Opposite" and requires this subsystem.
         return new Command("Flip to Opposite", this) {
