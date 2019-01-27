@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.command.WaitCommand;
 import frc.robot.RobotMap;
 
 public class Manipulator extends Subsystem {
@@ -40,11 +41,24 @@ public class Manipulator extends Subsystem {
     }
 
     // #region Command Chains
-    public Command pickUpBall() {
-        CommandChain retValue = new CommandChain("Pick up a Ball");
+    public Command pickCargo() {
+        CommandChain retValue = new CommandChain("Pick up Cargo");
         retValue.then(openBeak()).then(rollerIntake()).then(closeArms()).then(gamepieceCheck()).then(rollerStop());
         return retValue;
     }
+
+    public Command releaseCargo() {
+        CommandChain retValue = new CommandChain("Release Cargo");
+        retValue.then(rollerEject()).then(gamepieceCheck()).then(new WaitCommand(.5));
+        return retValue;
+    }
+
+    public Command pickUpHatch() {
+        CommandChain retValue = new CommandChain("Pick Up Hatch");
+        retValue.then(closeBeak()).then(openArms()).then(gamepieceCheck()).then(openBeak());
+        return retValue;
+    }
+
     // #endregion
 
     // #region Commands
