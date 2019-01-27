@@ -20,9 +20,9 @@ public interface RobotMap {
     DriveMap getDriveMap();
 
     public interface DriveMap {
-        SendableSpeedController getLeftMotors();
+        SendableSpeedController getLeft();
 
-        SendableSpeedController getRightMotors();
+        SendableSpeedController getRight();
 
         DoubleSolenoid getClimbPiston();
         

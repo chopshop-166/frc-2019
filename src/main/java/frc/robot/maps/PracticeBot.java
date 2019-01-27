@@ -7,6 +7,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj.AnalogGyro;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.I2C.Port;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
 import frc.robot.RobotMap;
@@ -18,8 +19,8 @@ public class PracticeBot implements RobotMap {
         return new DriveMap(){
         
             @Override
-            public SendableSpeedController getRightMotors() {
-                return new SendableSpeedController.wrap(new WPI_TalonSRX(1));
+            public SendableSpeedController getRight() {
+                return SendableSpeedController.wrap(new SpeedControllerGroup(new WPI_TalonSRX(1), new WPI_TalonSRX(2)));
             }
         
             @Override
@@ -28,8 +29,8 @@ public class PracticeBot implements RobotMap {
             }
         
             @Override
-            public SendableSpeedController getLeftMotors() {
-                return new SendableSpeedController.wrap(new WPI_TalonSRX(2));
+            public SendableSpeedController getLeft() {
+                return SendableSpeedController.wrap(new SpeedControllerGroup(new WPI_TalonSRX(10), new WPI_TalonSRX(11)));
             }
         
             @Override
@@ -38,10 +39,15 @@ public class PracticeBot implements RobotMap {
             }
         
             @Override
-            public Encoder getEncoder() {
-                return new ;
+            public Encoder getLeftEncoder() {
+                return new Encoder(6,7);
             }
         
+            @Override
+            public Encoder getRightEncoder() {
+                return new Encoder(8,9);
+            }
+
             @Override
             public DoubleSolenoid getClimbPiston() {
                 return new DoubleSolenoid(4, 5);

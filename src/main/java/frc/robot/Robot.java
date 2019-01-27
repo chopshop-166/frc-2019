@@ -2,7 +2,12 @@ package frc.robot;
 
 import com.chopshop166.chopshoplib.CommandRobot;
 
+import edu.wpi.cscore.UsbCamera;
+import edu.wpi.cscore.VideoSink;
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.maps.PracticeBot;
@@ -19,9 +24,16 @@ public class Robot extends CommandRobot {
     final private RobotMap robotMap = new PracticeBot();
     final private ExampleSubsystem exampleSubsystem = new ExampleSubsystem(robotMap);
 
+    public static XboxController driveController = new XboxController(1);
+
     private Command autonomousCommand;
     final private SendableChooser<Command> chooser = new SendableChooser<>();
 
+
+    UsbCamera camera1;
+    UsbCamera camera2;
+    VideoSink videoSink;
+    boolean prevTrigger = false;
     /**
      * This function is run when the robot is first started up and should be used
      * for any initialization code.
@@ -29,7 +41,9 @@ public class Robot extends CommandRobot {
     @Override
     public void robotInit() {
         // Initialize OI here
-
+        camera1 = CameraServer.getInstance().startAutomaticCapture(0);
+        camera2 = CameraServer.getInstance().startAutomaticCapture(1);
+        videoSink = CameraServer.getInstance().getServer();
         // Initialize autonomous chooser
         chooser.setDefaultOption("Default Auto", exampleSubsystem.sampleCommand());
         // chooser.addOption("My Auto", new MyAutoCommand());
@@ -64,5 +78,13 @@ public class Robot extends CommandRobot {
         if (autonomousCommand != null) {
             autonomousCommand.cancel();
         }
+    }
+
+    public Command switchCameras() {
+        return new InstantCommand(() -> {
+            if (prevTrigger) videoSink.setSource(camera2);
+            else videoSink.setSource(camera1);
+            prevTrigger = !prevTrigger;
+        });
     }
 }
