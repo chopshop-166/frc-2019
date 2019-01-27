@@ -49,7 +49,7 @@ public class Manipulator extends Subsystem {
 
     public Command releaseCargo() {
         CommandChain retValue = new CommandChain("Release Cargo");
-        retValue.then(rollerEject()).then(gamepieceCheck()).then(new WaitCommand(.5));
+        retValue.then(rollerEject()).then(gamepieceCheck()).then(new WaitCommand(.5)).then(rollerStop());
         return retValue;
     }
 
