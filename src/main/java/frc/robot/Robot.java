@@ -33,7 +33,7 @@ public class Robot extends CommandRobot {
     UsbCamera camera1;
     UsbCamera camera2;
     VideoSink videoSink;
-    boolean prevTrigger = false;
+    boolean activeCamera = false;
     /**
      * This function is run when the robot is first started up and should be used
      * for any initialization code.
@@ -82,9 +82,9 @@ public class Robot extends CommandRobot {
 
     public Command switchCameras() {
         return new InstantCommand(() -> {
-            if (prevTrigger) videoSink.setSource(camera2);
+            if (activeCamera) videoSink.setSource(camera2);
             else videoSink.setSource(camera1);
-            prevTrigger = !prevTrigger;
+            activeCamera = !activeCamera;
         });
     }
 }
