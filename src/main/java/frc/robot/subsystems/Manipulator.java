@@ -41,7 +41,7 @@ public class Manipulator extends Subsystem {
     }
 
     // #region Command Chains
-    public Command pickCargo() {
+    public Command pickUpCargo() {
         CommandChain retValue = new CommandChain("Pick up Cargo");
         retValue.then(openBeak()).then(rollerIntake()).then(closeArms()).then(gamepieceCheck()).then(rollerStop());
         return retValue;
