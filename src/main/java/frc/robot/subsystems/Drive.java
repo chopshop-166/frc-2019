@@ -31,9 +31,7 @@ public class Drive extends Subsystem {
     private DifferentialDrive drive = new DifferentialDrive(left, right);
     // TODO find path for the cameras
 
-    public Drive(
-    final RobotMap.DriveMap map)
-    { // NOPMD
+    public Drive(final RobotMap.DriveMap map) { // NOPMD
         super();
         // Take values that the subsystem needs from the map, and store them in the
         // class
@@ -49,16 +47,23 @@ public class Drive extends Subsystem {
 
     double gyroCorrection;
 
-    PIDSource gyroSource = new PIDSource(){
-    
+    PIDSource gyroSource = new PIDSource() {
+
         @Override
         public void setPIDSourceType(PIDSourceType pidSource) {
-            
+
         }
 
-    @Override public double pidGet(){return gyro.getAngle();}
+        @Override
+        public double pidGet() {
+            return gyro.getAngle();
+        }
 
-    @Override public PIDSourceType getPIDSourceType(){return null;}};
+        @Override
+        public PIDSourceType getPIDSourceType() {
+            return null;
+        }
+    };
 
     PIDController gyroDrivePID = new PIDController(.01, .0009, 0.0, 0.0, gyroSource, (double value) -> {
         gyroCorrection = value;

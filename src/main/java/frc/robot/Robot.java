@@ -29,11 +29,11 @@ public class Robot extends CommandRobot {
     private Command autonomousCommand;
     final private SendableChooser<Command> chooser = new SendableChooser<>();
 
-
     UsbCamera camera1;
     UsbCamera camera2;
     VideoSink videoSink;
     boolean activeCamera = false;
+
     /**
      * This function is run when the robot is first started up and should be used
      * for any initialization code.
@@ -82,8 +82,10 @@ public class Robot extends CommandRobot {
 
     public Command switchCameras() {
         return new InstantCommand(() -> {
-            if (activeCamera) videoSink.setSource(camera2);
-            else videoSink.setSource(camera1);
+            if (activeCamera)
+                videoSink.setSource(camera2);
+            else
+                videoSink.setSource(camera1);
             activeCamera = !activeCamera;
         });
     }
