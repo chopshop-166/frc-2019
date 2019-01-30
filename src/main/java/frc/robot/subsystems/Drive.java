@@ -29,7 +29,6 @@ public class Drive extends Subsystem {
     private Encoder rightEncoder;
     private Gyro gyro;
     private DifferentialDrive drive = new DifferentialDrive(left, right);
-    // TODO find path for the cameras
 
     public Drive(final RobotMap.DriveMap map) { // NOPMD
         super();
@@ -142,6 +141,37 @@ public class Drive extends Subsystem {
     }
 
     public Command turnXDegrees(double degrees) {
+        // The command is named "Sample Command" and requires this subsystem.
+        return new Command("turnXDegrees", this) {
+            @Override
+            protected void initialize() {
+                gyroDrivePID.reset();
+                gyroDrivePID.setSetpoint(degrees);
+                gyroDrivePID.enable();
+            }
+
+            @Override
+            protected void execute() {
+                drive.arcadeDrive(0, gyroCorrection);
+            }
+
+            @Override
+            protected boolean isFinished() {
+                // Make this return true when this Command no longer needs to run execute()
+                if (gyro.getAngle() == degrees)
+                    return true;
+                else
+                    return false;
+            }
+
+            @Override
+            protected void end() {
+                gyroDrivePID.disable();
+            }
+        };
+    }
+
+    public Command align(double degrees) {
         // The command is named "Sample Command" and requires this subsystem.
         return new Command("turnXDegrees", this) {
             @Override

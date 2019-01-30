@@ -5,9 +5,12 @@ import com.chopshop166.chopshoplib.CommandRobot;
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.cscore.VideoSink;
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.InstantCommand;
+import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.maps.PracticeBot;
@@ -33,6 +36,7 @@ public class Robot extends CommandRobot {
     UsbCamera camera2;
     VideoSink videoSink;
     boolean activeCamera = false;
+    NetworkTableEntry xEntry;
 
     /**
      * This function is run when the robot is first started up and should be used
@@ -44,11 +48,16 @@ public class Robot extends CommandRobot {
         camera1 = CameraServer.getInstance().startAutomaticCapture(0);
         camera2 = CameraServer.getInstance().startAutomaticCapture(1);
         videoSink = CameraServer.getInstance().getServer();
+        NetworkTableInstance inst = NetworkTableInstance.getDefault();
+        NetworkTable table = inst.getTable("Table Thingy");
+        xEntry = table.getEntry("Please do a thing");
         // Initialize autonomous chooser
         chooser.setDefaultOption("Default Auto", exampleSubsystem.sampleCommand());
         // chooser.addOption("My Auto", new MyAutoCommand());
         SmartDashboard.putData("Auto mode", chooser);
     }
+
+    double x = 0;
 
     /**
      * This autonomous (along with the chooser code above) shows how to select
@@ -78,6 +87,13 @@ public class Robot extends CommandRobot {
         if (autonomousCommand != null) {
             autonomousCommand.cancel();
         }
+    }
+
+    public Command doANetworkTableThing() {
+        return new InstantCommand(() -> {
+            xEntry.setDouble(x);
+            x += 0.05;
+        });
     }
 
     public Command switchCameras() {

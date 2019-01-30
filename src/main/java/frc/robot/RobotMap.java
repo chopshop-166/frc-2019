@@ -16,7 +16,7 @@ public interface RobotMap {
     // In the interface, create a function that returns a sensor interface or
     // SendableSpeedController.
     // In the map implementations, fill in that function with the specific instance.
-    
+
     DriveMap getDriveMap();
 
     public interface DriveMap {
@@ -25,13 +25,13 @@ public interface RobotMap {
         SendableSpeedController getRight();
 
         DoubleSolenoid getClimbPiston();
-        
+
         Lidar getLidar();
-        
+
         Encoder getLeftEncoder();
 
         Encoder getRightEncoder();
-        
+
         Gyro getGyro();
     }
 }
