@@ -17,14 +17,40 @@ public interface RobotMap {
     // SendableSpeedController.
     // In the map implementations, fill in that function with the specific instance.
     LiftMap getLiftMap();
+
     public interface LiftMap {
+      
         SendableSpeedController getMotor();
+      
         DoubleSolenoid getBrake();
+      
         SendableSpeedController getArmMotor();
+      
         Encoder getHeightEncoder();
+      
         DigitalInput getLowerLimit();
+      
         DigitalInput getUpperLimit();
+      
         Potentiometer getManipAngle();
     }
+
+    ManipulatorMap getManipulatorMap();
+
+    interface ManipulatorMap {
+
+        SendableSpeedController getpivotPointsMotor();
+
+        SendableSpeedController getrollersMotor();
+
+        DoubleSolenoid getbeaksPiston();
+
+        DigitalInput getGamepieceLimitSwitch();
+
+        DigitalInput getfoldedBackLimitSwitch();
+
+        DigitalInput getintakePositionLimitSwitch();
+    }
+
 }
 
