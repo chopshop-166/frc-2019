@@ -1,6 +1,7 @@
 package frc.robot;
 
 import com.chopshop166.chopshoplib.CommandRobot;
+import com.chopshop166.chopshoplib.controls.ButtonXboxController;
 
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -17,6 +18,7 @@ import frc.robot.subsystems.ExampleSubsystem;
  */
 public class Robot extends CommandRobot {
     final private RobotMap robotMap = new PracticeBot();
+    public static ButtonXboxController xBoxCoPilot = new ButtonXboxController(4);
     final private ExampleSubsystem exampleSubsystem = new ExampleSubsystem(robotMap);
 
     private Command autonomousCommand;
