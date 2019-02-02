@@ -37,8 +37,22 @@ public class LiftSubsystem extends Subsystem {
     }
 
     enum Heights {
-        kLoadingStation(19.0), kRocketCargoLow(27.5), kRocketHatchMid(47.0), kRocketCargoMid(55.5),
-        kRocketHatchHigh(63.0), kRocketCargoHigh(83.5), kFloorLoad(0.0), kCargoShipCargo(39.75);
+        // Loading Station
+        kLoadingStation(19.0),
+        // Low rocket cargo
+        kRocketCargoLow(27.5),
+        // Middle rocket hatch
+        kRocketHatchMid(47.0),
+        // Middle rocket cargo
+        kRocketCargoMid(55.5),
+        // Top rocket hatch
+        kRocketHatchHigh(63.0),
+        // Top rocket cargo
+        kRocketCargoHigh(83.5),
+        // floor load
+        kFloorLoad(0.0),
+        // cargo ship cargo
+        kCargoShipCargo(39.75);
 
         private double value;
 
@@ -101,29 +115,12 @@ public class LiftSubsystem extends Subsystem {
                 // Make this return true when this Command no longer needs to run execute()
                 return false;
             }
-
-            @Override
-            protected void end() {
-                // Called once after isFinished returns true
-            }
-
-            // Called when another command which requires one or more of the same
-            // subsystems is scheduled to run
-            @Override
-            protected void interrupted() {
-                end();
-            }
         };
     }
 
     public Command moveArm() {
         // The command is named "Move Arm" and requires this subsystem.
         return new Command("Move Arm", this) {
-            @Override
-            protected void initialize() {
-                // Called just before this Command runs the first time
-            }
-
             @Override
             protected void execute() {
                 // Called repeatedly when this Command is scheduled to run
@@ -134,18 +131,6 @@ public class LiftSubsystem extends Subsystem {
             protected boolean isFinished() {
                 // Make this return true when this Command no longer needs to run execute()
                 return false;
-            }
-
-            @Override
-            protected void end() {
-                // Called once after isFinished returns true
-            }
-
-            // Called when another command which requires one or more of the same
-            // subsystems is scheduled to run
-            @Override
-            protected void interrupted() {
-                end();
             }
         };
     }
@@ -184,36 +169,7 @@ public class LiftSubsystem extends Subsystem {
     }
 
     public Command homePos() {
-        // The command is named "Home Position" and requires this subsystem.
-        return new Command("Home Position", this) {
-            @Override
-            protected void initialize() {
-                // Called just before this Command runs the first time
-            }
-
-            @Override
-            protected void execute() {
-                // Called repeatedly when this Command is scheduled to run
-            }
-
-            @Override
-            protected boolean isFinished() {
-                // Make this return true when this Command no longer needs to run execute()
-                return false;
-            }
-
-            @Override
-            protected void end() {
-                // Called once after isFinished returns true
-            }
-
-            // Called when another command which requires one or more of the same
-            // subsystems is scheduled to run
-            @Override
-            protected void interrupted() {
-                end();
-            }
-        };
+        return goToHeight(Heights.kFloorLoad);
     }
 
     public Command goToHeight(Heights height) {
