@@ -36,7 +36,7 @@ public class Robot extends CommandRobot {
     UsbCamera camera2;
     VideoSink videoSink;
     boolean activeCamera = false;
-    NetworkTableEntry xEntry;
+
 
     /**
      * This function is run when the robot is first started up and should be used

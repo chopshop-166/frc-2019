@@ -4,6 +4,9 @@ import com.chopshop166.chopshoplib.commands.CommandChain;
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 import com.chopshop166.chopshoplib.sensors.Lidar;
 
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.Encoder;
@@ -158,8 +161,10 @@ public class Drive extends Subsystem {
             protected void initialize() {
                 NetworkTableInstance inst = NetworkTableInstance.getDefault();
                 NetworkTable table = inst.getTable("Vision Correction Table");
-                xEntry = table.getEntry("Vision Correction");gyroDrivePID.reset();
-                gyroDrivePID.setSetpoint(table.xEntry.get());
+                NetworkTableEntry xEntry;
+                xEntry = table.getEntry("Vision Correction");
+                gyroDrivePID.reset();
+                gyroDrivePID.setSetpoint(xEntry.getDouble(0));
                 gyroDrivePID.enable();
 
             }
@@ -171,7 +176,7 @@ public class Drive extends Subsystem {
 
             @Override
             protected boolean isFinished() {
-                return gyroDrivePID.
+                return gyroDrivePID.onTarget();
             }
 
             @Override
