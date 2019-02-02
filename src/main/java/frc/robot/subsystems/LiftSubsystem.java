@@ -87,25 +87,15 @@ public class LiftSubsystem extends Subsystem {
         // The command is named "Move Lift" and requires this subsystem.
         return new Command("Move Lift", this) {
             @Override
-            protected void initialize() {
-                // Called just before this Command runs the first time
-            }
-
-            @Override
             protected void execute() {
                 double liftSpeed;
                 liftSpeed = Robot.xBoxCoPilot.getY(Hand.kRight);
                 // Called repeatedly when this Command is scheduled to run
-                if (upperLimit.get()) {
-                    if (liftSpeed > 0) {
-                        liftSpeed = 0;
-                    }
-
+                if ((upperLimit.get()) && (liftSpeed > 0)) {
+                    liftSpeed = 0;
                 }
-                if (lowerLimit.get()) {
-                    if (liftSpeed < 0) {
-                        liftSpeed = 0;
-                    }
+                if ((lowerLimit.get()) && (liftSpeed < 0)) {
+                    liftSpeed = 0;
                 }
                 motor.set(liftSpeed);
             }
@@ -178,9 +168,14 @@ public class LiftSubsystem extends Subsystem {
             @Override
             protected void execute() {
                 double currentHeight = heightEncoder.getDistance();
-                if (currentHeight < height.get()) {
+               
+                if ((currentHeight < height.get()) && upperLimit.get()) {
+                    motor.set(0.0);
+                } else if ((currentHeight > height.get()) && lowerLimit.get()) {
+                    motor.set(0.0);
+                } else if (currentHeight < height.get()) {
                     motor.set(0.3);
-                } else {
+                }else {
                     motor.set(-0.3);
                 }
             }
