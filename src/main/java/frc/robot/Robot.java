@@ -48,16 +48,12 @@ public class Robot extends CommandRobot {
         camera1 = CameraServer.getInstance().startAutomaticCapture(0);
         camera2 = CameraServer.getInstance().startAutomaticCapture(1);
         videoSink = CameraServer.getInstance().getServer();
-        NetworkTableInstance inst = NetworkTableInstance.getDefault();
-        NetworkTable table = inst.getTable("Table Thingy");
-        xEntry = table.getEntry("Please do a thing");
         // Initialize autonomous chooser
         chooser.setDefaultOption("Default Auto", exampleSubsystem.sampleCommand());
         // chooser.addOption("My Auto", new MyAutoCommand());
         SmartDashboard.putData("Auto mode", chooser);
     }
 
-    double x = 0;
 
     /**
      * This autonomous (along with the chooser code above) shows how to select
@@ -87,13 +83,6 @@ public class Robot extends CommandRobot {
         if (autonomousCommand != null) {
             autonomousCommand.cancel();
         }
-    }
-
-    public Command doANetworkTableThing() {
-        return new InstantCommand(() -> {
-            xEntry.setDouble(x);
-            x += 0.05;
-        });
     }
 
     public Command switchCameras() {

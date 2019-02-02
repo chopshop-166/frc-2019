@@ -78,16 +78,10 @@ public class Drive extends Subsystem {
     }
 
     public Command driveNormal() {
-        // The command is named "Sample Command" and requires this subsystem.
         return new Command("driveNormal", this) {
-            @Override
-            protected void initialize() {
-                // Called just before this Command runs the first time
-            }
 
             @Override
             protected void execute() {
-                // Called repeatedly when this Command is scheduled to run
                 drive.arcadeDrive(
                         Robot.driveController.getTriggerAxis(Hand.kRight)
                                 - Robot.driveController.getTriggerAxis(Hand.kLeft),
@@ -96,19 +90,12 @@ public class Drive extends Subsystem {
 
             @Override
             protected boolean isFinished() {
-                // Make this return true when this Command no longer needs to run execute()
                 return false;
-            }
-
-            @Override
-            protected void end() {
-                // Called once after isFinished returns true
             }
         };
     }
 
     public Command goXDistance(double distance) {
-        // The command is named "Sample Command" and requires this subsystem.
         return new Command("GoXDistance", this) {
             @Override
             protected void initialize() {
@@ -126,8 +113,7 @@ public class Drive extends Subsystem {
 
             @Override
             protected boolean isFinished() {
-                // Make this return true when this Command no longer needs to run execute()
-                if (leftEncoder.get() + rightEncoder.get() / 2 > distance)
+                if ((leftEncoder.get() + rightEncoder.get()) / 2 > distance)
                     return true;
                 else
                     return false;
@@ -141,7 +127,6 @@ public class Drive extends Subsystem {
     }
 
     public Command turnXDegrees(double degrees) {
-        // The command is named "Sample Command" and requires this subsystem.
         return new Command("turnXDegrees", this) {
             @Override
             protected void initialize() {
@@ -157,11 +142,7 @@ public class Drive extends Subsystem {
 
             @Override
             protected boolean isFinished() {
-                // Make this return true when this Command no longer needs to run execute()
-                if (gyro.getAngle() == degrees)
-                    return true;
-                else
-                    return false;
+                return gyroDrivePID.onTarget(); 
             }
 
             @Override
@@ -171,14 +152,16 @@ public class Drive extends Subsystem {
         };
     }
 
-    public Command align(double degrees) {
-        // The command is named "Sample Command" and requires this subsystem.
+    public Command align() {
         return new Command("turnXDegrees", this) {
             @Override
             protected void initialize() {
-                gyroDrivePID.reset();
-                gyroDrivePID.setSetpoint(degrees);
+                NetworkTableInstance inst = NetworkTableInstance.getDefault();
+                NetworkTable table = inst.getTable("Vision Correction Table");
+                xEntry = table.getEntry("Vision Correction");gyroDrivePID.reset();
+                gyroDrivePID.setSetpoint(table.xEntry.get());
                 gyroDrivePID.enable();
+
             }
 
             @Override
@@ -188,11 +171,7 @@ public class Drive extends Subsystem {
 
             @Override
             protected boolean isFinished() {
-                // Make this return true when this Command no longer needs to run execute()
-                if (gyro.getAngle() == degrees)
-                    return true;
-                else
-                    return false;
+                return gyroDrivePID.
             }
 
             @Override
@@ -212,39 +191,6 @@ public class Drive extends Subsystem {
         return new InstantCommand("Retract Piston", this, () -> {
             climbPiston.set(Value.kReverse);
         });
-    }
-
-    public Command score() {
-        // The command is named "Sample Command" and requires this subsystem.
-        return new Command("Score", this) {
-            @Override
-            protected void initialize() {
-                // Called just before this Command runs the first time
-            }
-
-            @Override
-            protected void execute() {
-                // Called repeatedly when this Command is scheduled to run
-            }
-
-            @Override
-            protected boolean isFinished() {
-                // Make this return true when this Command no longer needs to run execute()
-                return false;
-            }
-
-            @Override
-            protected void end() {
-                // Called once after isFinished returns true
-            }
-
-            // Called when another command which requires one or more of the same
-            // subsystems is scheduled to run
-            @Override
-            protected void interrupted() {
-                end();
-            }
-        };
     }
 
     public Command downOffDrop() {
