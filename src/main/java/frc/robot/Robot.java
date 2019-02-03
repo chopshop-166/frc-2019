@@ -39,7 +39,6 @@ public class Robot extends CommandRobot {
     UsbCamera Camera0;
     UsbCamera Camera1;
     VideoSink videoSink;
-    boolean activeCamera = false;
     boolean camera0Active = true;
 
     /**

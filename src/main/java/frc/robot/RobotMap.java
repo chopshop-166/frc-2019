@@ -26,19 +26,19 @@ public interface RobotMap {
     LiftMap getLiftMap();
 
     public interface LiftMap {
-      
+
         SendableSpeedController getMotor();
-      
+
         DoubleSolenoid getBrake();
-      
+
         SendableSpeedController getArmMotor();
-      
+
         Encoder getHeightEncoder();
-      
+
         DigitalInput getLowerLimit();
-      
+
         DigitalInput getUpperLimit();
-      
+
         Potentiometer getManipAngle();
     }
 
@@ -59,7 +59,6 @@ public interface RobotMap {
         DigitalInput getintakePositionLimitSwitch();
     }
 
-
     DriveMap getDriveMap();
 
     public interface DriveMap {
@@ -78,4 +77,3 @@ public interface RobotMap {
         Gyro getGyro();
     }
 }
-
