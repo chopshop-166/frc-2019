@@ -98,7 +98,7 @@ public class Drive extends Subsystem {
         };
     }
 
-    public Command goXDistance(double distance) {
+    public Command goXDistanceForward(double distance) {
         return new Command("GoXDistance", this) {
             @Override
             protected void initialize() {
@@ -112,6 +112,37 @@ public class Drive extends Subsystem {
             @Override
             protected void execute() {
                 drive.arcadeDrive(sandstormSpeed, gyroCorrection);
+            }
+
+            @Override
+            protected boolean isFinished() {
+                if ((leftEncoder.get() + rightEncoder.get()) / 2 > distance)
+                    return true;
+                else
+                    return false;
+            }
+
+            @Override
+            protected void end() {
+                gyroDrivePID.disable();
+            }
+        };
+    }
+
+    public Command goXDistanceBackward(double distance) {
+        return new Command("GoXDistance", this) {
+            @Override
+            protected void initialize() {
+                gyroDrivePID.reset();
+                gyroDrivePID.setSetpoint(gyro.getAngle());
+                gyroDrivePID.enable();
+                leftEncoder.reset();
+                rightEncoder.reset();
+            }
+
+            @Override
+            protected void execute() {
+                drive.arcadeDrive(-sandstormSpeed, gyroCorrection);
             }
 
             @Override
@@ -157,31 +188,24 @@ public class Drive extends Subsystem {
 
     public Command align() {
         return new Command("turnXDegrees", this) {
-            @Override
-            protected void initialize() {
-                NetworkTableInstance inst = NetworkTableInstance.getDefault();
-                NetworkTable table = inst.getTable("Vision Correction Table");
-                NetworkTableEntry xEntry;
-                xEntry = table.getEntry("Vision Correction");
-                gyroDrivePID.reset();
-                gyroDrivePID.setSetpoint(xEntry.getDouble(0));
-                gyroDrivePID.enable();
 
-            }
+            NetworkTableInstance inst = NetworkTableInstance.getDefault();
+            NetworkTable table = inst.getTable("Vision Correction Table");
+            NetworkTableEntry xEntry;
+            double visionCorrectionSpeed = table.getEntry("Vision Correction").getDouble(0);
 
             @Override
             protected void execute() {
-                drive.arcadeDrive(0, gyroCorrection);
+                visionCorrectionSpeed = table.getEntry("Vision Correction").getDouble(0);
+                drive.arcadeDrive(0, visionCorrectionSpeed);
             }
 
             @Override
             protected boolean isFinished() {
-                return gyroDrivePID.onTarget();
-            }
-
-            @Override
-            protected void end() {
-                gyroDrivePID.disable();
+                if (.1 >= visionCorrectionSpeed && visionCorrectionSpeed >= -.1)
+                    return true;
+                else
+                    return false;
             }
         };
     }
@@ -199,8 +223,8 @@ public class Drive extends Subsystem {
     }
 
     public Command downOffDrop() {
-        return new CommandChain("Down off Drop").then(goXDistance(1)).then(extendPiston()).then(goXDistance(1))
-                .then(retractPiston()).then(goXDistance(1));
+        return new CommandChain("Down off Drop").then(goXDistanceForward(1)).then(extendPiston())
+                .then(goXDistanceForward(1)).then(retractPiston()).then(goXDistanceForward(1));
 
     }
 }
