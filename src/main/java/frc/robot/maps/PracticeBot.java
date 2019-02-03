@@ -24,38 +24,38 @@ public class PracticeBot implements RobotMap {
 
     @Override
     public LiftMap getLiftMap() {
-        return new LiftMap(){
-        
+        return new LiftMap() {
+
             @Override
             public DigitalInput getUpperLimit() {
                 return new DigitalInput(4);
             }
-        
+
             @Override
             public SendableSpeedController getMotor() {
                 return SendableSpeedController.wrap(new WPI_TalonSRX(3));
             }
-        
+
             @Override
             public Potentiometer getManipAngle() {
                 return new AnalogPotentiometer(1);
             }
-        
+
             @Override
             public DigitalInput getLowerLimit() {
                 return new DigitalInput(0);
             }
-        
+
             @Override
             public Encoder getHeightEncoder() {
-                return new Encoder(3,5);
+                return new Encoder(3, 5);
             }
-        
+
             @Override
             public DoubleSolenoid getBrake() {
                 return new DoubleSolenoid(2, 7);
             }
-        
+
             @Override
             public SendableSpeedController getArmMotor() {
                 return SendableSpeedController.wrap(new WPI_TalonSRX(2));
@@ -104,13 +104,13 @@ public class PracticeBot implements RobotMap {
         return new DriveMap() {
 
             @Override
-            public SendableSpeedController getRight() {
-                return SendableSpeedController.wrap(new SpeedControllerGroup(new WPI_TalonSRX(1), new WPI_TalonSRX(2)));
+            public Lidar getLidar() {
+                return new Lidar(Port.kOnboard, 0x10);
             }
 
             @Override
-            public Lidar getLidar() {
-                return new Lidar(Port.kOnboard, 0x10);
+            public SendableSpeedController getRight() {
+                return SendableSpeedController.wrap(new SpeedControllerGroup(new WPI_TalonSRX(1), new WPI_TalonSRX(2)));
             }
 
             @Override
