@@ -3,7 +3,16 @@ package frc.robot;
 import com.chopshop166.chopshoplib.CommandRobot;
 import com.chopshop166.chopshoplib.controls.ButtonXboxController;
 
+import edu.wpi.cscore.UsbCamera;
+import edu.wpi.cscore.VideoSink;
+import edu.wpi.cscore.VideoSource.ConnectionStrategy;
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.command.InstantCommand;
+import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.maps.PracticeBot;
@@ -17,12 +26,20 @@ import frc.robot.subsystems.ExampleSubsystem;
  * project.
  */
 public class Robot extends CommandRobot {
+
     final private RobotMap robotMap = new PracticeBot();
     public static ButtonXboxController xBoxCoPilot = new ButtonXboxController(4);
     final private ExampleSubsystem exampleSubsystem = new ExampleSubsystem(robotMap);
 
+    public static XboxController driveController = new XboxController(1);
+
     private Command autonomousCommand;
     final private SendableChooser<Command> chooser = new SendableChooser<>();
+
+    UsbCamera Camera0;
+    UsbCamera Camera1;
+    VideoSink videoSink;
+    boolean camera0Active = true;
 
     /**
      * This function is run when the robot is first started up and should be used
@@ -31,11 +48,17 @@ public class Robot extends CommandRobot {
     @Override
     public void robotInit() {
         // Initialize OI here
-
+        Camera0 = CameraServer.getInstance().startAutomaticCapture(0);
+        Camera1 = CameraServer.getInstance().startAutomaticCapture(1);
+        Camera0.setResolution(640, 480);
+        Camera1.setResolution(640, 480);
+        videoSink = CameraServer.getInstance().getServer();
+        videoSink.getProperty("compression").set(70);
         // Initialize autonomous chooser
         chooser.setDefaultOption("Default Auto", exampleSubsystem.sampleCommand());
         // chooser.addOption("My Auto", new MyAutoCommand());
         SmartDashboard.putData("Auto mode", chooser);
+        SmartDashboard.putData("Switch Cameras", switchCameras());
     }
 
     /**
@@ -66,5 +89,18 @@ public class Robot extends CommandRobot {
         if (autonomousCommand != null) {
             autonomousCommand.cancel();
         }
+    }
+
+    public Command switchCameras() {
+        return new InstantCommand(() -> {
+            System.out.println("Camera 0" + camera0Active);
+            if (!camera0Active) {
+                videoSink.setSource(Camera0);
+                camera0Active = !camera0Active;
+            } else {
+                videoSink.setSource(Camera1);
+                camera0Active = !camera0Active;
+            }
+        });
     }
 }

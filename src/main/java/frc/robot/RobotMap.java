@@ -7,6 +7,13 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.interfaces.Potentiometer;
 
+import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
+import com.chopshop166.chopshoplib.sensors.Lidar;
+
+import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.interfaces.Gyro;
+
 /**
  * The RobotMap is an interface that contains the instructions on how to make a
  * particular robot. This is useful for situations of practice robot vs real
@@ -19,19 +26,19 @@ public interface RobotMap {
     LiftMap getLiftMap();
 
     public interface LiftMap {
-      
+
         SendableSpeedController getMotor();
-      
+
         DoubleSolenoid getBrake();
-      
+
         SendableSpeedController getArmMotor();
-      
+
         Encoder getHeightEncoder();
-      
+
         DigitalInput getLowerLimit();
-      
+
         DigitalInput getUpperLimit();
-      
+
         Potentiometer getManipAngle();
     }
 
@@ -52,5 +59,21 @@ public interface RobotMap {
         DigitalInput getintakePositionLimitSwitch();
     }
 
-}
+    DriveMap getDriveMap();
 
+    public interface DriveMap {
+        SendableSpeedController getLeft();
+
+        SendableSpeedController getRight();
+
+        DoubleSolenoid getClimbPiston();
+
+        Lidar getLidar();
+
+        Encoder getLeftEncoder();
+
+        Encoder getRightEncoder();
+
+        Gyro getGyro();
+    }
+}
