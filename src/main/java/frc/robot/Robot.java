@@ -4,6 +4,7 @@ import com.chopshop166.chopshoplib.CommandRobot;
 
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.cscore.VideoSink;
+import edu.wpi.cscore.VideoSource.ConnectionStrategy;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -24,6 +25,7 @@ import frc.robot.subsystems.ExampleSubsystem;
  * project.
  */
 public class Robot extends CommandRobot {
+
     final private RobotMap robotMap = new PracticeBot();
     final private ExampleSubsystem exampleSubsystem = new ExampleSubsystem(robotMap);
 
@@ -32,11 +34,11 @@ public class Robot extends CommandRobot {
     private Command autonomousCommand;
     final private SendableChooser<Command> chooser = new SendableChooser<>();
 
-    UsbCamera camera1;
-    UsbCamera camera2;
+    UsbCamera Camera0;
+    UsbCamera Camera1;
     VideoSink videoSink;
     boolean activeCamera = false;
-
+    boolean camera0Active = true;
 
     /**
      * This function is run when the robot is first started up and should be used
@@ -45,15 +47,18 @@ public class Robot extends CommandRobot {
     @Override
     public void robotInit() {
         // Initialize OI here
-        camera1 = CameraServer.getInstance().startAutomaticCapture(0);
-        camera2 = CameraServer.getInstance().startAutomaticCapture(1);
+        Camera0 = CameraServer.getInstance().startAutomaticCapture(0);
+        Camera1 = CameraServer.getInstance().startAutomaticCapture(1);
+        Camera0.setResolution(640, 480);
+        Camera1.setResolution(640, 480);
         videoSink = CameraServer.getInstance().getServer();
+        videoSink.getProperty("compression").set(70);
         // Initialize autonomous chooser
         chooser.setDefaultOption("Default Auto", exampleSubsystem.sampleCommand());
         // chooser.addOption("My Auto", new MyAutoCommand());
         SmartDashboard.putData("Auto mode", chooser);
+        SmartDashboard.putData("Switch Cameras", switchCameras());
     }
-
 
     /**
      * This autonomous (along with the chooser code above) shows how to select
@@ -87,11 +92,14 @@ public class Robot extends CommandRobot {
 
     public Command switchCameras() {
         return new InstantCommand(() -> {
-            if (activeCamera)
-                videoSink.setSource(camera2);
-            else
-                videoSink.setSource(camera1);
-            activeCamera = !activeCamera;
+            System.out.println("Camera 0" + camera0Active);
+            if (!camera0Active) {
+                videoSink.setSource(Camera0);
+                camera0Active = !camera0Active;
+            } else {
+                videoSink.setSource(Camera1);
+                camera0Active = !camera0Active;
+            }
         });
     }
 }

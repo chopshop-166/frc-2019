@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 import frc.robot.RobotMap;
 
@@ -37,6 +38,7 @@ public class Drive extends Subsystem {
         super();
         // Take values that the subsystem needs from the map, and store them in the
         // class
+
         left = map.getLeft();
         right = map.getRight();
         climbPiston = map.getClimbPiston();
@@ -145,7 +147,7 @@ public class Drive extends Subsystem {
 
             @Override
             protected boolean isFinished() {
-                return gyroDrivePID.onTarget(); 
+                return gyroDrivePID.onTarget();
             }
 
             @Override
