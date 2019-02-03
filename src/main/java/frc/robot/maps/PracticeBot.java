@@ -3,21 +3,14 @@ package frc.robot.maps;
 import com.chopshop166.chopshoplib.outputs.MockSpeedController;
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 import com.chopshop166.chopshoplib.sensors.Lidar;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import com.chopshop166.chopshoplib.sensors.MockPotentiometer;
+import com.chopshop166.chopshoplib.sensors.PIDGyro;
 
 import edu.wpi.first.wpilibj.AnalogGyro;
-import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.SpeedControllerGroup;
-import edu.wpi.first.wpilibj.I2C.Port;
-import edu.wpi.first.wpilibj.interfaces.Gyro;
-import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
-
-import edu.wpi.first.wpilibj.AnalogPotentiometer;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.I2C.Port;
 import edu.wpi.first.wpilibj.interfaces.Potentiometer;
 import frc.robot.RobotMap;
 
@@ -39,7 +32,7 @@ public class PracticeBot implements RobotMap {
 
             @Override
             public Potentiometer getManipAngle() {
-                return new AnalogPotentiometer(1);
+                return new MockPotentiometer();
             }
 
             @Override
@@ -70,7 +63,7 @@ public class PracticeBot implements RobotMap {
 
             @Override
             public SendableSpeedController getrollersMotor() {
-                return SendableSpeedController.wrap(new WPI_TalonSRX(2));
+                return new MockSpeedController();
             }
 
             @Override
@@ -111,18 +104,17 @@ public class PracticeBot implements RobotMap {
 
             @Override
             public SendableSpeedController getRight() {
-                return SendableSpeedController.wrap(new SpeedControllerGroup(new WPI_TalonSRX(1), new WPI_TalonSRX(2)));
+                return new MockSpeedController();
             }
 
             @Override
             public SendableSpeedController getLeft() {
-                return SendableSpeedController
-                        .wrap(new SpeedControllerGroup(new WPI_TalonSRX(10), new WPI_TalonSRX(11)));
+                return new MockSpeedController();
             }
 
             @Override
-            public Gyro getGyro() {
-                return new AnalogGyro(3);
+            public PIDGyro getGyro() {
+                return PIDGyro.mock();
             }
 
             @Override
