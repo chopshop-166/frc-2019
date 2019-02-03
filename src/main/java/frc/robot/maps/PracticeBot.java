@@ -1,5 +1,6 @@
 package frc.robot.maps;
 
+import com.chopshop166.chopshoplib.outputs.MockSpeedController;
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
@@ -14,41 +15,41 @@ public class PracticeBot implements RobotMap {
 
     @Override
     public LiftMap getLiftMap() {
-        return new LiftMap(){
-        
+        return new LiftMap() {
+
             @Override
             public DigitalInput getUpperLimit() {
                 return new DigitalInput(4);
             }
-        
+
             @Override
             public SendableSpeedController getMotor() {
-                return SendableSpeedController.wrap(new WPI_TalonSRX(3));
+                return new MockSpeedController();
             }
-        
+
             @Override
             public Potentiometer getManipAngle() {
                 return new AnalogPotentiometer(1);
             }
-        
+
             @Override
             public DigitalInput getLowerLimit() {
                 return new DigitalInput(0);
             }
-        
+
             @Override
             public Encoder getHeightEncoder() {
-                return new Encoder(3,5);
+                return new Encoder(3, 5);
             }
-        
+
             @Override
             public DoubleSolenoid getBrake() {
                 return new DoubleSolenoid(2, 7);
             }
-        
+
             @Override
             public SendableSpeedController getArmMotor() {
-                return SendableSpeedController.wrap(new WPI_TalonSRX(2));
+                return new MockSpeedController();
             }
         };
     }
@@ -64,7 +65,7 @@ public class PracticeBot implements RobotMap {
 
             @Override
             public SendableSpeedController getpivotPointsMotor() {
-                return SendableSpeedController.wrap(new WPI_TalonSRX(3));
+                return new MockSpeedController();
             }
 
             @Override
@@ -88,5 +89,4 @@ public class PracticeBot implements RobotMap {
             }
         };
     }
-    // Fill in any methods from the interface here.
 }
