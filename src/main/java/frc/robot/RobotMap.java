@@ -4,6 +4,8 @@ import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.interfaces.Potentiometer;
 
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 import com.chopshop166.chopshoplib.sensors.Lidar;
@@ -21,6 +23,24 @@ public interface RobotMap {
     // In the interface, create a function that returns a sensor interface or
     // SendableSpeedController.
     // In the map implementations, fill in that function with the specific instance.
+    LiftMap getLiftMap();
+
+    public interface LiftMap {
+      
+        SendableSpeedController getMotor();
+      
+        DoubleSolenoid getBrake();
+      
+        SendableSpeedController getArmMotor();
+      
+        Encoder getHeightEncoder();
+      
+        DigitalInput getLowerLimit();
+      
+        DigitalInput getUpperLimit();
+      
+        Potentiometer getManipAngle();
+    }
 
     ManipulatorMap getManipulatorMap();
 
@@ -58,3 +78,4 @@ public interface RobotMap {
         Gyro getGyro();
     }
 }
+
