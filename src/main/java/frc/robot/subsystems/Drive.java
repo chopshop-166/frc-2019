@@ -191,7 +191,6 @@ public class Drive extends Subsystem {
 
             NetworkTableInstance inst = NetworkTableInstance.getDefault();
             NetworkTable table = inst.getTable("Vision Correction Table");
-            NetworkTableEntry xEntry;
             double visionCorrectionSpeed = table.getEntry("Vision Correction").getDouble(0);
 
             @Override
