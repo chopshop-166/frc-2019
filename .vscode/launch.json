@@ -16,6 +16,13 @@
       "name": "WPILib roboRIO Debug",
       "request": "launch",
       "desktop": false,
+    },
+    {
+    "type": "python",
+    "name": "Vision",
+    "request": "launch",
+    "program": "${file}",
+    "cwd": "${fileDirname}" 
     }
   ]
 }
