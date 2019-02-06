@@ -1,9 +1,6 @@
 package frc.robot.subsystems;
 
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
-
-import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Subsystem;
@@ -114,22 +111,26 @@ public class Maflipulator extends Subsystem {
         return new Command("Flip", this) {
             @Override
             protected void initialize() {
-                if (currentPosition.get() = kFront) {
-
+                if (currentPosition == MaflipulatorSide.kFront) {
+                    flipMotor.set(1);
                 }
-                // Called just before this Command runs the first time
+                if (currentPosition == MaflipulatorSide.kBack) {
+                    flipMotor.set(-1);
+                }
             }
 
             @Override
             protected void execute() {
-                flipMotor.set(.7);
                 // Called repeatedly when this Command is scheduled to run
             }
 
             @Override
             protected boolean isFinished() {
                 // Make this return true when this Command no longer needs to run execute()
-                if (manipulatorPot.get() >= 270) {
+                if (currentPosition == MaflipulatorSide.kFront && manipulatorPot.get() >= 270) {
+                    return true;
+                }
+                if (currentPosition == MaflipulatorSide.kBack && manipulatorPot.get() <= 90) {
                     return true;
                 }
                 return false;
@@ -137,7 +138,7 @@ public class Maflipulator extends Subsystem {
 
             @Override
             protected void end() {
-
+                flipMotor.set(0);
                 // Called once after isFinished returns true
             }
 
