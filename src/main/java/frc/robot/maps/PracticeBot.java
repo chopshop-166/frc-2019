@@ -13,7 +13,6 @@ import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.I2C.Port;
 import edu.wpi.first.wpilibj.interfaces.Potentiometer;
 import frc.robot.RobotMap;
-import frc.robot.subsystems.Lift;
 
 public class PracticeBot implements RobotMap {
 
