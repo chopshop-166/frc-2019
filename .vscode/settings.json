@@ -12,5 +12,6 @@
     ".gradle/": true,
     "gradle*": true
   },
-  "wpilib.online": true
+  "wpilib.online": true,
+  "python.pythonPath": "C:\\Users\\xtron\\AppData\\Local\\Programs\\Python\\Python37-32\\python.exe"
 }
