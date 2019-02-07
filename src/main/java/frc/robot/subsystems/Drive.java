@@ -3,10 +3,10 @@ package frc.robot.subsystems;
 import com.chopshop166.chopshoplib.commands.CommandChain;
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 import com.chopshop166.chopshoplib.sensors.Lidar;
+import com.chopshop166.chopshoplib.sensors.PIDGyro;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.Encoder;
@@ -19,7 +19,6 @@ import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 import frc.robot.RobotMap;
 
@@ -31,7 +30,7 @@ public class Drive extends Subsystem {
     private Lidar lidar;
     private Encoder leftEncoder;
     private Encoder rightEncoder;
-    private Gyro gyro;
+    private PIDGyro gyro;
     private DifferentialDrive drive = new DifferentialDrive(left, right);
 
     public Drive(final RobotMap.DriveMap map) { // NOPMD
@@ -50,26 +49,9 @@ public class Drive extends Subsystem {
     // TODO put numbers here
 
     double gyroCorrection;
+    double visionMultiplier;
 
-    PIDSource gyroSource = new PIDSource() {
-
-        @Override
-        public void setPIDSourceType(PIDSourceType pidSource) {
-
-        }
-
-        @Override
-        public double pidGet() {
-            return gyro.getAngle();
-        }
-
-        @Override
-        public PIDSourceType getPIDSourceType() {
-            return null;
-        }
-    };
-
-    PIDController gyroDrivePID = new PIDController(.01, .0009, 0.0, 0.0, gyroSource, (double value) -> {
+    PIDController gyroDrivePID = new PIDController(.01, .0009, 0.0, 0.0, gyro, (double value) -> {
         gyroCorrection = value;
     });
 
@@ -98,7 +80,7 @@ public class Drive extends Subsystem {
         };
     }
 
-    public Command goXDistance(double distance) {
+    public Command goXDistanceForward(double distance) {
         return new Command("GoXDistance", this) {
             @Override
             protected void initialize() {
@@ -117,6 +99,37 @@ public class Drive extends Subsystem {
             @Override
             protected boolean isFinished() {
                 if ((leftEncoder.get() + rightEncoder.get()) / 2 > distance)
+                    return true;
+                else
+                    return false;
+            }
+
+            @Override
+            protected void end() {
+                gyroDrivePID.disable();
+            }
+        };
+    }
+
+    public Command goXDistanceBackward(double distance) {
+        return new Command("GoXDistance", this) {
+            @Override
+            protected void initialize() {
+                gyroDrivePID.reset();
+                gyroDrivePID.setSetpoint(gyro.getAngle());
+                gyroDrivePID.enable();
+                leftEncoder.reset();
+                rightEncoder.reset();
+            }
+
+            @Override
+            protected void execute() {
+                drive.arcadeDrive(-sandstormSpeed, gyroCorrection);
+            }
+
+            @Override
+            protected boolean isFinished() {
+                if ((Math.abs(leftEncoder.get() + rightEncoder.get()) / 2 > distance))
                     return true;
                 else
                     return false;
@@ -156,32 +169,29 @@ public class Drive extends Subsystem {
     }
 
     public Command align() {
-        return new Command("turnXDegrees", this) {
-            @Override
-            protected void initialize() {
-                NetworkTableInstance inst = NetworkTableInstance.getDefault();
-                NetworkTable table = inst.getTable("Vision Correction Table");
-                NetworkTableEntry xEntry;
-                xEntry = table.getEntry("Vision Correction");
-                gyroDrivePID.reset();
-                gyroDrivePID.setSetpoint(xEntry.getDouble(0));
-                gyroDrivePID.enable();
+        return new Command("align", this) {
 
-            }
+            NetworkTableInstance inst = NetworkTableInstance.getDefault();
+            NetworkTable table = inst.getTable("Vision Correction Table");
+            double visionCorrectionSpeed = table.getEntry("Vision Correction").getDouble(0);
 
             @Override
             protected void execute() {
-                drive.arcadeDrive(0, gyroCorrection);
+                visionCorrectionSpeed = table.getEntry("Vision Correction").getDouble(0);
+                drive.arcadeDrive(0, visionMultiplier * visionCorrectionSpeed);
             }
 
             @Override
             protected boolean isFinished() {
-                return gyroDrivePID.onTarget();
+                if (.1 >= visionCorrectionSpeed && visionCorrectionSpeed >= -.1)
+                    return true;
+                else
+                    return false;
             }
 
             @Override
             protected void end() {
-                gyroDrivePID.disable();
+                drive.stopMotor();
             }
         };
     }
@@ -199,8 +209,8 @@ public class Drive extends Subsystem {
     }
 
     public Command downOffDrop() {
-        return new CommandChain("Down off Drop").then(goXDistance(1)).then(extendPiston()).then(goXDistance(1))
-                .then(retractPiston()).then(goXDistance(1));
+        return new CommandChain("Down off Drop").then(goXDistanceForward(1)).then(extendPiston())
+                .then(goXDistanceForward(1)).then(retractPiston()).then(goXDistanceForward(1));
 
     }
 }
