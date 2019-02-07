@@ -21,7 +21,7 @@ import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.interfaces.Potentiometer;
 import frc.robot.RobotMap;
 
-public class PracticeBot implements RobotMap {
+public class Maverick implements RobotMap {
 
     @Override
     public LiftMap getLiftMap() {

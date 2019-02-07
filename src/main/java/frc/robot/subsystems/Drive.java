@@ -3,12 +3,10 @@ package frc.robot.subsystems;
 import com.chopshop166.chopshoplib.commands.CommandChain;
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 import com.chopshop166.chopshoplib.sensors.Lidar;
-
-import org.apache.commons.math3.analysis.function.Abs;
+import com.chopshop166.chopshoplib.sensors.PIDGyro;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.Encoder;
@@ -21,7 +19,6 @@ import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 import frc.robot.RobotMap;
 
@@ -33,7 +30,7 @@ public class Drive extends Subsystem {
     private Lidar lidar;
     private Encoder leftEncoder;
     private Encoder rightEncoder;
-    private Gyro gyro;
+    private PIDGyro gyro;
     private DifferentialDrive drive = new DifferentialDrive(left, right);
 
     public Drive(final RobotMap.DriveMap map) { // NOPMD
@@ -54,18 +51,7 @@ public class Drive extends Subsystem {
     double gyroCorrection;
     double visionMultiplier;
 
-    PIDSource gyroSource = new PIDSource() {
-
-        @Override
-        public void setPIDSourceType(PIDSourceType pidSource) {
-
-        }
-
-    @Override public double pidGet(){return gyro.getAngle();}
-
-    @Override public PIDSourceType getPIDSourceType(){return null;}};
-
-    PIDController gyroDrivePID = new PIDController(.01, .0009, 0.0, 0.0, gyroSource, (double value) -> {
+    PIDController gyroDrivePID = new PIDController(.01, .0009, 0.0, 0.0, gyro, (double value) -> {
         gyroCorrection = value;
     });
 
@@ -143,7 +129,7 @@ public class Drive extends Subsystem {
 
             @Override
             protected boolean isFinished() {
-                if ((Abs (leftEncoder.get() + rightEncoder.get()) / 2 > distance)
+                if ((Math.abs(leftEncoder.get() + rightEncoder.get()) / 2 > distance))
                     return true;
                 else
                     return false;
@@ -154,7 +140,7 @@ public class Drive extends Subsystem {
                 gyroDrivePID.disable();
             }
         };
-    }d
+    }
 
     public Command turnXDegrees(double degrees) {
         return new Command("turnXDegrees", this) {

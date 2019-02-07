@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.interfaces.Potentiometer;
 
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 import com.chopshop166.chopshoplib.sensors.Lidar;
+import com.chopshop166.chopshoplib.sensors.PIDGyro;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Encoder;
@@ -74,6 +75,6 @@ public interface RobotMap {
 
         Encoder getRightEncoder();
 
-        Gyro getGyro();
+        PIDGyro getGyro();
     }
 }

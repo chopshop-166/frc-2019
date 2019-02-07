@@ -50,12 +50,12 @@ public class Robot extends CommandRobot {
         // Initialize OI here
         camera0 = CameraServer.getInstance().startAutomaticCapture(0);
         camera1 = CameraServer.getInstance().startAutomaticCapture(1);
-        camera0.setResolution(310, 240);
-        camera1.setResolution(310, 240);
+        camera0.setResolution(320, 240);
+        camera1.setResolution(320, 240);
         camera0.setFPS(20);
         camera1.setFPS(20);
-        videoSink.getProperty("compression").set(70);
         videoSink = CameraServer.getInstance().getServer();
+        videoSink.getProperty("compression").set(70);
         // Initialize autonomous chooser
         chooser.setDefaultOption("Default Auto", exampleSubsystem.sampleCommand());
         // chooser.addOption("My Auto", new MyAutoCommand());
