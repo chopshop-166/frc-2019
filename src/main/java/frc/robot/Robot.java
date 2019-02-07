@@ -105,4 +105,18 @@ public class Robot extends CommandRobot {
             }
         });
     }
+
+    public Command darkenCameras() {
+        return new InstantCommand(() -> {
+            camera0.setBrightness(30);
+            camera1.setBrightness(30);
+        });
+    }
+
+    public Command brightenCameras() {
+        return new InstantCommand(() -> {
+            camera0.setBrightness(100);
+            camera1.setBrightness(100);
+        });
+    }
 }
