@@ -4,6 +4,8 @@ import com.chopshop166.chopshoplib.commands.CommandChain;
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 import com.chopshop166.chopshoplib.sensors.Lidar;
 
+import org.apache.commons.math3.analysis.function.Abs;
+
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -50,6 +52,7 @@ public class Drive extends Subsystem {
     // TODO put numbers here
 
     double gyroCorrection;
+    double visionMultiplier;
 
     PIDSource gyroSource = new PIDSource() {
 
@@ -58,16 +61,9 @@ public class Drive extends Subsystem {
 
         }
 
-        @Override
-        public double pidGet() {
-            return gyro.getAngle();
-        }
+    @Override public double pidGet(){return gyro.getAngle();}
 
-        @Override
-        public PIDSourceType getPIDSourceType() {
-            return null;
-        }
-    };
+    @Override public PIDSourceType getPIDSourceType(){return null;}};
 
     PIDController gyroDrivePID = new PIDController(.01, .0009, 0.0, 0.0, gyroSource, (double value) -> {
         gyroCorrection = value;
@@ -147,7 +143,7 @@ public class Drive extends Subsystem {
 
             @Override
             protected boolean isFinished() {
-                if ((leftEncoder.get() + rightEncoder.get()) / 2 > distance)
+                if ((Abs (leftEncoder.get() + rightEncoder.get()) / 2 > distance)
                     return true;
                 else
                     return false;
@@ -158,7 +154,7 @@ public class Drive extends Subsystem {
                 gyroDrivePID.disable();
             }
         };
-    }
+    }d
 
     public Command turnXDegrees(double degrees) {
         return new Command("turnXDegrees", this) {
@@ -187,7 +183,7 @@ public class Drive extends Subsystem {
     }
 
     public Command align() {
-        return new Command("turnXDegrees", this) {
+        return new Command("align", this) {
 
             NetworkTableInstance inst = NetworkTableInstance.getDefault();
             NetworkTable table = inst.getTable("Vision Correction Table");
@@ -196,7 +192,7 @@ public class Drive extends Subsystem {
             @Override
             protected void execute() {
                 visionCorrectionSpeed = table.getEntry("Vision Correction").getDouble(0);
-                drive.arcadeDrive(0, visionCorrectionSpeed);
+                drive.arcadeDrive(0, visionMultiplier * visionCorrectionSpeed);
             }
 
             @Override
@@ -205,6 +201,11 @@ public class Drive extends Subsystem {
                     return true;
                 else
                     return false;
+            }
+
+            @Override
+            protected void end() {
+                drive.stopMotor();
             }
         };
     }

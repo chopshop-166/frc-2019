@@ -54,7 +54,7 @@ public class Robot extends CommandRobot {
         camera1.setResolution(310, 240);
         camera0.setFPS(20);
         camera1.setFPS(20);
-        // videoSink.getProperty("compression").set(70);
+        videoSink.getProperty("compression").set(70);
         videoSink = CameraServer.getInstance().getServer();
         // Initialize autonomous chooser
         chooser.setDefaultOption("Default Auto", exampleSubsystem.sampleCommand());
