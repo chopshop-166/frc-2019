@@ -2,6 +2,7 @@ import gripV2
 import cv2
 import numpy as np
 import threading
+import math
 # from networktables import NetworkTables
 
 
@@ -20,10 +21,20 @@ import threading
 # with cond:
 #     if not notified[0]:
 #         cond.wait()
-
+def findAngle(M):
+    cX = int(M["m10"] / M["m00"])
+    cY = int(M["m01"] / M["m00"])
+    mU_20 = int(M["m20"] / M["m00"] - (cX * cX))
+    mU_02 = int(M["m02"] / M["m00"] - (cY * cY))
+    mU_11 = int(M["m11"] / M["m00"] - (cX * cY))
+    if mU_20 != mU_02:
+        theta = 0.5 * math.atan((2 * mU_11) / (mU_20 - mU_02))
+    return theta
         
         
 cap = cv2.VideoCapture(1)
+
+cap.set(10,30)
 goalFinder = gripV2.GripiPipeline()
 
 #frame = cv2.imread('Examples/2.jpg',1)
@@ -42,7 +53,7 @@ while(True):
     for contour in goalFinder.find_contours_output:
 
         area=cv2.contourArea(contour)
-        if area>10000:
+        if area>10:
             filteredContours.append(contour)
 
     if len(filteredContours) == 0:
@@ -57,6 +68,11 @@ while(True):
         cX = int(M["m10"] / M["m00"])
         cY = int(M["m01"] / M["m00"])
         contourArea = cv2.contourArea(contour)
+        theta = findAngle(M)
+        print ("Give me the angle{}".format(math.degrees(theta)))
+        vX = int(math.cos(theta) * 80 + cX)
+        vY = int(math.sin(theta) * 80 + cY)
+        cv2.line(frame, (cX,cY), (vX,vY), (255,0,255), 2)
 
         rect = cv2.minAreaRect(contour)
         box = cv2.boxPoints(rect)
@@ -67,7 +83,7 @@ while(True):
         totalY += cY
 
         #print("contour points {},{}".format(cX,cY))
-        cv2.circle(frame, (cX, cY), 7, (0, 0, 0), -1)
+        cv2.circle(frame, (cX, cY), 7, (255, 0, 0), -1)
 
         cv2.drawContours(frame, [contour], -1, (255, 255, 0), 2)
     #cv2.drawContours(frame, filteredContours, -1, (255, 0, 0), 2)
@@ -91,7 +107,7 @@ while(True):
     #table.putNumber("Vision Correction", fullContourMidpoint)
 
     #print("Average Contour Point {},{}".format(avgPoint[0],avgPoint[1]))
-    cv2.circle(frame, (avgPoint), 7, (0, 0, 0), -1)
+    cv2.circle(frame, (avgPoint), 7, (255, 255, 255), -1)
 
     cv2.imshow('image',frame)
     #filteredContours.clear()
@@ -100,4 +116,7 @@ while(True):
 cv2.waitKey(0)
 cap.release()
 cv2.destroyAllWindows()
+
+
+
 
