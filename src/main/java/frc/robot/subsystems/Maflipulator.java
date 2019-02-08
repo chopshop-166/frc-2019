@@ -32,7 +32,7 @@ public class Maflipulator extends Subsystem {
     }
 
     public Command manualFlip() {
-        // The command is named "Sample Command" and requires this subsystem.
+        // The command is named "Manual Flip" and requires this subsystem.
         return new Command("Manual Flip", this) {
             @Override
             protected void initialize() {
@@ -48,23 +48,11 @@ public class Maflipulator extends Subsystem {
             protected boolean isFinished() {
                 return false;
             }
-
-            @Override
-            protected void end() {
-                // Called once after isFinished returns true
-            }
-
-            // Called when another command which requires one or more of the same
-            // subsystems is scheduled to run
-            @Override
-            protected void interrupted() {
-                end();
-            }
         };
     }
 
     public Command restrictRotate() {
-        // The command is named "Sample Command" and requires this subsystem.
+        // The command is named "Restrict Rotate" and requires this subsystem.
         return new Command("Restrict Rotate", this) {
 
             @Override
@@ -109,8 +97,7 @@ public class Maflipulator extends Subsystem {
             protected void initialize() {
                 if (currentPosition == MaflipulatorSide.kFront) {
                     flipMotor.set(1);
-                }
-                if (currentPosition == MaflipulatorSide.kBack) {
+                } else {
                     flipMotor.set(-1);
                 }
             }
@@ -135,7 +122,6 @@ public class Maflipulator extends Subsystem {
             @Override
             protected void end() {
                 flipMotor.set(0);
-
                 // Called once after isFinished returns true
             }
         };
