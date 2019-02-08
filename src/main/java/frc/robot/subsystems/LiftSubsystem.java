@@ -5,6 +5,7 @@ import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
@@ -25,6 +26,9 @@ public class LiftSubsystem extends Subsystem {
     private DigitalInput upperLimit;
     private Potentiometer manipAngle;
 
+    PIDController heightPID;
+    double heightCorrection;
+
     public LiftSubsystem(final RobotMap.LiftMap map) {
         super();
         motor = map.getMotor();
@@ -34,6 +38,10 @@ public class LiftSubsystem extends Subsystem {
         lowerLimit = map.getLowerLimit();
         upperLimit = map.getUpperLimit();
         manipAngle = map.getManipAngle();
+        heightPID = new PIDController(.01, .0009, 0.0, 0.0, heightEncoder, (double value) -> {
+            heightCorrection = value;
+        });
+
     }
 
     enum Heights {
@@ -81,6 +89,28 @@ public class LiftSubsystem extends Subsystem {
         return new InstantCommand("Disengage Brake", this, () -> {
             brake.set(Value.kReverse);
         });
+    }
+
+    public Command autoMoveLift() {
+        return new Command("Auto Move Lift", this) {
+            @Override
+            protected void initialize() {
+                heightPID.reset();
+                heightPID.setSetpoint(0);
+                heightPID.enable();
+            }
+
+            @Override
+
+            protected void execute() {
+                motor.set(heightCorrection);
+            }
+
+            @Override
+            protected boolean isFinished() {
+                return false;
+            }
+        };
     }
 
     public Command moveLift() {
@@ -168,14 +198,14 @@ public class LiftSubsystem extends Subsystem {
             @Override
             protected void execute() {
                 double currentHeight = heightEncoder.getDistance();
-               
+
                 if ((currentHeight < height.get()) && upperLimit.get()) {
                     motor.set(0.0);
                 } else if ((currentHeight > height.get()) && lowerLimit.get()) {
                     motor.set(0.0);
                 } else if (currentHeight < height.get()) {
                     motor.set(0.3);
-                }else {
+                } else {
                     motor.set(-0.3);
                 }
             }
