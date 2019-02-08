@@ -16,7 +16,6 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.maps.PracticeBot;
-import frc.robot.subsystems.Lift;
 import frc.robot.subsystems.Maflipulator;
 
 /**
@@ -30,7 +29,6 @@ public class Robot extends CommandRobot {
 
     final private RobotMap robotMap = new PracticeBot();
     final public static ButtonXboxController coPilot = new ButtonXboxController(1);
-    final private Lift lift = new Lift(robotMap.getLiftMap());
     final private Maflipulator maflipulator = new Maflipulator(robotMap.getMaflipulatorMap());
 
     public static XboxController driveController = new XboxController(1);
