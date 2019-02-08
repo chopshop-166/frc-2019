@@ -14,7 +14,7 @@ public class Maflipulator extends Subsystem {
         kFront, kBack;
     }
 
-    MaflipulatorSide currentPosition;
+    private MaflipulatorSide currentPosition;
 
     private SendableSpeedController flipMotor;
     private Potentiometer manipulatorPot;
@@ -33,7 +33,7 @@ public class Maflipulator extends Subsystem {
 
     public Command manualFlip() {
         // The command is named "Sample Command" and requires this subsystem.
-        return new Command("manualFlip", this) {
+        return new Command("Manual Flip", this) {
             @Override
             protected void initialize() {
                 // Called just before this Command runs the first time
@@ -42,12 +42,10 @@ public class Maflipulator extends Subsystem {
             @Override
             protected void execute() {
                 flipMotor.set(Robot.coPilot.getY(Hand.kRight));
-                // Called repeatedly when this Command is scheduled to run
             }
 
             @Override
             protected boolean isFinished() {
-                // Make this return true when this Command no longer needs to run execute()
                 return false;
             }
 
@@ -65,43 +63,41 @@ public class Maflipulator extends Subsystem {
         };
     }
 
-    public Command sampleCommand() {
+    public Command restrictRotate() {
         // The command is named "Sample Command" and requires this subsystem.
-        return new Command("Sample Command", this) {
-            @Override
-            protected void initialize() {
-                // Called just before this Command runs the first time
-            }
+        return new Command("Restrict Rotate", this) {
 
             @Override
             protected void execute() {
                 double flipSpeed = Robot.coPilot.getY(Hand.kRight);
-                if (flipSpeed > 0 && manipulatorPot.get() >= 180) {
-                    flipSpeed = 0;
+                if (currentPosition == MaflipulatorSide.kFront) {
+                    if (flipSpeed > 0 && manipulatorPot.get() >= 180) {
+                        flipSpeed = 0;
+                    }
+                    if (flipSpeed < 0 && manipulatorPot.get() <= 70) {
+                        flipSpeed = 0;
+                    }
                 }
-                if (flipSpeed > 0 && manipulatorPot.get() <= 70) {
-                    flipSpeed = 0;
+
+                if (currentPosition == MaflipulatorSide.kBack) {
+                    if (flipSpeed > 0 && manipulatorPot.get() <= 180) {
+                        flipSpeed = 0;
+                    }
+                    if (flipSpeed < 0 && manipulatorPot.get() >= 290) {
+                        flipSpeed = 0;
+                    }
                 }
                 flipMotor.set(flipSpeed);
-                // Called repeatedly when this Command is scheduled to run
             }
 
             @Override
             protected boolean isFinished() {
-                // Make this return true when this Command no longer needs to run execute()
                 return false;
             }
 
             @Override
             protected void end() {
                 // Called once after isFinished returns true
-            }
-
-            // Called when another command which requires one or more of the same
-            // subsystems is scheduled to run
-            @Override
-            protected void interrupted() {
-                end();
             }
         };
     }
@@ -139,14 +135,8 @@ public class Maflipulator extends Subsystem {
             @Override
             protected void end() {
                 flipMotor.set(0);
-                // Called once after isFinished returns true
-            }
 
-            // Called when another command which requires one or more of the same
-            // subsystems is scheduled to run
-            @Override
-            protected void interrupted() {
-                end();
+                // Called once after isFinished returns true
             }
         };
     }
