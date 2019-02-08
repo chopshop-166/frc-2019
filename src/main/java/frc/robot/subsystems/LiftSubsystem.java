@@ -91,24 +91,30 @@ public class LiftSubsystem extends Subsystem {
         });
     }
 
-    public Command autoMoveLift() {
+    public Command autoMoveLift(Heights target) {
         return new Command("Auto Move Lift", this) {
             @Override
             protected void initialize() {
+                brake.set(Value.kReverse);
                 heightPID.reset();
-                heightPID.setSetpoint(0);
+                heightPID.setSetpoint(target.value);
                 heightPID.enable();
             }
 
             @Override
-
             protected void execute() {
                 motor.set(heightCorrection);
             }
 
             @Override
             protected boolean isFinished() {
-                return false;
+                return heightPID.onTarget();
+            }
+
+            @Override
+            protected void end() {
+                brake.set(Value.kForward);
+                motor.set(0);
             }
         };
     }
