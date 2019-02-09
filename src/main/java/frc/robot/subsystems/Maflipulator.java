@@ -5,6 +5,7 @@ import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.command.PIDCommand;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.interfaces.Potentiometer;
 import frc.robot.Robot;
@@ -146,20 +147,13 @@ public class Maflipulator extends Subsystem {
     }
 
     public Command moveToPosition() {
-        return new Command("move to position", this) {
+        return new PIDCommand("Move to Position", .01, .0009, 0.0, this) {
 
             @Override
             protected void initialize() {
                 anglePID.reset();
                 anglePID.setSetpoint(0);
                 anglePID.enable();
-            }
-
-            @Override
-            protected void execute() {
-                double flipSpeed = angleCorrection;
-                flipSpeed = restrict(flipSpeed);
-                flipMotor.set(flipSpeed);
             }
 
             @Override
@@ -170,6 +164,18 @@ public class Maflipulator extends Subsystem {
             @Override
             protected void end() {
                 flipMotor.set(0);
+            }
+
+            @Override
+            protected double returnPIDInput() {
+                return anglePot.pidGet();
+            }
+
+            @Override
+            protected void usePIDOutput(double output) {
+                double flipSpeed = angleCorrection;
+                flipSpeed = restrict(flipSpeed);
+                flipMotor.set(flipSpeed);
             }
         };
     }
