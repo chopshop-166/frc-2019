@@ -145,7 +145,7 @@ public class PracticeBot implements RobotMap {
 
             @Override
             public Potentiometer getMaflipulatorPot() {
-                return new AnalogPotentiometer(8);
+                return new MockPotentiometer();
             }
         };
     }
