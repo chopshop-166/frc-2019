@@ -67,6 +67,25 @@ public class Maflipulator extends Subsystem {
         };
     }
 
+    protected double restrict(double flipSpeed) {
+        if (currentPosition == MaflipulatorSide.kFront) {
+            if (flipSpeed > 0 && anglePot.get() >= FRONT_UPPER_ANGLE) {
+                flipSpeed = 0;
+            }
+            if (flipSpeed < 0 && anglePot.get() <= FRONT_LOWER_ANGLE) {
+                flipSpeed = 0;
+            }
+        } else {
+            if (flipSpeed > 0 && anglePot.get() <= BACK_UPPER_ANGLE) {
+                flipSpeed = 0;
+            }
+            if (flipSpeed < 0 && anglePot.get() >= BACK_LOWER_ANGLE) {
+                flipSpeed = 0;
+            }
+        }
+        return flipSpeed;
+    }
+
     public Command restrictRotate() {
         // The command is named "Restrict Rotate" and requires this subsystem.
         return new Command("Restrict Rotate", this) {
@@ -74,21 +93,7 @@ public class Maflipulator extends Subsystem {
             @Override
             protected void execute() {
                 double flipSpeed = Robot.xBoxCoPilot.getY(Hand.kRight);
-                if (currentPosition == MaflipulatorSide.kFront) {
-                    if (flipSpeed > 0 && anglePot.get() >= FRONT_UPPER_ANGLE) {
-                        flipSpeed = 0;
-                    }
-                    if (flipSpeed < 0 && anglePot.get() <= FRONT_LOWER_ANGLE) {
-                        flipSpeed = 0;
-                    }
-                } else {
-                    if (flipSpeed > 0 && anglePot.get() <= BACK_UPPER_ANGLE) {
-                        flipSpeed = 0;
-                    }
-                    if (flipSpeed < 0 && anglePot.get() >= BACK_LOWER_ANGLE) {
-                        flipSpeed = 0;
-                    }
-                }
+                flipSpeed = restrict(flipSpeed);
                 flipMotor.set(flipSpeed);
             }
 
@@ -153,21 +158,7 @@ public class Maflipulator extends Subsystem {
             @Override
             protected void execute() {
                 double flipSpeed = angleCorrection;
-                if (currentPosition == MaflipulatorSide.kFront) {
-                    if (flipSpeed > 0 && anglePot.get() >= FRONT_UPPER_ANGLE) {
-                        flipSpeed = 0;
-                    }
-                    if (flipSpeed < 0 && anglePot.get() <= FRONT_LOWER_ANGLE) {
-                        flipSpeed = 0;
-                    }
-                } else {
-                    if (flipSpeed > 0 && anglePot.get() <= BACK_UPPER_ANGLE) {
-                        flipSpeed = 0;
-                    }
-                    if (flipSpeed < 0 && anglePot.get() >= BACK_LOWER_ANGLE) {
-                        flipSpeed = 0;
-                    }
-                }
+                flipSpeed = restrict(flipSpeed);
                 flipMotor.set(flipSpeed);
             }
 
