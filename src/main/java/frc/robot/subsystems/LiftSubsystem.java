@@ -35,9 +35,7 @@ public class LiftSubsystem extends Subsystem {
         brake = map.getBrake();
         armMotor = map.getArmMotor();
         heightEncoder = map.getHeightEncoder();
-        lowerLimit = map.getLowerLimit();
-        upperLimit = map.getUpperLimit();
-        manipAngle = map.getManipAngle();
+
         heightPID = new PIDController(.01, .0009, 0.0, 0.0, heightEncoder, (double value) -> {
             heightCorrection = value;
         });
@@ -73,6 +71,8 @@ public class LiftSubsystem extends Subsystem {
         }
     }
 
+    private final static double AUTO_LIFT_SPEED = 0.3;
+
     @Override
     public void initDefaultCommand() {
         // Set the default command for a subsystem here.
@@ -103,7 +103,14 @@ public class LiftSubsystem extends Subsystem {
 
             @Override
             protected void execute() {
-                motor.set(heightCorrection);
+                double liftSpeed = heightCorrection;
+                if ((upperLimit.get()) && (liftSpeed > 0)) {
+                    liftSpeed = 0;
+                }
+                if ((lowerLimit.get()) && (liftSpeed < 0)) {
+                    liftSpeed = 0;
+                }
+                motor.set(liftSpeed);
             }
 
             @Override
@@ -203,6 +210,7 @@ public class LiftSubsystem extends Subsystem {
         return new Command("Go to a Specific Height", this) {
             @Override
             protected void execute() {
+
                 double currentHeight = heightEncoder.getDistance();
 
                 if ((currentHeight < height.get()) && upperLimit.get()) {
@@ -210,9 +218,10 @@ public class LiftSubsystem extends Subsystem {
                 } else if ((currentHeight > height.get()) && lowerLimit.get()) {
                     motor.set(0.0);
                 } else if (currentHeight < height.get()) {
-                    motor.set(0.3);
+
+                    motor.set(AUTO_LIFT_SPEED);
                 } else {
-                    motor.set(-0.3);
+                    motor.set(-AUTO_LIFT_SPEED);
                 }
             }
 
