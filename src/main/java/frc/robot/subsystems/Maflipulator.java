@@ -14,6 +14,13 @@ public class Maflipulator extends Subsystem {
         kFront, kBack;
     }
 
+    private final static double FRONT_LOWER_ANGLE = 70;
+    private final static double FRONT_UPPER_ANGLE = 180;
+    private final static double BACK_LOWER_ANGLE = 290;
+    private final static double BACK_UPPER_ANGLE = 180;
+
+    private final static double FLIP_MOTOR_SPEED = 1;
+
     private MaflipulatorSide currentPosition;
 
     private SendableSpeedController flipMotor;
@@ -22,13 +29,13 @@ public class Maflipulator extends Subsystem {
     public Maflipulator(final RobotMap.MaflipulatorMap map) { // NOPMD
         super();
         flipMotor = map.getFlipMotor();
-        manipulatorPot = map.getManipulatorPot();
+        manipulatorPot = map.getMaflipulatorPot();
     }
 
     @Override
     public void initDefaultCommand() {
         // Set the default command for a subsystem here.
-        setDefaultCommand(manualFlip());
+        setDefaultCommand(restrictRotate());
     }
 
     public Command manualFlip() {
@@ -41,7 +48,7 @@ public class Maflipulator extends Subsystem {
 
             @Override
             protected void execute() {
-                flipMotor.set(Robot.coPilot.getY(Hand.kRight));
+                flipMotor.set(Robot.xBoxCoPilot.getY(Hand.kRight));
             }
 
             @Override
@@ -57,21 +64,21 @@ public class Maflipulator extends Subsystem {
 
             @Override
             protected void execute() {
-                double flipSpeed = Robot.coPilot.getY(Hand.kRight);
+                double flipSpeed = Robot.xBoxCoPilot.getY(Hand.kRight);
                 if (currentPosition == MaflipulatorSide.kFront) {
-                    if (flipSpeed > 0 && manipulatorPot.get() >= 180) {
+                    if (flipSpeed > 0 && manipulatorPot.get() >= FRONT_UPPER_ANGLE) {
                         flipSpeed = 0;
                     }
-                    if (flipSpeed < 0 && manipulatorPot.get() <= 70) {
+                    if (flipSpeed < 0 && manipulatorPot.get() <= FRONT_LOWER_ANGLE) {
                         flipSpeed = 0;
                     }
                 }
 
                 if (currentPosition == MaflipulatorSide.kBack) {
-                    if (flipSpeed > 0 && manipulatorPot.get() <= 180) {
+                    if (flipSpeed > 0 && manipulatorPot.get() <= BACK_UPPER_ANGLE) {
                         flipSpeed = 0;
                     }
-                    if (flipSpeed < 0 && manipulatorPot.get() >= 290) {
+                    if (flipSpeed < 0 && manipulatorPot.get() >= BACK_LOWER_ANGLE) {
                         flipSpeed = 0;
                     }
                 }
@@ -96,9 +103,9 @@ public class Maflipulator extends Subsystem {
             @Override
             protected void initialize() {
                 if (currentPosition == MaflipulatorSide.kFront) {
-                    flipMotor.set(1);
+                    flipMotor.set(FLIP_MOTOR_SPEED);
                 } else {
-                    flipMotor.set(-1);
+                    flipMotor.set(-FLIP_MOTOR_SPEED);
                 }
             }
 
@@ -112,8 +119,7 @@ public class Maflipulator extends Subsystem {
                 // Make this return true when this Command no longer needs to run execute()
                 if (currentPosition == MaflipulatorSide.kFront && manipulatorPot.get() >= 270) {
                     return true;
-                }
-                if (currentPosition == MaflipulatorSide.kBack && manipulatorPot.get() <= 90) {
+                } else if (manipulatorPot.get() <= 90) {
                     return true;
                 }
                 return false;

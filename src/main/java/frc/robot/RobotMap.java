@@ -77,4 +77,13 @@ public interface RobotMap {
 
         PIDGyro getGyro();
     }
+
+    MaflipulatorMap getMaflipulatorMap();
+
+    interface MaflipulatorMap {
+
+        SendableSpeedController getFlipMotor();
+
+        Potentiometer getMaflipulatorPot();
+    }
 }

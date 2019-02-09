@@ -28,7 +28,7 @@ import frc.robot.subsystems.Maflipulator;
 public class Robot extends CommandRobot {
 
     final private RobotMap robotMap = new PracticeBot();
-    final public static ButtonXboxController coPilot = new ButtonXboxController(1);
+    final public static ButtonXboxController xBoxCoPilot = new ButtonXboxController(1);
     final private Maflipulator maflipulator = new Maflipulator(robotMap.getMaflipulatorMap());
 
     public static XboxController driveController = new XboxController(1);

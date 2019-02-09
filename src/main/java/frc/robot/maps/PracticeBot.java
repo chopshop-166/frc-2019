@@ -7,6 +7,7 @@ import com.chopshop166.chopshoplib.sensors.MockPotentiometer;
 import com.chopshop166.chopshoplib.sensors.PIDGyro;
 
 import edu.wpi.first.wpilibj.AnalogGyro;
+import edu.wpi.first.wpilibj.AnalogPotentiometer;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Encoder;
@@ -123,13 +124,28 @@ public class PracticeBot implements RobotMap {
             }
 
             @Override
-            public Encoder getRightEncoder() {
-                return new Encoder(8, 9);
+            public DoubleSolenoid getClimbPiston() {
+                return new DoubleSolenoid(4, 5);
             }
 
             @Override
-            public DoubleSolenoid getClimbPiston() {
-                return new DoubleSolenoid(4, 5);
+            public Encoder getRightEncoder() {
+                return new Encoder(3, 4);
+            }
+        };
+    }
+
+    public MaflipulatorMap getMaflipulatorMap() {
+        return new MaflipulatorMap() {
+
+            @Override
+            public SendableSpeedController getFlipMotor() {
+                return new MockSpeedController();
+            }
+
+            @Override
+            public Potentiometer getMaflipulatorPot() {
+                return new AnalogPotentiometer(8);
             }
         };
     }
