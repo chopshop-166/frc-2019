@@ -1,7 +1,7 @@
 package frc.robot.subsystems;
 
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
-
+import edu.wpi.first.wpilibj.command.PIDCommand;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Encoder;
@@ -17,7 +17,6 @@ import frc.robot.Robot;
 import frc.robot.RobotMap;
 
 public class LiftSubsystem extends Subsystem {
-
     private SendableSpeedController motor;
     private DoubleSolenoid brake;
     private SendableSpeedController armMotor;
@@ -25,9 +24,6 @@ public class LiftSubsystem extends Subsystem {
     private DigitalInput lowerLimit;
     private DigitalInput upperLimit;
     private Potentiometer manipAngle;
-
-    PIDController heightPID;
-    double heightCorrection;
 
     public LiftSubsystem(final RobotMap.LiftMap map) {
         super();
@@ -37,10 +33,6 @@ public class LiftSubsystem extends Subsystem {
         heightEncoder = map.getHeightEncoder();
         lowerLimit = map.getLowerLimit();
         upperLimit = map.getUpperLimit();
-        heightPID = new PIDController(.01, .0009, 0.0, 0.0, heightEncoder, (double value) -> {
-            heightCorrection = value;
-        });
-
     }
 
     enum Heights {
@@ -93,36 +85,41 @@ public class LiftSubsystem extends Subsystem {
     }
 
     public Command autoMoveLift(Heights target) {
-        return new Command("Auto Move Lift", this) {
+        return new PIDCommand("Auto Move Lift", 0, 0, 0, 0, this) {
             @Override
             protected void initialize() {
                 brake.set(Value.kReverse);
-                heightPID.reset();
-                heightPID.setSetpoint(target.value);
-                heightPID.enable();
+
+                setSetpoint(target.value);
+
             }
 
             @Override
-            protected void execute() {
+            protected void usePIDOutput(final double heightCorrection) {
                 double liftSpeed = heightCorrection;
-                if ((upperLimit.get()) && (liftSpeed > 0)) {
+                if (upperLimit.get() && liftSpeed > 0) {
                     liftSpeed = 0;
                 }
-                if ((lowerLimit.get()) && (liftSpeed < 0)) {
+                if (lowerLimit.get() && liftSpeed < 0) {
                     liftSpeed = 0;
                 }
                 motor.set(liftSpeed);
             }
 
             @Override
-            protected boolean isFinished() {
-                return heightPID.onTarget();
-            }
-
-            @Override
             protected void end() {
                 brake.set(Value.kForward);
                 motor.set(0);
+            }
+
+            @Override
+            protected double returnPIDInput() {
+                return heightEncoder.pidGet();
+            }
+
+            @Override
+            protected boolean isFinished() {
+                return getPIDController().onTarget();
             }
         };
     }
