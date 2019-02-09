@@ -24,14 +24,22 @@ import math
 def findAngle(M):
     cX = int(M["m10"] / M["m00"])
     cY = int(M["m01"] / M["m00"])
-    mU_20 = int(M["m20"] / M["m00"] - (cX * cX))
-    mU_02 = int(M["m02"] / M["m00"] - (cY * cY))
-    mU_11 = int(M["m11"] / M["m00"] - (cX * cY))
+    mU_20 = int(M["mu20"] / M["m00"] - (cX * cX))
+    mU_02 = int(M["mu02"] / M["m00"] - (cY * cY))
+    mU_11 = int(M["mu11"] / M["m00"] - (cX * cY))
     if mU_20 != mU_02:
         theta = 0.5 * math.atan((2 * mU_11) / (mU_20 - mU_02))
     return theta
         
-        
+def findBetterAngle(frame):
+    rows, cols = frame.shape
+    rect = cv2.minAreaRect(cnt)
+    center = rect[0]
+    angle = rect[2]
+    rot = cv2.getRotationMatrix2D(center, angle-90, 1)
+    print(rot)
+    frame = cv2.warpAffine(frame, rot, (rows,cols))
+
 cap = cv2.VideoCapture(1)
 
 cap.set(10,30)
@@ -68,16 +76,22 @@ while(True):
         cX = int(M["m10"] / M["m00"])
         cY = int(M["m01"] / M["m00"])
         contourArea = cv2.contourArea(contour)
-        theta = findAngle(M)
+        
+        rect = cv2.minAreaRect(contour)
+        box = cv2.boxPoints(rect)
+        box = np.int0(box)
+        cv2.drawContours(frame,[box],0,(0,0,255),2)
+
+        theta = rect[2]
         print ("Give me the angle{}".format(math.degrees(theta)))
         vX = int(math.cos(theta) * 80 + cX)
         vY = int(math.sin(theta) * 80 + cY)
         cv2.line(frame, (cX,cY), (vX,vY), (255,0,255), 2)
 
-        rect = cv2.minAreaRect(contour)
-        box = cv2.boxPoints(rect)
-        box = np.int0(box)
-        cv2.drawContours(frame,[box],0,(0,0,255),2)
+        #rect = cv2.minAreaRect(contour)
+        #box = cv2.boxPoints(rect)
+        #box = np.int0(box)
+        #cv2.drawContours(frame,[box],0,(0,0,255),2)
 
         totalX += cX
         totalY += cY
