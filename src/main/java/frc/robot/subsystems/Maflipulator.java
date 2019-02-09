@@ -1,6 +1,8 @@
 package frc.robot.subsystems;
 
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
+
+import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Subsystem;
@@ -24,12 +26,19 @@ public class Maflipulator extends Subsystem {
     private MaflipulatorSide currentPosition;
 
     private SendableSpeedController flipMotor;
-    private Potentiometer manipulatorPot;
+    private Potentiometer anglePot;
+
+    double angleCorrection;
+    PIDController anglePID;
 
     public Maflipulator(final RobotMap.MaflipulatorMap map) { // NOPMD
         super();
         flipMotor = map.getFlipMotor();
-        manipulatorPot = map.getMaflipulatorPot();
+        anglePot = map.getMaflipulatorPot();
+
+        anglePID = new PIDController(.01, .0009, 0.0, 0.0, anglePot, (double value) -> {
+            angleCorrection = value;
+        });
     }
 
     @Override
@@ -66,19 +75,17 @@ public class Maflipulator extends Subsystem {
             protected void execute() {
                 double flipSpeed = Robot.xBoxCoPilot.getY(Hand.kRight);
                 if (currentPosition == MaflipulatorSide.kFront) {
-                    if (flipSpeed > 0 && manipulatorPot.get() >= FRONT_UPPER_ANGLE) {
+                    if (flipSpeed > 0 && anglePot.get() >= FRONT_UPPER_ANGLE) {
                         flipSpeed = 0;
                     }
-                    if (flipSpeed < 0 && manipulatorPot.get() <= FRONT_LOWER_ANGLE) {
+                    if (flipSpeed < 0 && anglePot.get() <= FRONT_LOWER_ANGLE) {
                         flipSpeed = 0;
                     }
-                }
-
-                if (currentPosition == MaflipulatorSide.kBack) {
-                    if (flipSpeed > 0 && manipulatorPot.get() <= BACK_UPPER_ANGLE) {
+                } else {
+                    if (flipSpeed > 0 && anglePot.get() <= BACK_UPPER_ANGLE) {
                         flipSpeed = 0;
                     }
-                    if (flipSpeed < 0 && manipulatorPot.get() >= BACK_LOWER_ANGLE) {
+                    if (flipSpeed < 0 && anglePot.get() >= BACK_LOWER_ANGLE) {
                         flipSpeed = 0;
                     }
                 }
@@ -117,9 +124,9 @@ public class Maflipulator extends Subsystem {
             @Override
             protected boolean isFinished() {
                 // Make this return true when this Command no longer needs to run execute()
-                if (currentPosition == MaflipulatorSide.kFront && manipulatorPot.get() >= 270) {
+                if (currentPosition == MaflipulatorSide.kFront && anglePot.get() >= 270) {
                     return true;
-                } else if (manipulatorPot.get() <= 90) {
+                } else if (anglePot.get() <= 90) {
                     return true;
                 }
                 return false;
@@ -129,6 +136,49 @@ public class Maflipulator extends Subsystem {
             protected void end() {
                 flipMotor.set(0);
                 // Called once after isFinished returns true
+            }
+        };
+    }
+
+    public Command moveToPosition() {
+        return new Command("move to position", this) {
+
+            @Override
+            protected void initialize() {
+                anglePID.reset();
+                anglePID.setSetpoint(0);
+                anglePID.enable();
+            }
+
+            @Override
+            protected void execute() {
+                double flipSpeed = angleCorrection;
+                if (currentPosition == MaflipulatorSide.kFront) {
+                    if (flipSpeed > 0 && anglePot.get() >= FRONT_UPPER_ANGLE) {
+                        flipSpeed = 0;
+                    }
+                    if (flipSpeed < 0 && anglePot.get() <= FRONT_LOWER_ANGLE) {
+                        flipSpeed = 0;
+                    }
+                } else {
+                    if (flipSpeed > 0 && anglePot.get() <= BACK_UPPER_ANGLE) {
+                        flipSpeed = 0;
+                    }
+                    if (flipSpeed < 0 && anglePot.get() >= BACK_LOWER_ANGLE) {
+                        flipSpeed = 0;
+                    }
+                }
+                flipMotor.set(flipSpeed);
+            }
+
+            @Override
+            protected boolean isFinished() {
+                return anglePID.onTarget();
+            }
+
+            @Override
+            protected void end() {
+                flipMotor.set(0);
             }
         };
     }
