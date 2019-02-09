@@ -35,7 +35,8 @@ public class LiftSubsystem extends Subsystem {
         brake = map.getBrake();
         armMotor = map.getArmMotor();
         heightEncoder = map.getHeightEncoder();
-
+        lowerLimit = map.getLowerLimit();
+        upperLimit = map.getUpperLimit();
         heightPID = new PIDController(.01, .0009, 0.0, 0.0, heightEncoder, (double value) -> {
             heightCorrection = value;
         });
