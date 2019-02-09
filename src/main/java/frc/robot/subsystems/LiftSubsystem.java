@@ -1,10 +1,11 @@
 package frc.robot.subsystems;
 
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
-
+import edu.wpi.first.wpilibj.command.PIDCommand;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
@@ -16,7 +17,6 @@ import frc.robot.Robot;
 import frc.robot.RobotMap;
 
 public class LiftSubsystem extends Subsystem {
-
     private SendableSpeedController motor;
     private DoubleSolenoid brake;
     private SendableSpeedController armMotor;
@@ -33,7 +33,6 @@ public class LiftSubsystem extends Subsystem {
         heightEncoder = map.getHeightEncoder();
         lowerLimit = map.getLowerLimit();
         upperLimit = map.getUpperLimit();
-        manipAngle = map.getManipAngle();
     }
 
     enum Heights {
@@ -65,6 +64,8 @@ public class LiftSubsystem extends Subsystem {
         }
     }
 
+    private final static double AUTO_LIFT_SPEED = 0.3;
+
     @Override
     public void initDefaultCommand() {
         // Set the default command for a subsystem here.
@@ -81,6 +82,46 @@ public class LiftSubsystem extends Subsystem {
         return new InstantCommand("Disengage Brake", this, () -> {
             brake.set(Value.kReverse);
         });
+    }
+
+    public Command autoMoveLift(Heights target) {
+        return new PIDCommand("Auto Move Lift", 0, 0, 0, 0, this) {
+            @Override
+            protected void initialize() {
+                brake.set(Value.kReverse);
+
+                setSetpoint(target.value);
+
+            }
+
+            @Override
+            protected void usePIDOutput(final double heightCorrection) {
+                double liftSpeed = heightCorrection;
+                if (upperLimit.get() && liftSpeed > 0) {
+                    liftSpeed = 0;
+                }
+                if (lowerLimit.get() && liftSpeed < 0) {
+                    liftSpeed = 0;
+                }
+                motor.set(liftSpeed);
+            }
+
+            @Override
+            protected void end() {
+                brake.set(Value.kForward);
+                motor.set(0);
+            }
+
+            @Override
+            protected double returnPIDInput() {
+                return heightEncoder.pidGet();
+            }
+
+            @Override
+            protected boolean isFinished() {
+                return getPIDController().onTarget();
+            }
+        };
     }
 
     public Command moveLift() {
@@ -167,16 +208,18 @@ public class LiftSubsystem extends Subsystem {
         return new Command("Go to a Specific Height", this) {
             @Override
             protected void execute() {
+
                 double currentHeight = heightEncoder.getDistance();
-               
+
                 if ((currentHeight < height.get()) && upperLimit.get()) {
                     motor.set(0.0);
                 } else if ((currentHeight > height.get()) && lowerLimit.get()) {
                     motor.set(0.0);
                 } else if (currentHeight < height.get()) {
-                    motor.set(0.3);
-                }else {
-                    motor.set(-0.3);
+
+                    motor.set(AUTO_LIFT_SPEED);
+                } else {
+                    motor.set(-AUTO_LIFT_SPEED);
                 }
             }
 
