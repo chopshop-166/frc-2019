@@ -115,16 +115,20 @@ public class Maflipulator extends Subsystem {
     }
 
     public Command Flip() {
-        // The command is named "Flip" and requires this subsystem.
-        return new Command("Flip", this) {
-            @Override
-            protected void initialize() {
-                if (currentPosition == MaflipulatorSide.kFront) {
-                    flipMotor.set(FLIP_MOTOR_SPEED);
-                } else {
-                    flipMotor.set(-FLIP_MOTOR_SPEED);
-                }
+        return new InstantCommand("Flip", this, () -> {
+
+            Command moveCommand;
+            if (currentPosition == MaflipulatorSide.kFront) {
+                moveCommand = moveToPosition(270);
+                currentPosition = MaflipulatorSide.kBack;
+            } else {
+                moveCommand = moveToPosition(90);
+                currentPosition = MaflipulatorSide.kFront;
             }
+
+            Scheduler.getInstance().add(moveCommand);
+        });
+    }
 
     public Command PIDPickupPosition() {
         return new InstantCommand("PID Pickup Position", this, () -> {
