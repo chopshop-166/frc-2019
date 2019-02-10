@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.command.PIDCommand;
+import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.interfaces.Potentiometer;
 import frc.robot.Robot;
@@ -125,39 +126,30 @@ public class Maflipulator extends Subsystem {
                 }
             }
 
-            @Override
-            protected boolean isFinished() {
-                // Make this return true when this Command no longer needs to run execute()
-                if (currentPosition == MaflipulatorSide.kFront && anglePot.get() >= 270) {
-                    return true;
-                } else if (anglePot.get() <= 90) {
-                    return true;
-                }
-                return false;
-            }
+    public Command PIDPickupPosition() {
+        return new InstantCommand("PID Pickup Position", this, () -> {
 
-            @Override
-            protected void end() {
-                flipMotor.set(0);
-            }
-        };
+            Command moveCommand;
+            if (currentPosition == MaflipulatorSide.kFront)
+                moveCommand = moveToPosition(90);
+            else
+                moveCommand = moveToPosition(270);
+
+            Scheduler.getInstance().add(moveCommand);
+        });
+
     }
 
-    public Command PIDFlip() {
-        return new InstantCommand("PID Flip", this, () -> {
-            if (currentPosition == MaflipulatorSide.kFront) {
-                if (anglePot.get() < (FRONT_LOWER_ANGLE + 90) / 2) {
-                    moveToPosition(FRONT_UPPER_ANGLE);
-                } else {
-                    moveToPosition(FRONT_LOWER_ANGLE);
-                }
-            } else {
-                if (anglePot.get() > (BACK_LOWER_ANGLE + 270) / 2) {
-                    moveToPosition(BACK_UPPER_ANGLE);
-                } else {
-                    moveToPosition(BACK_LOWER_ANGLE);
-                }
-            }
+    public Command PIDScoringPosition() {
+        return new InstantCommand("PID Scoring Position", this, () -> {
+
+            Command moveCommand;
+            if (currentPosition == MaflipulatorSide.kFront)
+                moveCommand = moveToPosition(FRONT_LOWER_ANGLE);
+            else
+                moveCommand = moveToPosition(BACK_LOWER_ANGLE);
+
+            Scheduler.getInstance().add(moveCommand);
         });
     }
 
