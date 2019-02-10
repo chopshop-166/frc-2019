@@ -5,6 +5,7 @@ import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.command.PIDCommand;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.interfaces.Potentiometer;
@@ -109,10 +110,6 @@ public class Maflipulator extends Subsystem {
                 return false;
             }
 
-            @Override
-            protected void end() {
-                // Called once after isFinished returns true
-            }
         };
     }
 
@@ -129,11 +126,6 @@ public class Maflipulator extends Subsystem {
             }
 
             @Override
-            protected void execute() {
-                // Called repeatedly when this Command is scheduled to run
-            }
-
-            @Override
             protected boolean isFinished() {
                 // Make this return true when this Command no longer needs to run execute()
                 if (currentPosition == MaflipulatorSide.kFront && anglePot.get() >= 270) {
@@ -147,18 +139,35 @@ public class Maflipulator extends Subsystem {
             @Override
             protected void end() {
                 flipMotor.set(0);
-                // Called once after isFinished returns true
             }
         };
     }
 
-    public Command moveToPosition() {
+    public Command PIDFlip() {
+        return new InstantCommand("PID Flip", this, () -> {
+            if (currentPosition == MaflipulatorSide.kFront) {
+                if (anglePot.get() < (FRONT_LOWER_ANGLE + 90) / 2) {
+                    moveToPosition(FRONT_UPPER_ANGLE);
+                } else {
+                    moveToPosition(FRONT_LOWER_ANGLE);
+                }
+            } else {
+                if (anglePot.get() > (BACK_LOWER_ANGLE + 270) / 2) {
+                    moveToPosition(BACK_UPPER_ANGLE);
+                } else {
+                    moveToPosition(BACK_LOWER_ANGLE);
+                }
+            }
+        });
+    }
+
+    public Command moveToPosition(double targetPosition) {
         return new PIDCommand("Move to Position", .01, .0009, 0.0, this) {
 
             @Override
             protected void initialize() {
                 anglePID.reset();
-                anglePID.setSetpoint(0);
+                anglePID.setSetpoint(targetPosition);
                 anglePID.enable();
             }
 
