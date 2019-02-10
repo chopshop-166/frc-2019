@@ -130,8 +130,8 @@ public class Maflipulator extends Subsystem {
         });
     }
 
-    public Command PIDPickupPosition() {
-        return new InstantCommand("PID Pickup Position", this, () -> {
+    public Command PIDScoringPosition() {
+        return new InstantCommand("PID Scoring Position", this, () -> {
 
             Command moveCommand;
             if (currentPosition == MaflipulatorSide.kFront)
@@ -144,8 +144,8 @@ public class Maflipulator extends Subsystem {
 
     }
 
-    public Command PIDScoringPosition() {
-        return new InstantCommand("PID Scoring Position", this, () -> {
+    public Command PIDPickupPosition() {
+        return new InstantCommand("PID Pickup Position", this, () -> {
 
             Command moveCommand;
             if (currentPosition == MaflipulatorSide.kFront)
