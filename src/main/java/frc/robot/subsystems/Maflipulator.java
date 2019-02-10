@@ -40,6 +40,12 @@ public class Maflipulator extends Subsystem {
         anglePID = new PIDController(.01, .0009, 0.0, 0.0, anglePot, (double value) -> {
             angleCorrection = value;
         });
+
+        if (anglePot.get() < 180)
+            currentPosition = MaflipulatorSide.kFront;
+        else
+            currentPosition = MaflipulatorSide.kBack;
+
     }
 
     @Override
