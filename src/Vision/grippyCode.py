@@ -3,24 +3,24 @@ import cv2
 import numpy as np
 import threading
 import math
-# from networktables import NetworkTables
+from networktables import NetworkTables
 
 
-# cond = threading.Condition()
-# notified = [False]
+cond = threading.Condition()
+notified = [False]
 
-# def connectionListener(connected, info):
-#     print(info, '; Connected=%s' % connected)
-#     with cond:
-#         notified[0] = True
-#         cond.notify()
+def connectionListener(connected, info):
+    print(info, '; Connected=%s' % connected)
+    with cond:
+        notified[0] = True
+        cond.notify()
 
-# NetworkTables.initialize(server='10.1.66.2')
-# NetworkTables.addConnectionListener(connectionListener, immediateNotify=True)
-# table = NetworkTables.getTable('Vision Correction Table')
-# with cond:
-#     if not notified[0]:
-#         cond.wait()
+NetworkTables.initialize(server='10.1.66.2')
+NetworkTables.addConnectionListener(connectionListener, immediateNotify=True)
+table = NetworkTables.getTable('Vision Correction Table')
+with cond:
+    if not notified[0]:
+        cond.wait()
 
 cap = cv2.VideoCapture(1)
 cap.set(10,30)
@@ -31,7 +31,7 @@ rightAngle = -15
 leftAngle = -75
 deadzone = 15
 
-#...
+
 def findPairOffset(pair):
     leftcX = pair[0][0][0]
     rightcX = pair[1][0][0]
@@ -78,6 +78,18 @@ def findPairs(contourList):
             closestCenterPair = pair
             return closestCenterPair
 
+
+#avgPoint = pairmidpoint
+#coordinate i have then subtract center in pixels to find midpoint
+
+def normalizeImage(pairMidpoint):
+    width = frame.shape[1]
+    imageMidpoint = (width / 2)
+    pairPointOrient = (pairMidpoint - imageMidpoint)
+    fullPairMidpoint = (pairPointOrient / imageMidpoint)
+    # prints after ewww math THIS IS THE CONTOUR MIDPOINT from...
+    # Contour Midpoint Scale (-1 to 1)
+    return fullPairMidpoint
 # MAIN LOOP
 while(True):
     #capture image
@@ -99,11 +111,18 @@ while(True):
         bestPair = findPairs(filteredContours)
         if bestPair != None:
             rectangleMidpoint = (int((bestPair[1][0][0] + bestPair[0][0][0]) / 2), int((bestPair[1][0][1] + bestPair[0][0][1]) / 2))
+            table.putNumber("Vision Correction", normalizeImage(rectangleMidpoint[0]))
             cv2.circle(frame, (rectangleMidpoint), 7, (0, 255, 0), -1)
-        avgPoint = (int(totalX / len(filteredContours)), int(totalY / len(filteredContours)))
+
+            #should put a value from -1 to 1 depending on pair midpoint offset from image midpoint
+    
+
+    #print('Final Pair Midpoint: {},{} ', fullPairMidpoint)
 
     #show image!
     cv2.imshow('image',frame)
+
+
 
 cv2.waitKey(0)
 cap.release()
