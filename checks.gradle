@@ -14,7 +14,7 @@ spotbugs {
 }
 
 pmd {
-    toolVersion = "6.10.0"
+    toolVersion = "6.11.0"
     ignoreFailures = true
     ruleSets = []
     ruleSetFiles = files("$rootProject.projectDir/config/pmd-ruleset.xml")
