@@ -20,8 +20,10 @@ public class Maflipulator extends Subsystem {
     }
 
     private final static double FRONT_LOWER_ANGLE = 70;
+    private final static double FRONT_SCORING_ANGLE = 90;
     private final static double FRONT_UPPER_ANGLE = 180;
     private final static double BACK_LOWER_ANGLE = 290;
+    private final static double BACK_SCORING_ANGLE = 270;
     private final static double BACK_UPPER_ANGLE = 180;
 
     private final static double FLIP_MOTOR_SPEED = 1;
@@ -135,9 +137,9 @@ public class Maflipulator extends Subsystem {
 
             Command moveCommand;
             if (currentPosition == MaflipulatorSide.kFront)
-                moveCommand = moveToPosition(90);
+                moveCommand = moveToPosition(FRONT_SCORING_ANGLE);
             else
-                moveCommand = moveToPosition(270);
+                moveCommand = moveToPosition(BACK_SCORING_ANGLE);
 
             Scheduler.getInstance().add(moveCommand);
         });
