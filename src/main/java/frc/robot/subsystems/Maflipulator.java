@@ -7,7 +7,6 @@ import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.command.PIDCommand;
-import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.interfaces.Potentiometer;
 import frc.robot.Robot;
@@ -108,7 +107,7 @@ public class Maflipulator extends Subsystem {
                 currentPosition = MaflipulatorSide.kFront;
             }
 
-            Scheduler.getInstance().add(moveCommand);
+            moveCommand.start();
         });
     }
 
@@ -121,7 +120,7 @@ public class Maflipulator extends Subsystem {
             else
                 moveCommand = moveToPosition(BACK_SCORING_ANGLE);
 
-            Scheduler.getInstance().add(moveCommand);
+            moveCommand.start();
         });
 
     }
@@ -135,7 +134,7 @@ public class Maflipulator extends Subsystem {
             else
                 moveCommand = moveToPosition(BACK_LOWER_ANGLE);
 
-            Scheduler.getInstance().add(moveCommand);
+            moveCommand.start();
         });
     }
 
