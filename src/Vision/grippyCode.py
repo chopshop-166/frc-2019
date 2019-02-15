@@ -9,11 +9,13 @@ from networktables import NetworkTables
 cond = threading.Condition()
 notified = [False]
 
+
 def connectionListener(connected, info):
     print(info, '; Connected=%s' % connected)
     with cond:
         notified[0] = True
         cond.notify()
+
 
 NetworkTables.initialize(server='10.1.66.2')
 NetworkTables.addConnectionListener(connectionListener, immediateNotify=True)
@@ -23,9 +25,9 @@ with cond:
         cond.wait()
 
 cap = cv2.VideoCapture(1)
-cap.set(10,30)
+cap.set(10, 30)
 
-goalFinder = gripV2.GripiPipeline()
+goalFinder = gripV2.gripV2()
 
 rightAngle = -15
 leftAngle = -75
@@ -40,11 +42,13 @@ def findPairOffset(pair):
     return pairOffset
 
 #First Search for the -15 degree contour and add to first part of pair,
-#then search for -75 degree contour, put in pair, assure the -75 contour is to the right of the -15 degree contour,
+#then search for -75 degree contour, put in pair,
+#assure the -75 contour is to the right of the -15 degree contour,
 #then assure the -75 contour is the closest contour to the -15,
 #by searching for other -75 contours that are either closer or farther
 #DONEEEEEEEE!!!!!!!!
-#   (find center of each pair then identify which pair is closest to image center)
+#(find center of each pair then identify which pair is closest to image center)
+
 def findPairs(contourList):
     rightRectList = []
     leftRectList = []
@@ -55,7 +59,8 @@ def findPairs(contourList):
     for contour in contourList:
         rectangleBox = cv2.minAreaRect(contour)
  
-        if rectangleBox[2] > rightAngle - deadzone and rectangleBox[2] < rightAngle + deadzone:
+        if math.abs(rectangleBox[2] - rightAngle) < deadzone:
+        #if rectangleBox[2] > rightAngle - deadzone and rectangleBox[2] < rightAngle + deadzone:
             rightRectList.append(rectangleBox)
        
         if rectangleBox[2] > leftAngle - deadzone and rectangleBox[2] < leftAngle + deadzone:
@@ -76,7 +81,8 @@ def findPairs(contourList):
         print ("rectangle pair coordinates: {}, {}".format(pair[0][0][0],pair[1][0][0]))       
         if closestCenterPair is None or findPairOffset(pair) < findPairOffset(closestCenterPair):
             closestCenterPair = pair
-            return closestCenterPair
+
+return closestCenterPair
 
 
 #avgPoint = pairmidpoint
@@ -126,7 +132,6 @@ while(True):
 
 cv2.waitKey(0)
 cap.release()
-cv2.destroyAllWindows()
 
 
 """
@@ -161,7 +166,6 @@ totalX, totalY = 0, 0
         cv2.circle(frame, (cX, cY), 7, (255, 0, 0), -1)
 
         #cv2.drawContours(frame, [contour], -1, (255, 255, 0), 2)
-
 """
 
 

@@ -3,7 +3,7 @@ import numpy
 import math
 from enum import Enum
 
-class GripiPipeline:
+class gripV2:
 
     """
     

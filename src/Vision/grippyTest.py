@@ -2,7 +2,7 @@ import gripV2
 import cv2
 
 img = cv2.imread('Examples/2.jpg',1)
-cv2.imshow("Plezse show",img)
+cv2.imshow("Please show",img)
 
 cap = cv2.VideoCapture(1)
 while(True):
