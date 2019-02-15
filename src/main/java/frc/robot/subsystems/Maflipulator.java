@@ -26,7 +26,7 @@ public class Maflipulator extends Subsystem {
     private final static double BACK_SCORING_ANGLE = 270;
     private final static double BACK_UPPER_ANGLE = 180;
 
-    private final static double FLIP_MOTOR_SPEED = 1;
+    private final static double FLIP_MOTOR_SPEED = 0.2;
 
     private MaflipulatorSide currentPosition;
 
@@ -58,26 +58,6 @@ public class Maflipulator extends Subsystem {
         setDefaultCommand(restrictRotate());
     }
 
-    public Command manualFlip() {
-        // The command is named "Manual Flip" and requires this subsystem.
-        return new Command("Manual Flip", this) {
-            @Override
-            protected void initialize() {
-                // Called just before this Command runs the first time
-            }
-
-            @Override
-            protected void execute() {
-                flipMotor.set(Robot.xBoxCoPilot.getY(Hand.kRight));
-            }
-
-            @Override
-            protected boolean isFinished() {
-                return false;
-            }
-        };
-    }
-
     protected double restrict(double flipSpeed) {
         if (currentPosition == MaflipulatorSide.kFront) {
             if (flipSpeed > 0 && anglePot.get() >= FRONT_UPPER_ANGLE) {
@@ -103,7 +83,7 @@ public class Maflipulator extends Subsystem {
 
             @Override
             protected void execute() {
-                double flipSpeed = Robot.xBoxCoPilot.getY(Hand.kRight);
+                double flipSpeed = Robot.xBoxCoPilot.getY(Hand.kRight) * FLIP_MOTOR_SPEED;
                 flipSpeed = restrict(flipSpeed);
                 flipMotor.set(flipSpeed);
             }
