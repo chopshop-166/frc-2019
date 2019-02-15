@@ -150,7 +150,7 @@ public class Maflipulator extends Subsystem {
 
             @Override
             protected boolean isFinished() {
-                return anglePID.onTarget();
+                return anglePID.onTarget() && Math.abs(angleCorrection) < 0.1;
             }
 
             @Override
