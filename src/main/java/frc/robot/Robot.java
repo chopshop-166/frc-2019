@@ -16,7 +16,9 @@ import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.maps.CurrentRobot;
 import frc.robot.maps.PracticeBot;
+import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Maflipulator;
 
 /**
@@ -28,19 +30,19 @@ import frc.robot.subsystems.Maflipulator;
  */
 public class Robot extends CommandRobot {
 
-    final private RobotMap robotMap = new PracticeBot();
+    final private RobotMap robotMap = new CurrentRobot();
     final public static ButtonXboxController xBoxCoPilot = new ButtonXboxController(1);
-    final private Maflipulator maflipulator = new Maflipulator(robotMap.getMaflipulatorMap());
-
-    public static XboxController driveController = new XboxController(1);
+   // final private Maflipulator maflipulator = new Maflipulator(robotMap.getMaflipulatorMap());
+    final private Drive drive = new Drive(robotMap.getDriveMap());
+    public static XboxController driveController = new XboxController(5);
     
     private Command autonomousCommand;
     final private SendableChooser<Command> chooser = new SendableChooser<>();
 
-    UsbCamera camera0;
-    UsbCamera camera1;
-    VideoSink videoSink;
-    boolean camera0Active = true;
+    // UsbCamera camera0;
+    // UsbCamera camera1;
+    // VideoSink videoSink;
+    // boolean camera0Active = true;
 
     /**
      * This function is run when the robot is first started up and should be used
@@ -49,19 +51,19 @@ public class Robot extends CommandRobot {
     @Override
     public void robotInit() {
         // Initialize OI here
-        camera0 = CameraServer.getInstance().startAutomaticCapture(0);
-        camera1 = CameraServer.getInstance().startAutomaticCapture(1);
-        camera0.setResolution(320, 240);
-        camera1.setResolution(320, 240);
-        camera0.setFPS(20);
-        camera1.setFPS(20);
-        videoSink = CameraServer.getInstance().getServer();
-        videoSink.getProperty("compression").set(70);
+        // camera0 = CameraServer.getInstance().startAutomaticCapture(0);
+        // camera1 = CameraServer.getInstance().startAutomaticCapture(1);
+        // camera0.setResolution(320, 240);
+        // camera1.setResolution(320, 240);
+        // camera0.setFPS(20);
+        // camera1.setFPS(20);
+        // videoSink = CameraServer.getInstance().getServer();
+        // videoSink.getProperty("compression").set(70);
         // Initialize autonomous chooser
         // chooser.setDefaultOption("Default Auto", exampleSubsystem.sampleCommand());
         // chooser.addOption("My Auto", new MyAutoCommand());
         SmartDashboard.putData("Auto mode", chooser);
-        SmartDashboard.putData("Switch Cameras", switchCameras());
+      //  SmartDashboard.putData("Switch Cameras", switchCameras());
     }
 
     /**
@@ -94,30 +96,30 @@ public class Robot extends CommandRobot {
         }
     }
 
-    public Command switchCameras() {
-        return new InstantCommand(() -> {
-            System.out.println("Camera 0" + camera0Active);
-            if (!camera0Active) {
-                videoSink.setSource(camera0);
-                camera0Active = !camera0Active;
-            } else {
-                videoSink.setSource(camera1);
-                camera0Active = !camera0Active;
-            }
-        });
-    }
+//     public Command switchCameras() {
+//         return new InstantCommand(() -> {
+//             System.out.println("Camera 0" + camera0Active);
+//             if (!camera0Active) {
+//                 videoSink.setSource(camera0);
+//                 camera0Active = !camera0Active;
+//             } else {
+//                 videoSink.setSource(camera1);
+//                 camera0Active = !camera0Active;
+//             }
+//         });
+//     }
 
-    public Command darkenCameras() {
-        return new InstantCommand(() -> {
-            camera0.setBrightness(30);
-            camera1.setBrightness(30);
-        });
-    }
+//     public Command darkenCameras() {
+//         return new InstantCommand(() -> {
+//             camera0.setBrightness(30);
+//             camera1.setBrightness(30);
+//         });
+//     }
 
-    public Command brightenCameras() {
-        return new InstantCommand(() -> {
-            camera0.setBrightness(100);
-            camera1.setBrightness(100);
-        });
-    }
+//     public Command brightenCameras() {
+//         return new InstantCommand(() -> {
+//             camera0.setBrightness(100);
+//             camera1.setBrightness(100);
+//         });
+//     }
 }

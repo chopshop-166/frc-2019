@@ -31,7 +31,7 @@ public class Drive extends Subsystem {
     private Encoder leftEncoder;
     private Encoder rightEncoder;
     private PIDGyro gyro;
-    private DifferentialDrive drive = new DifferentialDrive(left, right);
+    private DifferentialDrive drive;
 
     public Drive(final RobotMap.DriveMap map) { // NOPMD
         super();
@@ -45,15 +45,24 @@ public class Drive extends Subsystem {
         leftEncoder = map.getLeftEncoder();
         rightEncoder = map.getRightEncoder();
         gyro = map.getGyro();
+        gyroDrivePID= new PIDController(.01, .0009, 0.0, 0.0, gyro, (double value) -> {
+            gyroCorrection = value;
+        });
+        drive = new DifferentialDrive(left, right);
+        addChildren();
+    }
+    private void addChildren() {
+        addChild(leftEncoder);
+        addChild(rightEncoder);
+        addChild(drive);
+        addChild(gyro);
     }
     // TODO put numbers here
 
     double gyroCorrection;
     double visionMultiplier;
 
-    PIDController gyroDrivePID = new PIDController(.01, .0009, 0.0, 0.0, gyro, (double value) -> {
-        gyroCorrection = value;
-    });
+    PIDController gyroDrivePID;
 
     double sandstormSpeed = .2;
 
@@ -84,9 +93,9 @@ public class Drive extends Subsystem {
         return new Command("GoXDistance", this) {
             @Override
             protected void initialize() {
-                gyroDrivePID.reset();
-                gyroDrivePID.setSetpoint(gyro.getAngle());
-                gyroDrivePID.enable();
+                // gyroDrivePID.reset();
+                // gyroDrivePID.setSetpoint(gyro.getAngle());
+                // gyroDrivePID.enable();
                 leftEncoder.reset();
                 rightEncoder.reset();
             }
@@ -106,7 +115,7 @@ public class Drive extends Subsystem {
 
             @Override
             protected void end() {
-                gyroDrivePID.disable();
+            //    gyroDrivePID.disable();
             }
         };
     }
@@ -115,9 +124,9 @@ public class Drive extends Subsystem {
         return new Command("GoXDistance", this) {
             @Override
             protected void initialize() {
-                gyroDrivePID.reset();
-                gyroDrivePID.setSetpoint(gyro.getAngle());
-                gyroDrivePID.enable();
+                // gyroDrivePID.reset();
+                // gyroDrivePID.setSetpoint(gyro.getAngle());
+                // gyroDrivePID.enable();
                 leftEncoder.reset();
                 rightEncoder.reset();
             }
@@ -137,36 +146,36 @@ public class Drive extends Subsystem {
 
             @Override
             protected void end() {
-                gyroDrivePID.disable();
+                // gyroDrivePID.disable();
             }
         };
     }
 
-    public Command turnXDegrees(double degrees) {
-        return new Command("turnXDegrees", this) {
-            @Override
-            protected void initialize() {
-                gyroDrivePID.reset();
-                gyroDrivePID.setSetpoint(degrees);
-                gyroDrivePID.enable();
-            }
+    // public Command turnXDegrees(double degrees) {
+    //     return new Command("turnXDegrees", this) {
+    //         @Override
+    //         protected void initialize() {
+    //             // gyroDrivePID.reset();
+    //             // gyroDrivePID.setSetpoint(degrees);
+    //             // gyroDrivePID.enable();
+    //         }
 
-            @Override
-            protected void execute() {
-                drive.arcadeDrive(0, gyroCorrection);
-            }
+    //         @Override
+    //         protected void execute() {
+    //             drive.arcadeDrive(0, gyroCorrection);
+    //         }
 
-            @Override
-            protected boolean isFinished() {
-                return gyroDrivePID.onTarget();
-            }
+    //        // @Override
+    //        // protected boolean isFinished() {
+    //         //    return gyroDrivePID.onTarget();
+    //         // }
 
-            @Override
-            protected void end() {
-                gyroDrivePID.disable();
-            }
-        };
-    }
+    //         // @Override
+    //         // protected void end() {
+    //          //   gyroDrivePID.disable();
+    //        // }
+    //     };
+    // }
 
     public Command align() {
         return new Command("align", this) {
