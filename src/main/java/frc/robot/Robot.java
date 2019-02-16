@@ -16,7 +16,7 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.maps.PracticeBot;
-import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.subsystems.Maflipulator;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -28,8 +28,8 @@ import frc.robot.subsystems.ExampleSubsystem;
 public class Robot extends CommandRobot {
 
     final private RobotMap robotMap = new PracticeBot();
-    public static ButtonXboxController xBoxCoPilot = new ButtonXboxController(4);
-    final private ExampleSubsystem exampleSubsystem = new ExampleSubsystem(robotMap);
+    final public static ButtonXboxController xBoxCoPilot = new ButtonXboxController(1);
+    final private Maflipulator maflipulator = new Maflipulator(robotMap.getMaflipulatorMap());
 
     public static XboxController driveController = new XboxController(1);
 
@@ -57,7 +57,7 @@ public class Robot extends CommandRobot {
         videoSink = CameraServer.getInstance().getServer();
         videoSink.getProperty("compression").set(70);
         // Initialize autonomous chooser
-        chooser.setDefaultOption("Default Auto", exampleSubsystem.sampleCommand());
+        // chooser.setDefaultOption("Default Auto", exampleSubsystem.sampleCommand());
         // chooser.addOption("My Auto", new MyAutoCommand());
         SmartDashboard.putData("Auto mode", chooser);
         SmartDashboard.putData("Switch Cameras", switchCameras());
