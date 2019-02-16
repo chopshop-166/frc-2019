@@ -52,7 +52,10 @@ public class Maflipulator extends Subsystem {
             currentPosition = MaflipulatorSide.kBack;
 
     }
-
+    public void addChildren() {
+        addChild(flipMotor);
+        addChild(anglePot);
+    }
     @Override
     public void initDefaultCommand() {
         // Set the default command for a subsystem here.

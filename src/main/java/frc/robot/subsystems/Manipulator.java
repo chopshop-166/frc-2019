@@ -31,9 +31,16 @@ public class Manipulator extends Subsystem {
         gamepieceLimitSwitch = map.getGamepieceLimitSwitch();
         foldedBackLimitSwitch = map.getfoldedBackLimitSwitch();
         intakePositionLimitSwitch = map.getintakePositionLimitSwitch();
-
+        addChildren();
     }
-
+    public void addChildren() {
+        addChild(pivotPointsMotor);
+        addChild(rollersMotor);
+        addChild(beaksPiston);
+        addChild(gamepieceLimitSwitch);
+        addChild(foldedBackLimitSwitch);
+        addChild(intakePositionLimitSwitch);
+    }
     @Override
     public void initDefaultCommand() {
         // Set the default command for a subsystem here.

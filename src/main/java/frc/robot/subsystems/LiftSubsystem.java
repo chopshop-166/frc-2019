@@ -1,7 +1,10 @@
 package frc.robot.subsystems;
 
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
+import com.chopshop166.chopshoplib.sensors.SparkMaxCounter;
+
 import edu.wpi.first.wpilibj.command.PIDCommand;
+import edu.wpi.first.wpilibj.CounterBase;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Encoder;
@@ -13,28 +16,39 @@ import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.interfaces.Potentiometer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 import frc.robot.RobotMap;
 
 public class LiftSubsystem extends Subsystem {
-    private SendableSpeedController motor;
+    private SpeedController motor;
     private DoubleSolenoid brake;
     private SendableSpeedController armMotor;
-    private Encoder heightEncoder;
+    private SparkMaxCounter heightEncoder;
     private DigitalInput lowerLimit;
     private DigitalInput upperLimit;
-    private Potentiometer manipAngle;
 
     public LiftSubsystem(final RobotMap.LiftMap map) {
         super();
         motor = map.getMotor();
         brake = map.getBrake();
-        armMotor = map.getArmMotor();
         heightEncoder = map.getHeightEncoder();
         lowerLimit = map.getLowerLimit();
         upperLimit = map.getUpperLimit();
+        addChildren();
     }
-
+    public void addChildren() {
+        addChild(motor);
+        addChild(brake);
+        addChild(armMotor);
+        addChild(heightEncoder);
+        addChild(lowerLimit);
+        addChild(upperLimit);
+    }
+    private void registeredCommands() {
+        SmartDashboard.putData("Loading Station", autoMoveLift(Heights.kLoadingStation));
+        SmartDashboard.putData("Loading Station", autoMoveLift(Heights.kRocketCargoMid));
+    }
     enum Heights {
         // Loading Station
         kLoadingStation(19.0),
@@ -69,7 +83,7 @@ public class LiftSubsystem extends Subsystem {
     @Override
     public void initDefaultCommand() {
         // Set the default command for a subsystem here.
-        // setDefaultCommand(new MySpecialCommand());
+         setDefaultCommand(moveLift());
     }
 
     public Command engageBrake() {
@@ -139,23 +153,6 @@ public class LiftSubsystem extends Subsystem {
                     liftSpeed = 0;
                 }
                 motor.set(liftSpeed);
-            }
-
-            @Override
-            protected boolean isFinished() {
-                // Make this return true when this Command no longer needs to run execute()
-                return false;
-            }
-        };
-    }
-
-    public Command moveArm() {
-        // The command is named "Move Arm" and requires this subsystem.
-        return new Command("Move Arm", this) {
-            @Override
-            protected void execute() {
-                // Called repeatedly when this Command is scheduled to run
-                armMotor.set(Robot.xBoxCoPilot.getY(Hand.kLeft));
             }
 
             @Override

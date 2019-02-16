@@ -2,14 +2,17 @@ package frc.robot;
 
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 
+import edu.wpi.first.wpilibj.CounterBase;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.interfaces.Potentiometer;
 
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 import com.chopshop166.chopshoplib.sensors.Lidar;
 import com.chopshop166.chopshoplib.sensors.PIDGyro;
+import com.chopshop166.chopshoplib.sensors.SparkMaxCounter;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Encoder;
@@ -28,24 +31,20 @@ public interface RobotMap {
 
     public interface LiftMap {
 
-        SendableSpeedController getMotor();
+        SpeedController getMotor();
 
         DoubleSolenoid getBrake();
 
-        SendableSpeedController getArmMotor();
-
-        Encoder getHeightEncoder();
+        SparkMaxCounter getHeightEncoder();
 
         DigitalInput getLowerLimit();
 
         DigitalInput getUpperLimit();
-
-        Potentiometer getManipAngle();
     }
 
     ManipulatorMap getManipulatorMap();
 
-    interface ManipulatorMap {
+    public interface ManipulatorMap {
 
         SendableSpeedController getpivotPointsMotor();
 
@@ -80,7 +79,7 @@ public interface RobotMap {
 
     MaflipulatorMap getMaflipulatorMap();
 
-    interface MaflipulatorMap {
+    public interface MaflipulatorMap {
 
         SendableSpeedController getFlipMotor();
 

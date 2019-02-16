@@ -2,6 +2,7 @@ package frc.robot;
 
 import com.chopshop166.chopshoplib.CommandRobot;
 import com.chopshop166.chopshoplib.controls.ButtonXboxController;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.cscore.VideoSink;
@@ -32,7 +33,7 @@ public class Robot extends CommandRobot {
     final private Maflipulator maflipulator = new Maflipulator(robotMap.getMaflipulatorMap());
 
     public static XboxController driveController = new XboxController(1);
-
+    
     private Command autonomousCommand;
     final private SendableChooser<Command> chooser = new SendableChooser<>();
 
