@@ -21,6 +21,7 @@ import frc.robot.maps.PracticeBot;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.LiftSubsystem;
 import frc.robot.subsystems.Maflipulator;
+import frc.robot.subsystems.Manipulator;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -36,6 +37,7 @@ public class Robot extends CommandRobot {
     final private Maflipulator maflipulator = new Maflipulator(robotMap.getMaflipulatorMap());
     final private Drive drive = new Drive(robotMap.getDriveMap());
     final private LiftSubsystem lift = new LiftSubsystem (robotMap.getLiftMap());
+    final private Manipulator manipulator = new Manipulator(robotMap.getManipulatorMap());
     public static XboxController driveController = new XboxController(5);
     
     private Command autonomousCommand;

@@ -75,22 +75,22 @@ public class CurrentRobot implements RobotMap {
 
             @Override
             public DigitalInput getintakePositionLimitSwitch() {
-                return new DigitalInput(1);
+                return new DigitalInput(5);
             }
 
             @Override
             public DigitalInput getfoldedBackLimitSwitch() {
-                return new DigitalInput(2);
+                return new DigitalInput(6);
             }
 
             @Override
             public DoubleSolenoid getbeaksPiston() {
-                return new DoubleSolenoid(2, 3);
+                return new DoubleSolenoid(6, 7);
             }
 
             @Override
             public DigitalInput getGamepieceLimitSwitch() {
-                return new DigitalInput(3);
+                return new DigitalInput(4);
             }
         };
     }

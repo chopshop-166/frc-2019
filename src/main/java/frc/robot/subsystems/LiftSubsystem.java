@@ -157,6 +157,11 @@ public class LiftSubsystem extends Subsystem {
                 if ((!lowerLimit.get()) && (liftSpeed < 0)) {
                     liftSpeed = 0;
                 }
+                if (Math.abs(liftSpeed) <= 0.05) {
+                    brake.set(Value.kForward);
+                } else {
+                    brake.set(Value.kReverse);
+                }
                 SmartDashboard.putNumber("Lift", liftSpeed);
                 motor.set(liftSpeed);
             }

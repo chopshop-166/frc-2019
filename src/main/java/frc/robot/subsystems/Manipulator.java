@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.command.WaitCommand;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.RobotMap;
 
 public class Manipulator extends Subsystem {
@@ -32,6 +33,8 @@ public class Manipulator extends Subsystem {
         foldedBackLimitSwitch = map.getfoldedBackLimitSwitch();
         intakePositionLimitSwitch = map.getintakePositionLimitSwitch();
         addChildren();
+        SmartDashboard.putData(openBeak());
+        SmartDashboard.putData(closeBeak());
     }
     public void addChildren() {
         addChild(pivotPointsMotor);
