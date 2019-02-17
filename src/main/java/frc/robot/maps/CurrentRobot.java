@@ -28,8 +28,8 @@ public class CurrentRobot implements RobotMap {
     @Override
     public LiftMap getLiftMap() {
         return new LiftMap() {
-            CANSparkMax liftMotor = new CANSparkMax(42, MotorType.kBrushless);
-
+            CANSparkMax liftMotor;
+           
             @Override
             public DigitalInput getUpperLimit() {
                 return new DigitalInput(9);
@@ -37,6 +37,8 @@ public class CurrentRobot implements RobotMap {
 
             @Override
             public SpeedController getMotor() { 
+                liftMotor = new CANSparkMax(42, MotorType.kBrushless);
+                liftMotor.setInverted(true);
                 return liftMotor;
             }
 

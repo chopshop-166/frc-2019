@@ -2,6 +2,8 @@ package frc.robot.subsystems;
 
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 import com.chopshop166.chopshoplib.sensors.SparkMaxCounter;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.command.PIDCommand;
 import edu.wpi.first.wpilibj.CounterBase;
@@ -21,18 +23,20 @@ import frc.robot.Robot;
 import frc.robot.RobotMap;
 
 public class LiftSubsystem extends Subsystem {
-    private SpeedController motor;
+     //  private SpeedController motor;
     private DoubleSolenoid brake;
-    private SendableSpeedController armMotor;
     private SparkMaxCounter heightEncoder;
     private DigitalInput lowerLimit;
     private DigitalInput upperLimit;
+    private CANSparkMax motor;
 
     public LiftSubsystem(final RobotMap.LiftMap map) {
         super();
-        motor = map.getMotor();
+       // motor = map.getMotor();
+       motor = new CANSparkMax(15, MotorType.kBrushless);
+       motor.setInverted(true);
         brake = map.getBrake();
-        heightEncoder = map.getHeightEncoder();
+       // heightEncoder = map.getHeightEncoder();
         lowerLimit = map.getLowerLimit();
         upperLimit = map.getUpperLimit();
         addChildren();
@@ -40,8 +44,7 @@ public class LiftSubsystem extends Subsystem {
     public void addChildren() {
         addChild(motor);
         addChild(brake);
-        addChild(armMotor);
-        addChild(heightEncoder);
+        //addChild(heightEncoder);
         addChild(lowerLimit);
         addChild(upperLimit);
     }
@@ -111,10 +114,10 @@ public class LiftSubsystem extends Subsystem {
             @Override
             protected void usePIDOutput(final double heightCorrection) {
                 double liftSpeed = heightCorrection;
-                if (upperLimit.get() && liftSpeed > 0) {
+                if (!upperLimit.get() && liftSpeed > 0) {
                     liftSpeed = 0;
                 }
-                if (lowerLimit.get() && liftSpeed < 0) {
+                if (!lowerLimit.get() && liftSpeed < 0) {
                     liftSpeed = 0;
                 }
                 motor.set(liftSpeed);
@@ -144,14 +147,17 @@ public class LiftSubsystem extends Subsystem {
             @Override
             protected void execute() {
                 double liftSpeed;
-                liftSpeed = Robot.xBoxCoPilot.getY(Hand.kRight);
+                liftSpeed = -Robot.xBoxCoPilot.getY(Hand.kRight);
+                SmartDashboard.putNumber("Lift Faults", motor.getFaults());
+                SmartDashboard.putNumber("Lift Before", liftSpeed);
                 // Called repeatedly when this Command is scheduled to run
-                if ((upperLimit.get()) && (liftSpeed > 0)) {
+                if ((!upperLimit.get()) && (liftSpeed > 0)) {
                     liftSpeed = 0;
                 }
-                if ((lowerLimit.get()) && (liftSpeed < 0)) {
+                if ((!lowerLimit.get()) && (liftSpeed < 0)) {
                     liftSpeed = 0;
                 }
+                SmartDashboard.putNumber("Lift", liftSpeed);
                 motor.set(liftSpeed);
             }
 
@@ -208,9 +214,9 @@ public class LiftSubsystem extends Subsystem {
 
                 double currentHeight = heightEncoder.getDistance();
 
-                if ((currentHeight < height.get()) && upperLimit.get()) {
+                if ((currentHeight < height.get()) && !upperLimit.get()) {
                     motor.set(0.0);
-                } else if ((currentHeight > height.get()) && lowerLimit.get()) {
+                } else if ((currentHeight > height.get()) && !lowerLimit.get()) {
                     motor.set(0.0);
                 } else if (currentHeight < height.get()) {
 

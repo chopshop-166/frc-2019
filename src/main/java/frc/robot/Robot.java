@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.maps.CurrentRobot;
 import frc.robot.maps.PracticeBot;
 import frc.robot.subsystems.Drive;
+import frc.robot.subsystems.LiftSubsystem;
 import frc.robot.subsystems.Maflipulator;
 
 /**
@@ -32,8 +33,9 @@ public class Robot extends CommandRobot {
 
     final private RobotMap robotMap = new CurrentRobot();
     final public static ButtonXboxController xBoxCoPilot = new ButtonXboxController(1);
-   // final private Maflipulator maflipulator = new Maflipulator(robotMap.getMaflipulatorMap());
+    final private Maflipulator maflipulator = new Maflipulator(robotMap.getMaflipulatorMap());
     final private Drive drive = new Drive(robotMap.getDriveMap());
+    final private LiftSubsystem lift = new LiftSubsystem (robotMap.getLiftMap());
     public static XboxController driveController = new XboxController(5);
     
     private Command autonomousCommand;

@@ -87,7 +87,7 @@ public class Maflipulator extends Subsystem {
 
             @Override
             protected void execute() {
-                double flipSpeed = Robot.xBoxCoPilot.getY(Hand.kRight) * FLIP_MOTOR_SPEED;
+                double flipSpeed = Robot.xBoxCoPilot.getY(Hand.kLeft) * FLIP_MOTOR_SPEED;
                 flipSpeed = restrict(flipSpeed);
                 flipMotor.set(flipSpeed);
             }
