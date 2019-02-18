@@ -39,7 +39,7 @@ public class Robot extends CommandRobot {
     final private Drive drive = new Drive(robotMap.getDriveMap());
     final private LiftSubsystem lift = new LiftSubsystem (robotMap.getLiftMap());
     final private Manipulator manipulator = new Manipulator(robotMap.getManipulatorMap());
-    public static XboxController driveController = new XboxController(5);
+    public static ButtonXboxController driveController = new ButtonXboxController(5);
     
     private Command autonomousCommand;
     final private SendableChooser<Command> chooser = new SendableChooser<>();
@@ -134,6 +134,7 @@ public void assignButtons() {
     Robot.xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.A.get()).whenPressed(manipulator.openArms());
     Robot.xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.B.get()).whenPressed(manipulator.closeArms());
     Robot.xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.Y.get()).whenPressed(maflipulator.CrappyFlip());
+    Robot.driveController.getButton(ButtonXboxController.XBoxButton.A.get()).whenPressed(drive.align());
 }
 
 }
