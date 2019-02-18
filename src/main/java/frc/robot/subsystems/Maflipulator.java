@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.command.PIDCommand;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.interfaces.Potentiometer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 import frc.robot.RobotMap;
 
@@ -18,16 +19,16 @@ public class Maflipulator extends Subsystem {
         kFront, kBack;
     }
 
-    private final static double FRONT_LOWER_ANGLE = 70;
+    private final static double FRONT_LOWER_ANGLE = 0.94;
     private final static double FRONT_SCORING_ANGLE = 90;
     private final static double FRONT_FLIP_POSITION = FRONT_SCORING_ANGLE;
-    private final static double FRONT_UPPER_ANGLE = 180;
-    private final static double BACK_LOWER_ANGLE = 290;
+    private final static double FRONT_UPPER_ANGLE = 0.69;
+    private final static double BACK_LOWER_ANGLE = .099;
     private final static double BACK_SCORING_ANGLE = 270;
     private final static double BACK_FLIP_POSITION = BACK_SCORING_ANGLE;
-    private final static double BACK_UPPER_ANGLE = 180;
+    private final static double BACK_UPPER_ANGLE = .42;
 
-    private final static double FLIP_MOTOR_SPEED = 0.2;
+    private final static double FLIP_MOTOR_SPEED = 1;
 
     private MaflipulatorSide currentPosition;
 
@@ -46,50 +47,56 @@ public class Maflipulator extends Subsystem {
             angleCorrection = value;
         });
 
-        if (anglePot.get() < 180)
+        if (anglePot.get() > 0.5)
             currentPosition = MaflipulatorSide.kFront;
         else
             currentPosition = MaflipulatorSide.kBack;
 
     }
+
     public void addChildren() {
         addChild(flipMotor);
         addChild(anglePot);
     }
+
     @Override
     public void initDefaultCommand() {
         // Set the default command for a subsystem here.
-        setDefaultCommand(restrictRotate());
+        setDefaultCommand(manualRotate());
     }
 
     protected double restrict(double flipSpeed) {
         if (currentPosition == MaflipulatorSide.kFront) {
-            if (flipSpeed > 0 && anglePot.get() >= FRONT_UPPER_ANGLE) {
+            if (flipSpeed > 0 && anglePot.get() <= FRONT_UPPER_ANGLE) {
                 flipSpeed = 0;
             }
-            if (flipSpeed < 0 && anglePot.get() <= FRONT_LOWER_ANGLE) {
+            if (flipSpeed < 0 && anglePot.get() >= FRONT_LOWER_ANGLE) {
                 flipSpeed = 0;
             }
         } else {
-            if (flipSpeed > 0 && anglePot.get() <= BACK_UPPER_ANGLE) {
+            if (flipSpeed < 0 && anglePot.get() >= BACK_UPPER_ANGLE) {
                 flipSpeed = 0;
             }
-            if (flipSpeed < 0 && anglePot.get() >= BACK_LOWER_ANGLE) {
+            if (flipSpeed > 0 && anglePot.get() <= BACK_LOWER_ANGLE) {
                 flipSpeed = 0;
             }
         }
+        SmartDashboard.putNumber("Pot Angle", anglePot.get());
         return flipSpeed;
+
     }
 
-    public Command restrictRotate() {
-        // The command is named "Restrict Rotate" and requires this subsystem.
-        return new Command("Restrict Rotate", this) {
+    public Command manualRotate() {
+        // The command is named "Manual Rotate" and requires this subsystem.
+        return new Command("Manual Rotate", this) {
 
             @Override
             protected void execute() {
                 double flipSpeed = Robot.xBoxCoPilot.getY(Hand.kLeft) * FLIP_MOTOR_SPEED;
                 flipSpeed = restrict(flipSpeed);
                 flipMotor.set(flipSpeed);
+                SmartDashboard.putString("Side", currentPosition.toString());
+                SmartDashboard.putNumber("Flip Speed", flipSpeed);
             }
 
             @Override
@@ -114,6 +121,47 @@ public class Maflipulator extends Subsystem {
 
             moveCommand.start();
         });
+    }
+
+    public Command CrappyFlip() {
+        return new Command("Crappy Flip", this) {
+            @Override
+            protected void initialize() {
+                if (currentPosition == MaflipulatorSide.kFront) {
+                    flipMotor.set(0.5);
+
+                } else {
+                    flipMotor.set(-0.5);
+
+                }
+            }
+
+            @Override
+            protected boolean isFinished() {
+
+                if (anglePot.get() <= 0.25 && currentPosition == MaflipulatorSide.kFront) {
+                    return true;
+                }
+
+                if (anglePot.get() >= 0.7 && currentPosition == MaflipulatorSide.kBack) {
+                    return true;
+                }
+
+                return false;
+            }
+
+            @Override
+            protected void end() {
+                flipMotor.set(0);
+                if (currentPosition == MaflipulatorSide.kFront) {
+                    currentPosition = MaflipulatorSide.kBack;
+                }
+                if (currentPosition == MaflipulatorSide.kBack) {
+                    currentPosition = MaflipulatorSide.kFront;
+                }
+
+            }
+        };
     }
 
     public Command PIDScoringPosition() {

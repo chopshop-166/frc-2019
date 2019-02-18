@@ -28,7 +28,7 @@ public class CurrentRobot implements RobotMap {
     @Override
     public LiftMap getLiftMap() {
         return new LiftMap() {
-            CANSparkMax liftMotor;
+            CANSparkMax liftMotor = new CANSparkMax(15, MotorType.kBrushless);
            
             @Override
             public DigitalInput getUpperLimit() {
@@ -36,8 +36,7 @@ public class CurrentRobot implements RobotMap {
             }
 
             @Override
-            public SpeedController getMotor() { 
-                liftMotor = new CANSparkMax(42, MotorType.kBrushless);
+            public SpeedController getMotor() {
                 liftMotor.setInverted(true);
                 return liftMotor;
             }
@@ -151,7 +150,9 @@ public class CurrentRobot implements RobotMap {
 
 			@Override
 			public Potentiometer getMaflipulatorPot() {
-				return new AnalogPotentiometer(3);
+                 AnalogPotentiometer potentiometer = new AnalogPotentiometer(3);
+                return potentiometer;
+                
 			}
         };
 	}

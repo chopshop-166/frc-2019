@@ -23,20 +23,18 @@ import frc.robot.Robot;
 import frc.robot.RobotMap;
 
 public class LiftSubsystem extends Subsystem {
-     //  private SpeedController motor;
+    private SpeedController motor;
     private DoubleSolenoid brake;
     private SparkMaxCounter heightEncoder;
     private DigitalInput lowerLimit;
     private DigitalInput upperLimit;
-    private CANSparkMax motor;
+    // private CANSparkMax motor;
 
     public LiftSubsystem(final RobotMap.LiftMap map) {
         super();
-       // motor = map.getMotor();
-       motor = new CANSparkMax(15, MotorType.kBrushless);
-       motor.setInverted(true);
+        motor = map.getMotor();
         brake = map.getBrake();
-       // heightEncoder = map.getHeightEncoder();
+        heightEncoder = map.getHeightEncoder();
         lowerLimit = map.getLowerLimit();
         upperLimit = map.getUpperLimit();
         addChildren();
@@ -44,7 +42,7 @@ public class LiftSubsystem extends Subsystem {
     public void addChildren() {
         addChild(motor);
         addChild(brake);
-        //addChild(heightEncoder);
+        addChild(heightEncoder);
         addChild(lowerLimit);
         addChild(upperLimit);
     }
@@ -148,7 +146,12 @@ public class LiftSubsystem extends Subsystem {
             protected void execute() {
                 double liftSpeed;
                 liftSpeed = -Robot.xBoxCoPilot.getY(Hand.kRight);
-                SmartDashboard.putNumber("Lift Faults", motor.getFaults());
+                
+                if (Math.abs(liftSpeed) <= .1) {
+                    liftSpeed = 0;
+                }
+
+               // SmartDashboard.putNumber("Lift Faults", motor.getFaults());
                 SmartDashboard.putNumber("Lift Before", liftSpeed);
                 // Called repeatedly when this Command is scheduled to run
                 if ((!upperLimit.get()) && (liftSpeed > 0)) {
@@ -157,12 +160,13 @@ public class LiftSubsystem extends Subsystem {
                 if ((!lowerLimit.get()) && (liftSpeed < 0)) {
                     liftSpeed = 0;
                 }
+
+
                 if (Math.abs(liftSpeed) <= 0.05) {
                     brake.set(Value.kForward);
                 } else {
                     brake.set(Value.kReverse);
                 }
-                SmartDashboard.putNumber("Lift", liftSpeed);
                 motor.set(liftSpeed);
             }
 
