@@ -44,10 +44,10 @@ public class Robot extends CommandRobot {
     private Command autonomousCommand;
     final private SendableChooser<Command> chooser = new SendableChooser<>();
 
-    // UsbCamera camera0;
-    // UsbCamera camera1;
-    // VideoSink videoSink;
-    // boolean camera0Active = true;
+    UsbCamera cameraBack;
+    UsbCamera cameraFront;
+    VideoSink videoSink;
+    boolean cameraBackActive = true;
 
     /**
      * This function is run when the robot is first started up and should be used
@@ -56,19 +56,19 @@ public class Robot extends CommandRobot {
     @Override
     public void robotInit() {
         // Initialize OI here
-        // camera0 = CameraServer.getInstance().startAutomaticCapture(0);
-        // camera1 = CameraServer.getInstance().startAutomaticCapture(1);
-        // camera0.setResolution(320, 240);
-        // camera1.setResolution(320, 240);
-        // camera0.setFPS(20);
-        // camera1.setFPS(20);
-        // videoSink = CameraServer.getInstance().getServer();
-        // videoSink.getProperty("compression").set(70);
-        // Initialize autonomous chooser
-        // chooser.setDefaultOption("Default Auto", exampleSubsystem.sampleCommand());
-        // chooser.addOption("My Auto", new MyAutoCommand());
-        SmartDashboard.putData("Auto mode", chooser);
-        //  SmartDashboard.putData("Switch Cameras", switchCameras());
+        cameraBack = CameraServer.getInstance().startAutomaticCapture(0);
+        cameraFront = CameraServer.getInstance().startAutomaticCapture(1);
+        cameraBack.setResolution(320, 240);
+        cameraFront.setResolution(320, 240);
+        cameraBack.setFPS(20);
+        cameraFront.setFPS(20);
+        videoSink = CameraServer.getInstance().getServer();
+        videoSink.getProperty("compression").set(70);
+        //Initialize autonomous chooser
+        //chooser.setDefaultOption("Default Auto", exampleSubsystem.sampleCommand());
+        //chooser.addOption("My Auto", new MyAutoCommand());
+        //SmartDashboard.putData("Auto mode", chooser);
+        SmartDashboard.putData("Switch Cameras", switchCameras());
         assignButtons();
     }
 
@@ -102,32 +102,33 @@ public class Robot extends CommandRobot {
         }
     }
 
-//     public Command switchCameras() {
-//         return new InstantCommand(() -> {
-//             System.out.println("Camera 0" + camera0Active);
-//             if (!camera0Active) {
-//                 videoSink.setSource(camera0);
-//                 camera0Active = !camera0Active;
-//             } else {
-//                 videoSink.setSource(camera1);
-//                 camera0Active = !camera0Active;
-//             }
-//         });
-//     }
+    public Command switchCameras() {
+        return new InstantCommand(() -> {
+            System.out.println("Camera 0" + cameraBackActive);
+            if (!cameraBackActive) {
+                videoSink.setSource(cameraBack);
+                cameraBackActive = !cameraBackActive;
+            } else {
+                videoSink.setSource(cameraFront);
+                cameraBackActive = !cameraBackActive;
+            }
+        });
+    }
 
-//     public Command darkenCameras() {
-//         return new InstantCommand(() -> {
-//             camera0.setBrightness(30);
-//             camera1.setBrightness(30);
-//         });
-//     }
+    public Command darkenCameras() {
+        return new InstantCommand(() -> {
+            cameraBack.setBrightness(30);
+            cameraFront.setBrightness(30);
+        });
+    }
 
-//     public Command brightenCameras() {
-//         return new InstantCommand(() -> {
-//             camera0.setBrightness(100);
-//             camera1.setBrightness(100);
-//         });
-//     }
+    public Command brightenCameras() {
+        return new InstantCommand(() -> {
+            cameraBack.setBrightness(100);
+            cameraFront.setBrightness(100);
+        });
+    }
+
 public void assignButtons() {
     Robot.xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.BUMPER_LEFT.get()).whenPressed(manipulator.openBeak());
     Robot.xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.BUMPER_RIGHT.get()).whenPressed(manipulator.closeBeak());

@@ -115,7 +115,7 @@ public class Manipulator extends Subsystem {
             }
 
             @Override
-            protected void end() {
+            protected void end() {  
                 pivotPointsMotor.set(0);
             }
         };

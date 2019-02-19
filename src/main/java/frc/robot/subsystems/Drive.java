@@ -57,11 +57,12 @@ public class Drive extends Subsystem {
         addChild(drive);
         addChild(gyro);
     }
-    // TODO put numbers here
+
+    private final double visionCorrectionMultiplier = 1;
+    private final double visionCorrectionSpeed = 0.2;
+    private final double visionCorrectionRange = 0.1;
 
     double gyroCorrection;
-    double visionMultiplier;
-
     PIDController gyroDrivePID;
 
     double sandstormSpeed = .2;
@@ -182,17 +183,17 @@ public class Drive extends Subsystem {
 
             NetworkTableInstance inst = NetworkTableInstance.getDefault();
             NetworkTable table = inst.getTable("Vision Correction Table");
-            double visionCorrectionSpeed = table.getEntry("Vision Correction").getDouble(0);
+            double visionCorrectionFactor = table.getEntry("Vision Correction").getDouble(0);
 
             @Override
             protected void execute() {
-                visionCorrectionSpeed = table.getEntry("Vision Correction").getDouble(0);
-                drive.arcadeDrive(0, visionMultiplier * visionCorrectionSpeed);
+                visionCorrectionFactor = table.getEntry("Vision Correction").getDouble(0);
+                drive.arcadeDrive(visionCorrectionSpeed, visionCorrectionMultiplier * visionCorrectionFactor);
             }
 
             @Override
             protected boolean isFinished() {
-                if (.1 >= visionCorrectionSpeed && visionCorrectionSpeed >= -.1)
+                if (visionCorrectionFactor <= visionCorrectionRange && visionCorrectionFactor >= -visionCorrectionRange)
                     return true;
                 else
                     return false;
