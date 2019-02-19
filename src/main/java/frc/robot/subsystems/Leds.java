@@ -81,4 +81,55 @@ public class Leds extends Subsystem {
         });
     }
 
+    public Command justBreathe(DigitalOutputDutyCycle color, int frequency) {
+        // The command is named "Sample Command" and requires this subsystem.
+        return new Command("Fade", this) {
+            boolean isDutyCycleIncreasing = true;
+            double period;
+            final double executePeriod = 20 * 0.001; // Approx how often execute is called
+            final double dutyCycleChangePerPeriod = 2.0;
+            double changeAmount;
+
+            @Override
+            protected void initialize() {
+                // Called just before this Command runs the first time
+                period = (1.0 / frequency);
+                changeAmount = dutyCycleChangePerPeriod / ((period / executePeriod));
+                color.enablePWM(0);
+                isDutyCycleIncreasing = true;
+            }
+
+            @Override
+            protected void execute() {
+                // Called repeatedly when this Command is scheduled to run
+                if (isDutyCycleIncreasing == true) {
+                    color.updateDutyCycle(color.getPWMRate() + changeAmount);
+                } else {
+                    color.updateDutyCycle(color.getPWMRate() - changeAmount);
+                }
+                if ((color.getPWMRate() >= 1) || (color.getPWMRate() <= 0)) {
+                    isDutyCycleIncreasing = !isDutyCycleIncreasing;
+                }
+
+            }
+
+            @Override
+            protected boolean isFinished() {
+                // Make this return true when this Command no longer needs to run execute()
+                return false;
+            }
+
+            @Override
+            protected void end() {
+                // Called once after isFinished returns true
+            }
+
+            // Called when another command which requires one or more of the same
+            // subsystems is scheduled to run
+            @Override
+            protected void interrupted() {
+                end();
+            }
+        };
+    }
 }
