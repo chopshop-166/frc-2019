@@ -4,6 +4,7 @@ import com.chopshop166.chopshoplib.CommandRobot;
 import com.chopshop166.chopshoplib.controls.ButtonXboxController;
 import com.chopshop166.chopshoplib.controls.ButtonXboxController.XBoxButton;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import com.sun.jdi.connect.spi.Connection;
 
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.cscore.VideoSink;
@@ -64,6 +65,8 @@ public class Robot extends CommandRobot {
         cameraFront.setFPS(20);
         videoSink = CameraServer.getInstance().getServer();
         videoSink.getProperty("compression").set(70);
+        cameraBack.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
+        cameraFront.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
         //Initialize autonomous chooser
         //chooser.setDefaultOption("Default Auto", exampleSubsystem.sampleCommand());
         //chooser.addOption("My Auto", new MyAutoCommand());
@@ -117,15 +120,15 @@ public class Robot extends CommandRobot {
 
     public Command darkenCameras() {
         return new InstantCommand(() -> {
-            cameraBack.setBrightness(30);
-            cameraFront.setBrightness(30);
+            cameraBack.setBrightness(0);
+            cameraFront.setBrightness(0);
         });
     }
 
     public Command brightenCameras() {
         return new InstantCommand(() -> {
-            cameraBack.setBrightness(100);
-            cameraFront.setBrightness(100);
+            cameraBack.setExposureAuto();;
+            cameraFront.setExposureAuto();
         });
     }
 

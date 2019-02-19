@@ -24,7 +24,8 @@ with cond:
     if not notified[0]:
         cond.wait()
 
-cap = cv2.VideoCapture(1)
+#cap = cv2.VideoCapture(1)
+cap = cv2.VideoCapture("http://10.1.66.2:1181/?action=stream")
 cap.set(10, 30)
 
 goalFinder = gripV2.gripV2()
@@ -82,7 +83,7 @@ def findPairs(contourList):
         if closestCenterPair is None or findPairOffset(pair) < findPairOffset(closestCenterPair):
             closestCenterPair = pair
 
-return closestCenterPair
+    return closestCenterPair
 
 
 #avgPoint = pairmidpoint
@@ -90,6 +91,7 @@ return closestCenterPair
 
 def normalizeImage(pairMidpoint):
     width = frame.shape[1]
+    height = frame.shape[2]
     imageMidpoint = (width / 2)
     pairPointOrient = (pairMidpoint - imageMidpoint)
     fullPairMidpoint = (pairPointOrient / imageMidpoint)
@@ -101,6 +103,11 @@ while(True):
     #capture image
     ret, frame = cap.read()
     cv2.waitKey(300)
+
+    width = frame.shape[1]
+    height = frame.shape[0]
+    M = cv2.getRotationMatrix2D((width/2,height/2),90,1)
+    frame = cv2.warpAffine(frame,M,(width,height))
 
     #process with GRIP stuff
     goalFinder.process(frame)
