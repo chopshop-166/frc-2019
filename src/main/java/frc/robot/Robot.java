@@ -1,6 +1,7 @@
 package frc.robot;
 
 import com.chopshop166.chopshoplib.CommandRobot;
+import com.chopshop166.chopshoplib.commands.CommandChain;
 import com.chopshop166.chopshoplib.controls.ButtonXboxController;
 import com.chopshop166.chopshoplib.controls.ButtonXboxController.XBoxButton;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
@@ -72,6 +73,8 @@ public class Robot extends CommandRobot {
         //chooser.addOption("My Auto", new MyAutoCommand());
         //SmartDashboard.putData("Auto mode", chooser);
         SmartDashboard.putData("Switch Cameras", switchCameras());
+        SmartDashboard.putData("Good Flip", goodFlip());
+        SmartDashboard.putData("Darken Cameras", darkenCameras());
         assignButtons();
     }
 
@@ -118,6 +121,12 @@ public class Robot extends CommandRobot {
         });
     }
 
+    public Command goodFlip() {
+        CommandChain retValue = new CommandChain("Good Flip");
+        retValue.then(lift.goToHeight(LiftSubsystem.Heights.kLiftFlipHeight)).then(maflipulator.crappyFlip());
+        return retValue;
+    }
+
     public Command darkenCameras() {
         return new InstantCommand(() -> {
             cameraBack.setBrightness(0);
@@ -137,7 +146,7 @@ public void assignButtons() {
     Robot.xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.BUMPER_RIGHT.get()).whenPressed(manipulator.closeBeak());
     Robot.xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.A.get()).whenPressed(manipulator.openArms());
     Robot.xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.B.get()).whenPressed(manipulator.closeArms());
-    Robot.xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.Y.get()).whenPressed(maflipulator.CrappyFlip());
+    Robot.xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.Y.get()).whenPressed(maflipulator.crappyFlip());
     Robot.driveController.getButton(ButtonXboxController.XBoxButton.A.get()).whenPressed(drive.align());
 }
 

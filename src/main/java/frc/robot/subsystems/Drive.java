@@ -58,7 +58,7 @@ public class Drive extends Subsystem {
         addChild(gyro);
     }
 
-    private final double visionCorrectionMultiplier = 1;
+    private final double visionCorrectionMultiplier = 2;
     private final double visionCorrectionSpeed = 0.2;
     private final double visionCorrectionRange = 0.1;
 
@@ -188,7 +188,7 @@ public class Drive extends Subsystem {
             @Override
             protected void execute() {
                 visionCorrectionFactor = table.getEntry("Vision Correction").getDouble(0);
-                drive.arcadeDrive(visionCorrectionSpeed, visionCorrectionMultiplier * visionCorrectionFactor);
+                drive.arcadeDrive(0, visionCorrectionMultiplier * visionCorrectionFactor);
             }
 
             @Override

@@ -7,6 +7,7 @@ import com.chopshop166.chopshoplib.sensors.MockPotentiometer;
 import com.chopshop166.chopshoplib.sensors.PIDGyro;
 import com.chopshop166.chopshoplib.sensors.SparkMaxCounter;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.AnalogGyro;
@@ -30,8 +31,9 @@ public class PracticeBot implements RobotMap {
             }
 
             @Override
-            public SendableSpeedController getMotor() {
-                return new MockSpeedController();
+            public CANSparkMax getMotor() {
+                // return new MockSpeedController();
+                return null;
             }
 
             @Override

@@ -123,15 +123,15 @@ public class Maflipulator extends Subsystem {
         });
     }
 
-    public Command CrappyFlip() {
+    public Command crappyFlip() {
         return new Command("Crappy Flip", this) {
             @Override
             protected void initialize() {
                 if (currentPosition == MaflipulatorSide.kFront) {
-                    flipMotor.set(0.5);
+                    flipMotor.set(0.75);
 
                 } else {
-                    flipMotor.set(-0.5);
+                    flipMotor.set(-0.75);
 
                 }
             }

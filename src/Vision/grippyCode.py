@@ -60,8 +60,8 @@ def findPairs(contourList):
     for contour in contourList:
         rectangleBox = cv2.minAreaRect(contour)
  
-        if math.abs(rectangleBox[2] - rightAngle) < deadzone:
-        #if rectangleBox[2] > rightAngle - deadzone and rectangleBox[2] < rightAngle + deadzone:
+        #if Math.abs(rectangleBox[2] - rightAngle) < deadzone:
+        if rectangleBox[2] > rightAngle - deadzone and rectangleBox[2] < rightAngle + deadzone:
             rightRectList.append(rectangleBox)
        
         if rectangleBox[2] > leftAngle - deadzone and rectangleBox[2] < leftAngle + deadzone:
@@ -79,7 +79,7 @@ def findPairs(contourList):
 
     closestCenterPair = None
     for pair in rectPairList:
-        print ("rectangle pair coordinates: {}, {}".format(pair[0][0][0],pair[1][0][0]))       
+        #print ("rectangle pair coordinates: {}, {}".format(pair[0][0][0],pair[1][0][0]))       
         if closestCenterPair is None or findPairOffset(pair) < findPairOffset(closestCenterPair):
             closestCenterPair = pair
 
@@ -116,7 +116,8 @@ while(True):
     filteredContours=[]
     for contour in goalFinder.find_contours_output:
         area=cv2.contourArea(contour)
-        if area>1000:
+        #Need to adjust area value based on distance
+        if area>100:
             filteredContours.append(contour)
 
     #find best pair, if we found contours

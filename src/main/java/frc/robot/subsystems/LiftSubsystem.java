@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 import com.chopshop166.chopshoplib.sensors.SparkMaxCounter;
+import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
@@ -23,7 +24,7 @@ import frc.robot.Robot;
 import frc.robot.RobotMap;
 
 public class LiftSubsystem extends Subsystem {
-    private SpeedController motor;
+    private CANSparkMax motor;
     private DoubleSolenoid brake;
     private SparkMaxCounter heightEncoder;
     private DigitalInput lowerLimit;
@@ -34,11 +35,11 @@ public class LiftSubsystem extends Subsystem {
         super();
         motor = map.getMotor();
         brake = map.getBrake();
-        heightEncoder = map.getHeightEncoder();
+        heightEncoder = new SparkMaxCounter(motor.getEncoder());
         lowerLimit = map.getLowerLimit();
         upperLimit = map.getUpperLimit();
         addChildren();
-    }
+    }    
     public void addChildren() {
         addChild(motor);
         addChild(brake);
@@ -50,7 +51,7 @@ public class LiftSubsystem extends Subsystem {
         SmartDashboard.putData("Loading Station", autoMoveLift(Heights.kLoadingStation));
         SmartDashboard.putData("Loading Station", autoMoveLift(Heights.kRocketCargoMid));
     }
-    enum Heights {
+    public enum Heights {
         // Loading Station
         kLoadingStation(19.0),
         // Low rocket cargo
@@ -66,7 +67,10 @@ public class LiftSubsystem extends Subsystem {
         // floor load
         kFloorLoad(0.0),
         // cargo ship cargo
-        kCargoShipCargo(39.75);
+        kCargoShipCargo(39.75),
+        //Height needed to flip over
+        kLiftFlipHeight(25);
+        
 
         private double value;
 
@@ -79,7 +83,7 @@ public class LiftSubsystem extends Subsystem {
         }
     }
 
-    private final static double AUTO_LIFT_SPEED = 0.3;
+    private final static double AUTO_LIFT_SPEED = 0.5;
 
     @Override
     public void initDefaultCommand() {
@@ -129,7 +133,7 @@ public class LiftSubsystem extends Subsystem {
 
             @Override
             protected double returnPIDInput() {
-                return heightEncoder.pidGet();
+                return heightEncoder.get();
             }
 
             @Override
@@ -144,6 +148,9 @@ public class LiftSubsystem extends Subsystem {
         return new Command("Move Lift", this) {
             @Override
             protected void execute() {
+                SmartDashboard.putNumber("Lift Height", heightEncoder.getDistance());
+                SmartDashboard.putNumber("Lift Thing", 5);
+                //needs to go 25 arbitrary units up to flip
                 double liftSpeed;
                 liftSpeed = -Robot.xBoxCoPilot.getY(Hand.kRight);
                 
@@ -159,6 +166,7 @@ public class LiftSubsystem extends Subsystem {
                 }
                 if ((!lowerLimit.get()) && (liftSpeed < 0)) {
                     liftSpeed = 0;
+                    heightEncoder.reset();
                 }
 
 
@@ -222,6 +230,7 @@ public class LiftSubsystem extends Subsystem {
             protected void execute() {
 
                 double currentHeight = heightEncoder.getDistance();
+                brake.set(Value.kReverse);
 
                 if ((currentHeight < height.get()) && !upperLimit.get()) {
                     motor.set(0.0);
@@ -249,6 +258,7 @@ public class LiftSubsystem extends Subsystem {
             @Override
             protected void end() {
                 // Called once after isFinished returns true
+                brake.set(Value.kForward);
                 motor.set(0.0);
             }
         };

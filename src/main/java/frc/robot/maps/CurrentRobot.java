@@ -36,7 +36,7 @@ public class CurrentRobot implements RobotMap {
             }
 
             @Override
-            public SpeedController getMotor() {
+            public CANSparkMax getMotor() {
                 liftMotor.setInverted(true);
                 return liftMotor;
             }
