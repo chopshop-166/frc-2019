@@ -12,5 +12,5 @@
     ".gradle/": true,
     "gradle*": true
   },
-  "wpilib.online": true
+  "wpilib.online": true,
 }

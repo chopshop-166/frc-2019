@@ -1,41 +1,52 @@
 package frc.robot.subsystems;
 
-import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
-import edu.wpi.first.wpilibj.command.PIDCommand;
+import com.chopshop166.chopshoplib.sensors.SparkMaxCounter;
+import com.revrobotics.CANSparkMax;
+
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.PIDController;
-import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.InstantCommand;
+import edu.wpi.first.wpilibj.command.PIDCommand;
 import edu.wpi.first.wpilibj.command.Subsystem;
-import edu.wpi.first.wpilibj.interfaces.Potentiometer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 import frc.robot.RobotMap;
 
 public class LiftSubsystem extends Subsystem {
-    private SendableSpeedController motor;
+    private CANSparkMax motor;
     private DoubleSolenoid brake;
-    private SendableSpeedController armMotor;
-    private Encoder heightEncoder;
+    private SparkMaxCounter heightEncoder;
     private DigitalInput lowerLimit;
     private DigitalInput upperLimit;
-    private Potentiometer manipAngle;
 
     public LiftSubsystem(final RobotMap.LiftMap map) {
         super();
         motor = map.getMotor();
         brake = map.getBrake();
-        armMotor = map.getArmMotor();
-        heightEncoder = map.getHeightEncoder();
+        heightEncoder = new SparkMaxCounter(motor.getEncoder());
         lowerLimit = map.getLowerLimit();
         upperLimit = map.getUpperLimit();
+        addChildren();
+        registeredCommands();
     }
 
-    enum Heights {
+    public void addChildren() {
+        addChild(motor);
+        addChild(brake);
+        addChild(heightEncoder);
+        addChild(lowerLimit);
+        addChild(upperLimit);
+    }
+
+    private void registeredCommands() {
+        SmartDashboard.putData("Loading Station", autoMoveLift(Heights.kLoadingStation));
+        SmartDashboard.putData("Loading Station", autoMoveLift(Heights.kRocketCargoMid));
+    }
+
+    public enum Heights {
         // Loading Station
         kLoadingStation(19.0),
         // Low rocket cargo
@@ -51,7 +62,9 @@ public class LiftSubsystem extends Subsystem {
         // floor load
         kFloorLoad(0.0),
         // cargo ship cargo
-        kCargoShipCargo(39.75);
+        kCargoShipCargo(39.75),
+        // Height needed to flip over
+        kLiftFlipHeight(25);
 
         private double value;
 
@@ -64,12 +77,21 @@ public class LiftSubsystem extends Subsystem {
         }
     }
 
-    private final static double AUTO_LIFT_SPEED = 0.3;
+    private final static double AUTO_LIFT_SPEED_UP = 0.5;
+    private final static double AUTO_LIFT_SPEED_DOWN = -0.05;
 
     @Override
     public void initDefaultCommand() {
         // Set the default command for a subsystem here.
-        // setDefaultCommand(new MySpecialCommand());
+        setDefaultCommand(moveLift());
+    }
+
+    protected boolean isAtUpperLimit() {
+        return !upperLimit.get();
+    }
+
+    protected boolean isAtLowerLimit() {
+        return !lowerLimit.get();
     }
 
     public Command engageBrake() {
@@ -97,10 +119,10 @@ public class LiftSubsystem extends Subsystem {
             @Override
             protected void usePIDOutput(final double heightCorrection) {
                 double liftSpeed = heightCorrection;
-                if (upperLimit.get() && liftSpeed > 0) {
+                if (isAtUpperLimit() && liftSpeed > 0) {
                     liftSpeed = 0;
                 }
-                if (lowerLimit.get() && liftSpeed < 0) {
+                if (isAtLowerLimit() && liftSpeed < 0) {
                     liftSpeed = 0;
                 }
                 motor.set(liftSpeed);
@@ -114,7 +136,7 @@ public class LiftSubsystem extends Subsystem {
 
             @Override
             protected double returnPIDInput() {
-                return heightEncoder.pidGet();
+                return heightEncoder.get();
             }
 
             @Override
@@ -129,14 +151,31 @@ public class LiftSubsystem extends Subsystem {
         return new Command("Move Lift", this) {
             @Override
             protected void execute() {
+                SmartDashboard.putNumber("Lift Height", heightEncoder.getDistance());
+                SmartDashboard.putNumber("Lift Thing", 5);
+                // needs to go 25 arbitrary units up to flip
                 double liftSpeed;
-                liftSpeed = Robot.xBoxCoPilot.getY(Hand.kRight);
-                // Called repeatedly when this Command is scheduled to run
-                if ((upperLimit.get()) && (liftSpeed > 0)) {
+                liftSpeed = -Robot.xBoxCoPilot.getY(Hand.kRight);
+
+                if (Math.abs(liftSpeed) <= .1) {
                     liftSpeed = 0;
                 }
-                if ((lowerLimit.get()) && (liftSpeed < 0)) {
+
+                // SmartDashboard.putNumber("Lift Faults", motor.getFaults());
+                SmartDashboard.putNumber("Lift Before", liftSpeed);
+                // Called repeatedly when this Command is scheduled to run
+                if (isAtUpperLimit() && (liftSpeed > 0)) {
                     liftSpeed = 0;
+                }
+                if (isAtLowerLimit() && liftSpeed < 0) {
+                    liftSpeed = 0;
+                    heightEncoder.reset();
+                }
+
+                if (Math.abs(liftSpeed) <= 0.05) {
+                    brake.set(Value.kForward);
+                } else {
+                    brake.set(Value.kReverse);
                 }
                 motor.set(liftSpeed);
             }
@@ -145,56 +184,6 @@ public class LiftSubsystem extends Subsystem {
             protected boolean isFinished() {
                 // Make this return true when this Command no longer needs to run execute()
                 return false;
-            }
-        };
-    }
-
-    public Command moveArm() {
-        // The command is named "Move Arm" and requires this subsystem.
-        return new Command("Move Arm", this) {
-            @Override
-            protected void execute() {
-                // Called repeatedly when this Command is scheduled to run
-                armMotor.set(Robot.xBoxCoPilot.getY(Hand.kLeft));
-            }
-
-            @Override
-            protected boolean isFinished() {
-                // Make this return true when this Command no longer needs to run execute()
-                return false;
-            }
-        };
-    }
-
-    public Command flipOpp() {
-        // The command is named "Lift to Opposite" and requires this subsystem.
-        return new Command("Flip to Opposite", this) {
-            @Override
-            protected void initialize() {
-                // Called just before this Command runs the first time
-            }
-
-            @Override
-            protected void execute() {
-                // Called repeatedly when this Command is scheduled to run
-            }
-
-            @Override
-            protected boolean isFinished() {
-                // Make this return true when this Command no longer needs to run execute()
-                return false;
-            }
-
-            @Override
-            protected void end() {
-                // Called once after isFinished returns true
-            }
-
-            // Called when another command which requires one or more of the same
-            // subsystems is scheduled to run
-            @Override
-            protected void interrupted() {
-                end();
             }
         };
     }
@@ -210,16 +199,16 @@ public class LiftSubsystem extends Subsystem {
             protected void execute() {
 
                 double currentHeight = heightEncoder.getDistance();
+                brake.set(Value.kReverse);
 
-                if ((currentHeight < height.get()) && upperLimit.get()) {
+                if (currentHeight < height.get() && isAtUpperLimit()) {
                     motor.set(0.0);
-                } else if ((currentHeight > height.get()) && lowerLimit.get()) {
+                } else if (currentHeight > height.get() && isAtLowerLimit()) {
                     motor.set(0.0);
                 } else if (currentHeight < height.get()) {
-
-                    motor.set(AUTO_LIFT_SPEED);
+                    motor.set(AUTO_LIFT_SPEED_UP);
                 } else {
-                    motor.set(-AUTO_LIFT_SPEED);
+                    motor.set(AUTO_LIFT_SPEED_DOWN);
                 }
             }
 
@@ -237,6 +226,7 @@ public class LiftSubsystem extends Subsystem {
             @Override
             protected void end() {
                 // Called once after isFinished returns true
+                brake.set(Value.kForward);
                 motor.set(0.0);
             }
         };

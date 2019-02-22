@@ -1,19 +1,15 @@
 package frc.robot;
 
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
+import com.chopshop166.chopshoplib.sensors.Lidar;
+import com.chopshop166.chopshoplib.sensors.PIDGyro;
+import com.chopshop166.chopshoplib.sensors.SparkMaxCounter;
+import com.revrobotics.CANSparkMax;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.interfaces.Potentiometer;
-
-import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
-import com.chopshop166.chopshoplib.sensors.Lidar;
-import com.chopshop166.chopshoplib.sensors.PIDGyro;
-
-import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.interfaces.Gyro;
 
 /**
  * The RobotMap is an interface that contains the instructions on how to make a
@@ -28,19 +24,15 @@ public interface RobotMap {
 
     public interface LiftMap {
 
-        SendableSpeedController getMotor();
+        CANSparkMax getMotor();
 
         DoubleSolenoid getBrake();
 
-        SendableSpeedController getArmMotor();
-
-        Encoder getHeightEncoder();
+        SparkMaxCounter getHeightEncoder();
 
         DigitalInput getLowerLimit();
 
         DigitalInput getUpperLimit();
-
-        Potentiometer getManipAngle();
     }
 
     ManipulatorMap getManipulatorMap();
@@ -80,7 +72,7 @@ public interface RobotMap {
 
     MaflipulatorMap getMaflipulatorMap();
 
-    interface MaflipulatorMap {
+    public interface MaflipulatorMap {
 
         SendableSpeedController getFlipMotor();
 

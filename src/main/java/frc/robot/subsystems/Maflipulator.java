@@ -2,13 +2,14 @@ package frc.robot.subsystems;
 
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 
-import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
+import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.command.Command;
-import edu.wpi.first.wpilibj.command.InstantCommand;
+import edu.wpi.first.wpilibj.command.ConditionalCommand;
 import edu.wpi.first.wpilibj.command.PIDCommand;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.interfaces.Potentiometer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 import frc.robot.RobotMap;
 
@@ -18,16 +19,16 @@ public class Maflipulator extends Subsystem {
         kFront, kBack;
     }
 
-    private final static double FRONT_LOWER_ANGLE = 70;
-    private final static double FRONT_SCORING_ANGLE = 90;
-    private final static double FRONT_FLIP_POSITION = FRONT_SCORING_ANGLE;
-    private final static double FRONT_UPPER_ANGLE = 180;
-    private final static double BACK_LOWER_ANGLE = 290;
-    private final static double BACK_SCORING_ANGLE = 270;
-    private final static double BACK_FLIP_POSITION = BACK_SCORING_ANGLE;
-    private final static double BACK_UPPER_ANGLE = 180;
+    private final static double FRONT_LOWER_ANGLE = 0.94;
+    private final static double FRONT_SCORING_ANGLE = 0.25;
+    private final static double FLIP_TO_FRONT_POSITION = FRONT_SCORING_ANGLE;
+    private final static double FRONT_UPPER_ANGLE = 0.69;
+    private final static double BACK_LOWER_ANGLE = .099;
+    private final static double BACK_SCORING_ANGLE = 0.75;
+    private final static double FLIP_TO_BACK_POSITION = BACK_SCORING_ANGLE;
+    private final static double BACK_UPPER_ANGLE = .42;
 
-    private final static double FLIP_MOTOR_SPEED = 0.2;
+    private final static double FLIP_MOTOR_SPEED = 1;
 
     private MaflipulatorSide currentPosition;
 
@@ -46,47 +47,54 @@ public class Maflipulator extends Subsystem {
             angleCorrection = value;
         });
 
-        if (anglePot.get() < 180)
+        if (anglePot.get() > 0.5)
             currentPosition = MaflipulatorSide.kFront;
         else
             currentPosition = MaflipulatorSide.kBack;
 
     }
 
+    public void addChildren() {
+        addChild(flipMotor);
+        addChild(anglePot);
+    }
+
     @Override
     public void initDefaultCommand() {
         // Set the default command for a subsystem here.
-        setDefaultCommand(restrictRotate());
+        setDefaultCommand(manualRotate());
     }
 
     protected double restrict(double flipSpeed) {
         if (currentPosition == MaflipulatorSide.kFront) {
-            if (flipSpeed > 0 && anglePot.get() >= FRONT_UPPER_ANGLE) {
+            if (flipSpeed > 0 && anglePot.get() <= FRONT_UPPER_ANGLE) {
                 flipSpeed = 0;
-            }
-            if (flipSpeed < 0 && anglePot.get() <= FRONT_LOWER_ANGLE) {
+            } else if (flipSpeed < 0 && anglePot.get() >= FRONT_LOWER_ANGLE) {
                 flipSpeed = 0;
             }
         } else {
-            if (flipSpeed > 0 && anglePot.get() <= BACK_UPPER_ANGLE) {
+            if (flipSpeed < 0 && anglePot.get() >= BACK_UPPER_ANGLE) {
                 flipSpeed = 0;
-            }
-            if (flipSpeed < 0 && anglePot.get() >= BACK_LOWER_ANGLE) {
+            } else if (flipSpeed > 0 && anglePot.get() <= BACK_LOWER_ANGLE) {
                 flipSpeed = 0;
             }
         }
+        SmartDashboard.putNumber("Pot Angle", anglePot.get());
         return flipSpeed;
+
     }
 
-    public Command restrictRotate() {
-        // The command is named "Restrict Rotate" and requires this subsystem.
-        return new Command("Restrict Rotate", this) {
+    public Command manualRotate() {
+        // The command is named "Manual Rotate" and requires this subsystem.
+        return new Command("Manual Rotate", this) {
 
             @Override
             protected void execute() {
-                double flipSpeed = Robot.xBoxCoPilot.getY(Hand.kRight) * FLIP_MOTOR_SPEED;
+                double flipSpeed = Robot.xBoxCoPilot.getY(Hand.kLeft) * FLIP_MOTOR_SPEED;
                 flipSpeed = restrict(flipSpeed);
                 flipMotor.set(flipSpeed);
+                SmartDashboard.putString("Side", currentPosition.toString());
+                SmartDashboard.putNumber("Flip Speed", flipSpeed);
             }
 
             @Override
@@ -98,50 +106,56 @@ public class Maflipulator extends Subsystem {
     }
 
     public Command Flip() {
-        return new InstantCommand("Flip", this, () -> {
+        return new ConditionalCommand("Flip", moveToPosition(FLIP_TO_FRONT_POSITION),
+                moveToPosition(FLIP_TO_BACK_POSITION)) {
+            @Override
+            protected boolean condition() {
+                return currentPosition == MaflipulatorSide.kFront;
+            }
+        };
+    }
 
-            Command moveCommand;
-            if (currentPosition == MaflipulatorSide.kFront) {
-                moveCommand = moveToPosition(FRONT_FLIP_POSITION);
-                currentPosition = MaflipulatorSide.kBack;
-            } else {
-                moveCommand = moveToPosition(BACK_FLIP_POSITION);
-                currentPosition = MaflipulatorSide.kFront;
+    public Command crappyFlip() {
+        return new Command("Crappy Flip", this) {
+            @Override
+            protected void initialize() {
+                if (currentPosition == MaflipulatorSide.kFront) {
+                    flipMotor.set(0.75);
+
+                } else {
+                    flipMotor.set(-0.75);
+
+                }
             }
 
-            moveCommand.start();
-        });
-    }
+            @Override
+            protected boolean isFinished() {
 
-    public Command PIDScoringPosition() {
-        return new InstantCommand("PID Scoring Position", this, () -> {
+                if (anglePot.get() <= FRONT_SCORING_ANGLE && currentPosition == MaflipulatorSide.kFront) {
+                    return true;
+                }
 
-            Command moveCommand;
-            if (currentPosition == MaflipulatorSide.kFront)
-                moveCommand = moveToPosition(FRONT_SCORING_ANGLE);
-            else
-                moveCommand = moveToPosition(BACK_SCORING_ANGLE);
+                if (anglePot.get() >= BACK_SCORING_ANGLE && currentPosition == MaflipulatorSide.kBack) {
+                    return true;
+                }
 
-            moveCommand.start();
-        });
+                return false;
+            }
 
-    }
-
-    public Command PIDPickupPosition() {
-        return new InstantCommand("PID Pickup Position", this, () -> {
-
-            Command moveCommand;
-            if (currentPosition == MaflipulatorSide.kFront)
-                moveCommand = moveToPosition(FRONT_LOWER_ANGLE);
-            else
-                moveCommand = moveToPosition(BACK_LOWER_ANGLE);
-
-            moveCommand.start();
-        });
+            @Override
+            protected void end() {
+                flipMotor.set(0);
+                if (currentPosition == MaflipulatorSide.kFront) {
+                    currentPosition = MaflipulatorSide.kBack;
+                } else {
+                    currentPosition = MaflipulatorSide.kFront;
+                }
+            }
+        };
     }
 
     public Command moveToPosition(double targetPosition) {
-        return new PIDCommand("Move to Position", .01, .0009, 0.0, this) {
+        return new PIDCommand("Move to Position", .01, 0.0, 0.0, this) {
 
             @Override
             protected void initialize() {
@@ -171,6 +185,27 @@ public class Maflipulator extends Subsystem {
                 flipSpeed = restrict(flipSpeed);
                 flipMotor.set(flipSpeed);
             }
+        };
+    }
+
+    public Command goToScoringPosition() {
+        return new ConditionalCommand("Go To Scoring Position", moveToPosition(FRONT_SCORING_ANGLE),
+                moveToPosition(BACK_SCORING_ANGLE)) {
+            @Override
+            protected boolean condition() {
+                return currentPosition == MaflipulatorSide.kFront;
+            }
+        };
+    }
+
+    public Command PIDPickupPosition() {
+        return new ConditionalCommand("Pickup Position", moveToPosition(FRONT_LOWER_ANGLE),
+                moveToPosition(BACK_LOWER_ANGLE)) {
+            @Override
+            protected boolean condition() {
+                return currentPosition == MaflipulatorSide.kFront;
+            }
+
         };
     }
 }

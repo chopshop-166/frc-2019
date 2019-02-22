@@ -3,49 +3,54 @@ package frc.robot.maps;
 import com.chopshop166.chopshoplib.outputs.MockSpeedController;
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 import com.chopshop166.chopshoplib.sensors.Lidar;
-import com.chopshop166.chopshoplib.sensors.MockPotentiometer;
 import com.chopshop166.chopshoplib.sensors.PIDGyro;
 import com.chopshop166.chopshoplib.sensors.SparkMaxCounter;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.AnalogGyro;
+import edu.wpi.first.wpilibj.AnalogPotentiometer;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.I2C.Port;
+import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.interfaces.Potentiometer;
 import frc.robot.RobotMap;
 
-public class PracticeBot implements RobotMap {
+public class CurrentRobot implements RobotMap {
 
     @Override
     public LiftMap getLiftMap() {
         return new LiftMap() {
+            CANSparkMax liftMotor = new CANSparkMax(15, MotorType.kBrushless);
 
             @Override
             public DigitalInput getUpperLimit() {
-                return new DigitalInput(4);
+                return new DigitalInput(9);
             }
 
             @Override
             public CANSparkMax getMotor() {
-                // return new MockSpeedController();
-                return null;
+                liftMotor.setInverted(true);
+                return liftMotor;
             }
 
             @Override
             public DigitalInput getLowerLimit() {
-                return new DigitalInput(0);
+                return new DigitalInput(8);
             }
 
             @Override
             public SparkMaxCounter getHeightEncoder() {
-                return null;
+                return new SparkMaxCounter(liftMotor.getEncoder());
             }
 
             @Override
             public DoubleSolenoid getBrake() {
-                return new DoubleSolenoid(2, 7);
+                return new DoubleSolenoid(0, 1);
             }
         };
     }
@@ -66,22 +71,22 @@ public class PracticeBot implements RobotMap {
 
             @Override
             public DigitalInput getintakePositionLimitSwitch() {
-                return new DigitalInput(1);
+                return new DigitalInput(5);
             }
 
             @Override
             public DigitalInput getfoldedBackLimitSwitch() {
-                return new DigitalInput(2);
+                return new DigitalInput(6);
             }
 
             @Override
             public DoubleSolenoid getbeaksPiston() {
-                return new DoubleSolenoid(2, 3);
+                return new DoubleSolenoid(6, 7);
             }
 
             @Override
             public DigitalInput getGamepieceLimitSwitch() {
-                return new DigitalInput(3);
+                return new DigitalInput(4);
             }
         };
     }
@@ -97,47 +102,56 @@ public class PracticeBot implements RobotMap {
 
             @Override
             public SendableSpeedController getRight() {
-                return new MockSpeedController();
+                return SendableSpeedController
+                        .wrap(new SpeedControllerGroup(new WPI_VictorSPX(3), new WPI_VictorSPX(4)));
             }
 
             @Override
             public SendableSpeedController getLeft() {
-                return new MockSpeedController();
+                return SendableSpeedController
+                        .wrap(new SpeedControllerGroup(new WPI_VictorSPX(6), new WPI_VictorSPX(5)));
             }
 
             @Override
             public PIDGyro getGyro() {
-                return PIDGyro.mock();
+                return PIDGyro.wrap(new AnalogGyro(0));
             }
 
             @Override
             public Encoder getLeftEncoder() {
-                return new Encoder(6, 7);
+                Encoder leftEncoder = new Encoder(0, 1);
+                leftEncoder.setDistancePerPulse(Math.PI * 6 / 128);
+                return leftEncoder;
+            }
+
+            @Override
+            public Encoder getRightEncoder() {
+                Encoder rightEncoder = new Encoder(2, 3);
+                rightEncoder.setDistancePerPulse(Math.PI * 6 / 128);
+                return rightEncoder;
             }
 
             @Override
             public DoubleSolenoid getClimbPiston() {
                 return new DoubleSolenoid(4, 5);
             }
-
-            @Override
-            public Encoder getRightEncoder() {
-                return new Encoder(3, 4);
-            }
         };
     }
 
+    @Override
     public MaflipulatorMap getMaflipulatorMap() {
         return new MaflipulatorMap() {
 
             @Override
             public SendableSpeedController getFlipMotor() {
-                return SendableSpeedController.wrap(new WPI_TalonSRX(5));
+                return SendableSpeedController.wrap(new WPI_TalonSRX(10));
             }
 
             @Override
             public Potentiometer getMaflipulatorPot() {
-                return new MockPotentiometer();
+                AnalogPotentiometer potentiometer = new AnalogPotentiometer(3);
+                return potentiometer;
+
             }
         };
     }
