@@ -217,8 +217,9 @@ public class Drive extends Subsystem {
     }
 
     public Command downOffDrop() {
-        return new CommandChain("Down off Drop").then(goXDistanceForward(1)).then(extendPiston())
-                .then(goXDistanceForward(1)).then(retractPiston()).then(goXDistanceForward(1));
-
+        CommandChain retValue = new CommandChain("Down off Drop");
+        retValue.then(goXDistanceForward(1)).then(extendPiston()).then(goXDistanceForward(1)).then(retractPiston())
+                .then(goXDistanceForward(1));
+        return retValue;
     }
 }
