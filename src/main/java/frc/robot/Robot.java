@@ -38,10 +38,10 @@ public class Robot extends CommandRobot {
     private Command autonomousCommand;
     final private SendableChooser<Command> chooser = new SendableChooser<>();
 
-    UsbCamera cameraBack;
-    UsbCamera cameraFront;
-    VideoSink videoSink;
-    boolean cameraBackActive = true;
+    private UsbCamera cameraBack;
+    private UsbCamera cameraFront;
+    private VideoSink videoSink;
+    private boolean cameraBackActive = true;
 
     /**
      * This function is run when the robot is first started up and should be used
@@ -129,7 +129,6 @@ public class Robot extends CommandRobot {
     public Command brightenCameras() {
         return new InstantCommand(() -> {
             cameraBack.setExposureAuto();
-            ;
             cameraFront.setExposureAuto();
         });
     }
