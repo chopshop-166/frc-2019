@@ -12,13 +12,10 @@ import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.PIDController;
-import edu.wpi.first.wpilibj.PIDSource;
-import edu.wpi.first.wpilibj.PIDSourceType;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import edu.wpi.first.wpilibj.interfaces.Gyro;
 import frc.robot.Robot;
 import frc.robot.RobotMap;
 
@@ -45,12 +42,13 @@ public class Drive extends Subsystem {
         leftEncoder = map.getLeftEncoder();
         rightEncoder = map.getRightEncoder();
         gyro = map.getGyro();
-        gyroDrivePID= new PIDController(.01, .0009, 0.0, 0.0, gyro, (double value) -> {
+        gyroDrivePID = new PIDController(.01, .0009, 0.0, 0.0, gyro, (double value) -> {
             gyroCorrection = value;
         });
         drive = new DifferentialDrive(left, right);
         addChildren();
     }
+
     private void addChildren() {
         addChild(leftEncoder);
         addChild(rightEncoder);
@@ -116,7 +114,7 @@ public class Drive extends Subsystem {
 
             @Override
             protected void end() {
-            //    gyroDrivePID.disable();
+                // gyroDrivePID.disable();
             }
         };
     }
@@ -153,29 +151,29 @@ public class Drive extends Subsystem {
     }
 
     // public Command turnXDegrees(double degrees) {
-    //     return new Command("turnXDegrees", this) {
-    //         @Override
-    //         protected void initialize() {
-    //             // gyroDrivePID.reset();
-    //             // gyroDrivePID.setSetpoint(degrees);
-    //             // gyroDrivePID.enable();
-    //         }
+    // return new Command("turnXDegrees", this) {
+    // @Override
+    // protected void initialize() {
+    // // gyroDrivePID.reset();
+    // // gyroDrivePID.setSetpoint(degrees);
+    // // gyroDrivePID.enable();
+    // }
 
-    //         @Override
-    //         protected void execute() {
-    //             drive.arcadeDrive(0, gyroCorrection);
-    //         }
+    // @Override
+    // protected void execute() {
+    // drive.arcadeDrive(0, gyroCorrection);
+    // }
 
-    //        // @Override
-    //        // protected boolean isFinished() {
-    //         //    return gyroDrivePID.onTarget();
-    //         // }
+    // // @Override
+    // // protected boolean isFinished() {
+    // // return gyroDrivePID.onTarget();
+    // // }
 
-    //         // @Override
-    //         // protected void end() {
-    //          //   gyroDrivePID.disable();
-    //        // }
-    //     };
+    // // @Override
+    // // protected void end() {
+    // // gyroDrivePID.disable();
+    // // }
+    // };
     // }
 
     public Command align() {

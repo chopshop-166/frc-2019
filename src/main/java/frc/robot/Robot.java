@@ -3,24 +3,16 @@ package frc.robot;
 import com.chopshop166.chopshoplib.CommandRobot;
 import com.chopshop166.chopshoplib.commands.CommandChain;
 import com.chopshop166.chopshoplib.controls.ButtonXboxController;
-import com.chopshop166.chopshoplib.controls.ButtonXboxController.XBoxButton;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
-import com.sun.jdi.connect.spi.Connection;
 
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.cscore.VideoSink;
 import edu.wpi.cscore.VideoSource.ConnectionStrategy;
 import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.InstantCommand;
-import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.maps.CurrentRobot;
-import frc.robot.maps.PracticeBot;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.LiftSubsystem;
 import frc.robot.subsystems.Maflipulator;
@@ -39,10 +31,10 @@ public class Robot extends CommandRobot {
     final public static ButtonXboxController xBoxCoPilot = new ButtonXboxController(1);
     final private Maflipulator maflipulator = new Maflipulator(robotMap.getMaflipulatorMap());
     final private Drive drive = new Drive(robotMap.getDriveMap());
-    final private LiftSubsystem lift = new LiftSubsystem (robotMap.getLiftMap());
+    final private LiftSubsystem lift = new LiftSubsystem(robotMap.getLiftMap());
     final private Manipulator manipulator = new Manipulator(robotMap.getManipulatorMap());
     public static ButtonXboxController driveController = new ButtonXboxController(5);
-    
+
     private Command autonomousCommand;
     final private SendableChooser<Command> chooser = new SendableChooser<>();
 
@@ -68,10 +60,10 @@ public class Robot extends CommandRobot {
         videoSink.getProperty("compression").set(70);
         cameraBack.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
         cameraFront.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
-        //Initialize autonomous chooser
-        //chooser.setDefaultOption("Default Auto", exampleSubsystem.sampleCommand());
-        //chooser.addOption("My Auto", new MyAutoCommand());
-        //SmartDashboard.putData("Auto mode", chooser);
+        // Initialize autonomous chooser
+        // chooser.setDefaultOption("Default Auto", exampleSubsystem.sampleCommand());
+        // chooser.addOption("My Auto", new MyAutoCommand());
+        // SmartDashboard.putData("Auto mode", chooser);
         SmartDashboard.putData("Switch Cameras", switchCameras());
         SmartDashboard.putData("Good Flip", goodFlip());
         SmartDashboard.putData("Darken Cameras", darkenCameras());
@@ -136,18 +128,19 @@ public class Robot extends CommandRobot {
 
     public Command brightenCameras() {
         return new InstantCommand(() -> {
-            cameraBack.setExposureAuto();;
+            cameraBack.setExposureAuto();
+            ;
             cameraFront.setExposureAuto();
         });
     }
 
-public void assignButtons() {
-    xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.BUMPER_LEFT).whenPressed(manipulator.openBeak());
-    xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.BUMPER_RIGHT.get()).whenPressed(manipulator.closeBeak());
-    xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.A).whenPressed(manipulator.openArms());
-    xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.B).whenPressed(manipulator.closeArms());
-    xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.Y).whenPressed(maflipulator.crappyFlip());
-    driveController.getButton(ButtonXboxController.XBoxButton.A).whenPressed(drive.align());
-}
+    public void assignButtons() {
+        xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.BUMPER_LEFT).whenPressed(manipulator.openBeak());
+        xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.BUMPER_RIGHT.get()).whenPressed(manipulator.closeBeak());
+        xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.A).whenPressed(manipulator.openArms());
+        xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.B).whenPressed(manipulator.closeArms());
+        xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.Y).whenPressed(maflipulator.crappyFlip());
+        driveController.getButton(ButtonXboxController.XBoxButton.A).whenPressed(drive.align());
+    }
 
 }
