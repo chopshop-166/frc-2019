@@ -2,10 +2,10 @@ package frc.robot.subsystems;
 
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 
-import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
+import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.command.Command;
-import edu.wpi.first.wpilibj.command.InstantCommand;
+import edu.wpi.first.wpilibj.command.ConditionalCommand;
 import edu.wpi.first.wpilibj.command.PIDCommand;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.interfaces.Potentiometer;
@@ -69,15 +69,13 @@ public class Maflipulator extends Subsystem {
         if (currentPosition == MaflipulatorSide.kFront) {
             if (flipSpeed > 0 && anglePot.get() <= FRONT_UPPER_ANGLE) {
                 flipSpeed = 0;
-            }
-            if (flipSpeed < 0 && anglePot.get() >= FRONT_LOWER_ANGLE) {
+            } else if (flipSpeed < 0 && anglePot.get() >= FRONT_LOWER_ANGLE) {
                 flipSpeed = 0;
             }
         } else {
             if (flipSpeed < 0 && anglePot.get() >= BACK_UPPER_ANGLE) {
                 flipSpeed = 0;
-            }
-            if (flipSpeed > 0 && anglePot.get() <= BACK_LOWER_ANGLE) {
+            } else if (flipSpeed > 0 && anglePot.get() <= BACK_LOWER_ANGLE) {
                 flipSpeed = 0;
             }
         }
@@ -108,19 +106,13 @@ public class Maflipulator extends Subsystem {
     }
 
     public Command Flip() {
-        return new InstantCommand("Flip", this, () -> {
-
-            Command moveCommand;
-            if (currentPosition == MaflipulatorSide.kFront) {
-                moveCommand = moveToPosition(FLIP_TO_FRONT_POSITION);
-                currentPosition = MaflipulatorSide.kBack;
-            } else {
-                moveCommand = moveToPosition(FLIP_TO_BACK_POSITION);
-                currentPosition = MaflipulatorSide.kFront;
+        return new ConditionalCommand("Flip", moveToPosition(FLIP_TO_FRONT_POSITION),
+                moveToPosition(FLIP_TO_BACK_POSITION)) {
+            @Override
+            protected boolean condition() {
+                return currentPosition == MaflipulatorSide.kFront;
             }
-
-            moveCommand.start();
-        });
+        };
     }
 
     public Command crappyFlip() {
@@ -162,35 +154,8 @@ public class Maflipulator extends Subsystem {
         };
     }
 
-    public Command PIDScoringPosition() {
-        return new InstantCommand("PID Scoring Position", this, () -> {
-
-            Command moveCommand;
-            if (currentPosition == MaflipulatorSide.kFront)
-                moveCommand = moveToPosition(FRONT_SCORING_ANGLE);
-            else
-                moveCommand = moveToPosition(BACK_SCORING_ANGLE);
-
-            moveCommand.start();
-        });
-
-    }
-
-    public Command PIDPickupPosition() {
-        return new InstantCommand("PID Pickup Position", this, () -> {
-
-            Command moveCommand;
-            if (currentPosition == MaflipulatorSide.kFront)
-                moveCommand = moveToPosition(FRONT_LOWER_ANGLE);
-            else
-                moveCommand = moveToPosition(BACK_LOWER_ANGLE);
-
-            moveCommand.start();
-        });
-    }
-
     public Command moveToPosition(double targetPosition) {
-        return new PIDCommand("Move to Position", .01, .0009, 0.0, this) {
+        return new PIDCommand("Move to Position", .01, 0.0, 0.0, this) {
 
             @Override
             protected void initialize() {
@@ -220,6 +185,27 @@ public class Maflipulator extends Subsystem {
                 flipSpeed = restrict(flipSpeed);
                 flipMotor.set(flipSpeed);
             }
+        };
+    }
+
+    public Command goToScoringPosition() {
+        return new ConditionalCommand("Go To Scoring Position", moveToPosition(FRONT_SCORING_ANGLE),
+                moveToPosition(BACK_SCORING_ANGLE)) {
+            @Override
+            protected boolean condition() {
+                return currentPosition == MaflipulatorSide.kFront;
+            }
+        };
+    }
+
+    public Command PIDPickupPosition() {
+        return new ConditionalCommand("Pickup Position", moveToPosition(FRONT_LOWER_ANGLE),
+                moveToPosition(BACK_LOWER_ANGLE)) {
+            @Override
+            protected boolean condition() {
+                return currentPosition == MaflipulatorSide.kFront;
+            }
+
         };
     }
 }
