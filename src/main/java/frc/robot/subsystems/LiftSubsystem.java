@@ -77,7 +77,8 @@ public class LiftSubsystem extends Subsystem {
         }
     }
 
-    private final static double AUTO_LIFT_SPEED = 0.5;
+    private final static double AUTO_LIFT_SPEED_UP = 0.5;
+    private final static double AUTO_LIFT_SPEED_DOWN = -0.05;
 
     @Override
     public void initDefaultCommand() {
@@ -200,15 +201,14 @@ public class LiftSubsystem extends Subsystem {
                 double currentHeight = heightEncoder.getDistance();
                 brake.set(Value.kReverse);
 
-                if ((currentHeight < height.get()) && !upperLimit.get()) {
+                if (currentHeight < height.get() && isAtUpperLimit()) {
                     motor.set(0.0);
-                } else if ((currentHeight > height.get()) && !lowerLimit.get()) {
+                } else if (currentHeight > height.get() && isAtLowerLimit()) {
                     motor.set(0.0);
                 } else if (currentHeight < height.get()) {
-
-                    motor.set(AUTO_LIFT_SPEED);
+                    motor.set(AUTO_LIFT_SPEED_UP);
                 } else {
-                    motor.set(-AUTO_LIFT_SPEED);
+                    motor.set(AUTO_LIFT_SPEED_DOWN);
                 }
             }
 
