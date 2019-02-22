@@ -128,11 +128,14 @@ while(True):
     if len(filteredContours) >= 2:
         bestPair = findPairs(filteredContours)
         if bestPair != None:
+            table.putBoolean("Vision Found", True)
             rectangleMidpoint = (int((bestPair[1][0][0] + bestPair[0][0][0]) / 2), int(
                 (bestPair[1][0][1] + bestPair[0][0][1]) / 2))
             table.putNumber("Vision Correction",
                             normalizeImage(rectangleMidpoint[0]))
             cv2.circle(frame, (rectangleMidpoint), 7, (0, 255, 0), -1)
+        else:
+            table.putBoolean("Vision Found", False)
 
             # should put a value from -1 to 1 depending on pair midpoint offset from image midpoint
 
