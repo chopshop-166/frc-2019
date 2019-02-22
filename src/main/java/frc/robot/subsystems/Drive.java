@@ -58,7 +58,7 @@ public class Drive extends Subsystem {
         addChild(gyro);
     }
 
-    private final double visionCorrectionMultiplier = 2;
+    private final double visionCorrectionMultiplier = .25;
     private final double visionCorrectionSpeed = 0.2;
     private final double visionCorrectionRange = 0.1;
 

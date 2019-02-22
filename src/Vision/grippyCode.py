@@ -60,7 +60,7 @@ def findPairs(contourList):
     for contour in contourList:
         rectangleBox = cv2.minAreaRect(contour)
  
-        #if Math.abs(rectangleBox[2] - rightAngle) < deadzone:
+        #if Math.abs(rectangleBox[2] - rightAngle) > deadzone:
         if rectangleBox[2] > rightAngle - deadzone and rectangleBox[2] < rightAngle + deadzone:
             rightRectList.append(rectangleBox)
        
@@ -90,6 +90,7 @@ def findPairs(contourList):
 #coordinate i have then subtract center in pixels to find midpoint
 
 def normalizeImage(pairMidpoint):
+    global imageMidpoint
     width = frame.shape[1]
     height = frame.shape[2]
     imageMidpoint = (width / 2)
@@ -141,40 +142,4 @@ while(True):
 cv2.waitKey(0)
 cap.release()
 
-
-"""
-old method for finding angles
-
-totalX, totalY = 0, 0
-
- for contour in filteredContours:
-        rect = cv2.minAreaRect(contour)
-        box = cv2.boxPoints(rect)
-        box = np.int0(box)
-        cv2.drawContours(frame,[box],0,(0,0,255),2)
-
-        cX,cY = rect[0]
-        cX = int(cX)
-        cY = int(cY)
-        theta = rect[2]
-        #print ("center and angles: ({},{}), {}".format(cX,cY, (theta)))
-
-        vX = int(math.cos(math.radians(theta)) * 70 + cX)
-        vY = int(math.sin(math.radians(theta)) * 70 + cY)
-        wX = int(math.cos(math.radians(theta)) * -70 + cX)
-        wY = int(math.sin(math.radians(theta)) * -70 + cY)
-        #Draws contour lines based off angles of contours
-        cv2.line(frame, (cX,cY), (vX,vY), (255,0,255), 2)
-        cv2.line(frame, (cX,cY), (wX,wY), (255,0,255), 2)
-
-        totalX += cX
-        totalY += cY
-
-        #print("contour points {},{}".format(cX,cY))
-        cv2.circle(frame, (cX, cY), 7, (255, 0, 0), -1)
-
-        #cv2.drawContours(frame, [contour], -1, (255, 255, 0), 2)
-"""
-
-
-
+cv2.destroyAllWindows()
