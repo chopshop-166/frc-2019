@@ -47,10 +47,12 @@ public class LiftSubsystem extends Subsystem {
         addChild(lowerLimit);
         addChild(upperLimit);
     }
+
     private void registeredCommands() {
         SmartDashboard.putData("Loading Station", autoMoveLift(Heights.kLoadingStation));
         SmartDashboard.putData("Loading Station", autoMoveLift(Heights.kRocketCargoMid));
     }
+
     public enum Heights {
         // Loading Station
         kLoadingStation(19.0),
@@ -68,9 +70,8 @@ public class LiftSubsystem extends Subsystem {
         kFloorLoad(0.0),
         // cargo ship cargo
         kCargoShipCargo(39.75),
-        //Height needed to flip over
+        // Height needed to flip over
         kLiftFlipHeight(25);
-        
 
         private double value;
 
@@ -88,7 +89,15 @@ public class LiftSubsystem extends Subsystem {
     @Override
     public void initDefaultCommand() {
         // Set the default command for a subsystem here.
-         setDefaultCommand(moveLift());
+        setDefaultCommand(moveLift());
+    }
+
+    protected boolean isAtUpperLimit() {
+        return !upperLimit.get();
+    }
+
+    protected boolean isAtLowerLimit() {
+        return !lowerLimit.get();
     }
 
     public Command engageBrake() {
@@ -116,10 +125,10 @@ public class LiftSubsystem extends Subsystem {
             @Override
             protected void usePIDOutput(final double heightCorrection) {
                 double liftSpeed = heightCorrection;
-                if (!upperLimit.get() && liftSpeed > 0) {
+                if (isAtUpperLimit() && liftSpeed > 0) {
                     liftSpeed = 0;
                 }
-                if (!lowerLimit.get() && liftSpeed < 0) {
+                if (isAtLowerLimit() && liftSpeed < 0) {
                     liftSpeed = 0;
                 }
                 motor.set(liftSpeed);
@@ -150,25 +159,24 @@ public class LiftSubsystem extends Subsystem {
             protected void execute() {
                 SmartDashboard.putNumber("Lift Height", heightEncoder.getDistance());
                 SmartDashboard.putNumber("Lift Thing", 5);
-                //needs to go 25 arbitrary units up to flip
+                // needs to go 25 arbitrary units up to flip
                 double liftSpeed;
                 liftSpeed = -Robot.xBoxCoPilot.getY(Hand.kRight);
-                
+
                 if (Math.abs(liftSpeed) <= .1) {
                     liftSpeed = 0;
                 }
 
-               // SmartDashboard.putNumber("Lift Faults", motor.getFaults());
+                // SmartDashboard.putNumber("Lift Faults", motor.getFaults());
                 SmartDashboard.putNumber("Lift Before", liftSpeed);
                 // Called repeatedly when this Command is scheduled to run
-                if ((!upperLimit.get()) && (liftSpeed > 0)) {
+                if (isAtUpperLimit() && (liftSpeed > 0)) {
                     liftSpeed = 0;
                 }
-                if ((!lowerLimit.get()) && (liftSpeed < 0)) {
+                if (isAtLowerLimit() && liftSpeed < 0) {
                     liftSpeed = 0;
                     heightEncoder.reset();
                 }
-
 
                 if (Math.abs(liftSpeed) <= 0.05) {
                     brake.set(Value.kForward);
@@ -182,39 +190,6 @@ public class LiftSubsystem extends Subsystem {
             protected boolean isFinished() {
                 // Make this return true when this Command no longer needs to run execute()
                 return false;
-            }
-        };
-    }
-
-    public Command flipOpp() {
-        // The command is named "Lift to Opposite" and requires this subsystem.
-        return new Command("Flip to Opposite", this) {
-            @Override
-            protected void initialize() {
-                // Called just before this Command runs the first time
-            }
-
-            @Override
-            protected void execute() {
-                // Called repeatedly when this Command is scheduled to run
-            }
-
-            @Override
-            protected boolean isFinished() {
-                // Make this return true when this Command no longer needs to run execute()
-                return false;
-            }
-
-            @Override
-            protected void end() {
-                // Called once after isFinished returns true
-            }
-
-            // Called when another command which requires one or more of the same
-            // subsystems is scheduled to run
-            @Override
-            protected void interrupted() {
-                end();
             }
         };
     }
