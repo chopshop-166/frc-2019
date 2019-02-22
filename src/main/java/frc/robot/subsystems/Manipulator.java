@@ -36,6 +36,7 @@ public class Manipulator extends Subsystem {
         SmartDashboard.putData(openBeak());
         SmartDashboard.putData(closeBeak());
     }
+
     public void addChildren() {
         addChild(pivotPointsMotor);
         addChild(rollersMotor);
@@ -44,6 +45,7 @@ public class Manipulator extends Subsystem {
         addChild(foldedBackLimitSwitch);
         addChild(intakePositionLimitSwitch);
     }
+
     @Override
     public void initDefaultCommand() {
         // Set the default command for a subsystem here.
@@ -115,7 +117,7 @@ public class Manipulator extends Subsystem {
             }
 
             @Override
-            protected void end() {  
+            protected void end() {
                 pivotPointsMotor.set(0);
             }
         };

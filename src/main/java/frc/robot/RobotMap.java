@@ -45,7 +45,7 @@ public interface RobotMap {
 
     ManipulatorMap getManipulatorMap();
 
-    public interface ManipulatorMap {
+    interface ManipulatorMap {
 
         SendableSpeedController getpivotPointsMotor();
 

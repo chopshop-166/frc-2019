@@ -142,12 +142,12 @@ public class Robot extends CommandRobot {
     }
 
 public void assignButtons() {
-    Robot.xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.BUMPER_LEFT.get()).whenPressed(manipulator.openBeak());
-    Robot.xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.BUMPER_RIGHT.get()).whenPressed(manipulator.closeBeak());
-    Robot.xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.A.get()).whenPressed(manipulator.openArms());
-    Robot.xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.B.get()).whenPressed(manipulator.closeArms());
-    Robot.xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.Y.get()).whenPressed(maflipulator.crappyFlip());
-    Robot.driveController.getButton(ButtonXboxController.XBoxButton.A.get()).whenPressed(drive.align());
+    xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.BUMPER_LEFT).whenPressed(manipulator.openBeak());
+    xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.BUMPER_RIGHT.get()).whenPressed(manipulator.closeBeak());
+    xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.A).whenPressed(manipulator.openArms());
+    xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.B).whenPressed(manipulator.closeArms());
+    xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.Y).whenPressed(maflipulator.crappyFlip());
+    driveController.getButton(ButtonXboxController.XBoxButton.A).whenPressed(drive.align());
 }
 
 }

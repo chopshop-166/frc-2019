@@ -29,7 +29,6 @@ public class LiftSubsystem extends Subsystem {
     private SparkMaxCounter heightEncoder;
     private DigitalInput lowerLimit;
     private DigitalInput upperLimit;
-    // private CANSparkMax motor;
 
     public LiftSubsystem(final RobotMap.LiftMap map) {
         super();
@@ -39,6 +38,7 @@ public class LiftSubsystem extends Subsystem {
         lowerLimit = map.getLowerLimit();
         upperLimit = map.getUpperLimit();
         addChildren();
+        registeredCommands();
     }    
     public void addChildren() {
         addChild(motor);
