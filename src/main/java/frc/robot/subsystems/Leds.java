@@ -7,6 +7,7 @@ import com.mach.LightDrive.LightDriveCAN;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.command.Subsystem;
 
 public class Leds extends Subsystem {
@@ -88,40 +89,17 @@ public class Leds extends Subsystem {
     }
 
     public Command turnOnVisionLights() {
-        return new Command("Turn on the color known as vision", this) {
-            @Override
-            protected void initialize() {
-                // Called repeatedly when this Command is scheduled to run
-                ldrive_can.SetColor(3, Color.GREEN, 1);
-                ldrive_can.Update();
-            }
-
-            @Override
-            protected boolean isFinished() {
-                // Make this return true when this Command no longer needs to run execute()
-                return true;
-            }
-
-        };
+        return new InstantCommand("Retract Piston", this, () -> {
+            ldrive_can.SetColor(3, Color.GREEN, 1);
+        });
     }
 
     public Command turnOffVisionLights() {
-        return new Command("Turn off the color known as vision", this) {
-            @Override
-            protected void initialize() {
-                // Called once after isFinished returns true
-                ldrive_can.SetColor(3, Color.OFF, 1);
-
-            }
-
-            @Override
-            protected boolean isFinished() {
-                // Make this return true when this Command no longer needs to run execute()
-                return true;
-            }
-
-        };
+        return new InstantCommand("Retract Piston", this, () -> {
+            ldrive_can.SetColor(3, Color.OFF, 1);
+        });
     }
+
 
     public Command turnOnGreen() {
         // The command is named "Sample Command" and requires this subsystem.
