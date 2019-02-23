@@ -189,7 +189,7 @@ public class LiftSubsystem extends Subsystem {
                 if (currentHeight < target.get()) {
                     restrictedMotorSet(AUTO_LIFT_SPEED_UP);
                 } else {
-                    restrictedMotorSet(-AUTO_LIFT_SPEED_DOWN);
+                    restrictedMotorSet(AUTO_LIFT_SPEED_DOWN);
                 }
             }
 
@@ -207,6 +207,32 @@ public class LiftSubsystem extends Subsystem {
             @Override
             protected void end() {
                 // Called once after isFinished returns true
+                restrictedMotorSet(0);
+            }
+        };
+    }
+
+    public Command goToAtLeast(Heights target) {
+        // The command is named "Go to a Specific Height" and requires this subsystem.
+        return new Command("Go at Least to a Specific Height", this) {
+            @Override
+            protected void execute() {
+                restrictedMotorSet(AUTO_LIFT_SPEED_UP);
+            }
+
+            @Override
+            protected boolean isFinished() {
+                // Make this return true when this Command no longer needs to run execute()
+                double currentHeight = heightEncoder.getDistance();
+                if (currentHeight > target.get()) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+
+            @Override
+            protected void end() {
                 restrictedMotorSet(0);
             }
         };
