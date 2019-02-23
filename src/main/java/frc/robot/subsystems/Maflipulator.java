@@ -23,12 +23,18 @@ public class Maflipulator extends Subsystem {
     private final static double FRONT_SCORING_ANGLE = 0.25;
     private final static double FLIP_TO_FRONT_POSITION = FRONT_SCORING_ANGLE;
     private final static double FRONT_UPPER_ANGLE = 0.69;
-    private final static double BACK_LOWER_ANGLE = .099;
+    private final static double BACK_LOWER_ANGLE = .13;
     private final static double BACK_SCORING_ANGLE = 0.75;
     private final static double FLIP_TO_BACK_POSITION = BACK_SCORING_ANGLE;
     private final static double BACK_UPPER_ANGLE = .42;
+    private final static double VERTICAL_ANGLE = .6;
 
     private final static double FLIP_MOTOR_SPEED = 1;
+    
+    private final static double FLIP_RAISING_SPEED = .75;
+    private final static double FLIP_DROPPING_SPEED = .2;
+
+    private final static double DEADBAND = .1;
 
     private MaflipulatorSide currentPosition;
 
@@ -38,7 +44,7 @@ public class Maflipulator extends Subsystem {
     double angleCorrection;
     PIDController anglePID;
 
-    public Maflipulator(final RobotMap.MaflipulatorMap map) { // NOPMD
+    public Maflipulator(final RobotMap.MaflipulatorMap map) {
         super();
         flipMotor = map.getFlipMotor();
         anglePot = map.getMaflipulatorPot();
@@ -47,11 +53,12 @@ public class Maflipulator extends Subsystem {
             angleCorrection = value;
         });
 
-        if (anglePot.get() > 0.5)
+        if (anglePot.get() > VERTICAL_ANGLE)
             currentPosition = MaflipulatorSide.kFront;
         else
             currentPosition = MaflipulatorSide.kBack;
 
+        addChildren();
     }
 
     public void addChildren() {
@@ -91,7 +98,11 @@ public class Maflipulator extends Subsystem {
             @Override
             protected void execute() {
                 double flipSpeed = Robot.xBoxCoPilot.getY(Hand.kLeft) * FLIP_MOTOR_SPEED;
+                flipSpeed *= Math.abs(flipSpeed);
                 flipSpeed = restrict(flipSpeed);
+                if (Math.abs(flipSpeed) < DEADBAND) {
+                    flipSpeed = 0;
+                }
                 flipMotor.set(flipSpeed);
                 SmartDashboard.putString("Side", currentPosition.toString());
                 SmartDashboard.putNumber("Flip Speed", flipSpeed);
@@ -118,24 +129,34 @@ public class Maflipulator extends Subsystem {
     public Command crappyFlip() {
         return new Command("Crappy Flip", this) {
             @Override
-            protected void initialize() {
+            protected void execute() {
+
                 if (currentPosition == MaflipulatorSide.kFront) {
-                    flipMotor.set(0.75);
-
+                    if (anglePot.get() >= VERTICAL_ANGLE) {
+                        flipMotor.set(FLIP_DROPPING_SPEED);
+                    } else {
+                        flipMotor.set(FLIP_RAISING_SPEED);
+                    }
                 } else {
-                    flipMotor.set(-0.75);
-
+                    if (anglePot.get() <= VERTICAL_ANGLE) {
+                        flipMotor.set(-FLIP_DROPPING_SPEED);
+                    } else {
+                        flipMotor.set(-FLIP_RAISING_SPEED);
+                    }
                 }
             }
 
             @Override
             protected boolean isFinished() {
 
-                if (anglePot.get() <= FRONT_SCORING_ANGLE && currentPosition == MaflipulatorSide.kFront) {
+                if (anglePot.get() <= FRONT_SCORING_ANGLE && currentPosition == MaflipulatorSide.kBack) {
+                    System.out.println("Finished A");
                     return true;
                 }
 
-                if (anglePot.get() >= BACK_SCORING_ANGLE && currentPosition == MaflipulatorSide.kBack) {
+                if (anglePot.get() >= BACK_SCORING_ANGLE && currentPosition == MaflipulatorSide.kFront) {
+                    //Finished B when "Y button" was pressed on 2/22/19 at end of night: Arms were on front and arms didnt angle up
+                    System.out.println("Finished B");
                     return true;
                 }
 

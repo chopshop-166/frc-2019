@@ -115,7 +115,8 @@ public class Robot extends CommandRobot {
 
     public Command goodFlip() {
         CommandChain retValue = new CommandChain("Good Flip");
-        retValue.then(lift.goToHeight(LiftSubsystem.Heights.kLiftFlipHeight)).then(maflipulator.crappyFlip());
+
+        retValue.then(lift.goToAtLeast(LiftSubsystem.Heights.kLiftFlipHeight)).then(maflipulator.crappyFlip());
         return retValue;
     }
 
@@ -138,7 +139,7 @@ public class Robot extends CommandRobot {
         xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.BUMPER_RIGHT.get()).whenPressed(manipulator.closeBeak());
         xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.A).whenPressed(manipulator.openArms());
         xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.B).whenPressed(manipulator.closeArms());
-        xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.Y).whenPressed(maflipulator.crappyFlip());
+        xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.Y).whenPressed(goodFlip());
         driveController.getButton(ButtonXboxController.XBoxButton.A).whenPressed(drive.align());
     }
 

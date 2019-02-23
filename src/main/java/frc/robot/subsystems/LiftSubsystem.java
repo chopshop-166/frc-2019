@@ -84,6 +84,7 @@ public class LiftSubsystem extends Subsystem {
         }
         if (liftSpeed < 0 && !lowerLimit.get()) {
             liftSpeed = 0;
+            heightEncoder.reset();
 
         }
         if (Math.abs(liftSpeed) <= 0.05) {
@@ -159,13 +160,11 @@ public class LiftSubsystem extends Subsystem {
             @Override
             protected void execute() {
                 SmartDashboard.putNumber("Lift Height", heightEncoder.getDistance());
-                SmartDashboard.putNumber("Lift Thing", 5);
                 double liftSpeed = -Robot.xBoxCoPilot.getY(Hand.kRight);
                 if (Math.abs(liftSpeed) <= .1) {
                     liftSpeed = 0;
                 }
                 restrictedMotorSet(liftSpeed);
-                heightEncoder.reset();
             }
 
             @Override
@@ -186,6 +185,7 @@ public class LiftSubsystem extends Subsystem {
             @Override
             protected void execute() {
                 double currentHeight = heightEncoder.getDistance();
+                SmartDashboard.putNumber("Lift Height", currentHeight);
                 if (currentHeight < target.get()) {
                     restrictedMotorSet(AUTO_LIFT_SPEED_UP);
                 } else {
