@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 public class Leds extends Subsystem {
     LightDriveCAN ldrive_can;
 
-    public Leds(final RobotMap map) { // NOPMD
+    public Leds() { // NOPMD
         super();
         // Take values that the subsystem needs from the map, and store them in the
         // class
@@ -25,7 +25,7 @@ public class Leds extends Subsystem {
 
     @Override
     public void initDefaultCommand() {
-
+        setTeamColor();
     }
 
     private boolean isBlueTeam() {
@@ -37,48 +37,193 @@ public class Leds extends Subsystem {
         }
     }
 
-    public Command setTeamColor(boolean turnOn) {
-        return new InstantCommand("turn on team color", this, () -> {
-            if (isBlueTeam()) {
-                ldrive_can.SetColor(1, Color.BLUE, (float) 0.8);
+    /*
+     * public Command setTeamColor(boolean turnOn) { return new
+     * InstantCommand("turn on team color", this, () -> { if (isBlueTeam()) {
+     * ldrive_can.SetColor(1, Color.BLUE, (float) 0.8);
+     * 
+     * } else { ldrive_can.SetColor(3, Color.RED, (float) 0.8); }
+     * ldrive_can.Update(); }); }
+     */
+    public Command setTeamColor() {
+        // The command is named "Sample Command" and requires this subsystem.
+        return new Command("Set team color", this) {
 
-            } else {
-                ldrive_can.SetColor(3, Color.RED, (float) 0.8);
+            protected void initialize() {
+                // Called just before this Command runs the first time
+                if (isBlueTeam()) {
+                    ldrive_can.SetColor(1, Color.BLUE, (float) 0.8);
+
+                } else {
+                    ldrive_can.SetColor(3, Color.RED, (float) 0.8);
+                }
+                ldrive_can.Update();
             }
-            ldrive_can.Update();
-        });
+
+            @Override
+            protected boolean isFinished() {
+                // Make this return true when this Command no longer needs to run execute()
+                return false;
+            }
+
+            @Override
+            protected void end() {
+                // Called once after isFinished returns true
+            }
+
+            // Called when another command which requires one or more of the same
+            // subsystems is scheduled to run
+            @Override
+            protected void interrupted() {
+                end();
+            }
+        };
     }
 
-    public Command turnOnGreen(boolean turnOn) {
-        return new InstantCommand("turn on verde", this, () -> {
-            ldrive_can.SetColor(2, Color.GREEN, (float) 0.8);
+    public Command turnOnGreen() {
+        // The command is named "Sample Command" and requires this subsystem.
+        return new Command("Turn on the color known as verde", this) {
 
-            ldrive_can.Update();
-        });
+            protected void initialize() {
+                // Called just before this Command runs the first time
+
+            }
+
+            @Override
+            protected void execute() {
+                // Called repeatedly when this Command is scheduled to run
+                ldrive_can.SetColor(2, Color.GREEN, (float) 0.8);
+                ldrive_can.Update();
+            }
+
+            @Override
+            protected boolean isFinished() {
+                // Make this return true when this Command no longer needs to run execute()
+                return false;
+            }
+
+            @Override
+            protected void end() {
+                // Called once after isFinished returns true
+            }
+
+            // Called when another command which requires one or more of the same
+            // subsystems is scheduled to run
+            @Override
+            protected void interrupted() {
+                end();
+            }
+        };
     }
 
-    public Command turnOnRed(boolean turnOn) {
-        return new InstantCommand("turn on red", this, () -> {
-            ldrive_can.SetColor(2, Color.RED, (float) 0.8);
+    public Command turnOnRed() {
+        // The command is named "Sample Command" and requires this subsystem.
+        return new Command("Turn on the color known as rojo", this) {
 
-            ldrive_can.Update();
-        });
+            protected void initialize() {
+                // Called just before this Command runs the first time
+
+            }
+
+            @Override
+            protected void execute() {
+                // Called repeatedly when this Command is scheduled to run
+                ldrive_can.SetColor(3, Color.RED, (float) 0.8);
+                ldrive_can.Update();
+
+            }
+
+            @Override
+            protected boolean isFinished() {
+                // Make this return true when this Command no longer needs to run execute()
+                return false;
+            }
+
+            @Override
+            protected void end() {
+                // Called once after isFinished returns true
+            }
+
+            // Called when another command which requires one or more of the same
+            // subsystems is scheduled to run
+            @Override
+            protected void interrupted() {
+                end();
+            }
+        };
     }
 
-    public Command turnOnBlue(boolean turnOn) {
-        return new InstantCommand("turn on azul", this, () -> {
-            ldrive_can.SetColor(2, Color.GREEN, (float) 0.8);
+    public Command turnOnBlue() {
+        // The command is named "Sample Command" and requires this subsystem.
+        return new Command("Turn on the color known as Azul", this) {
 
-            ldrive_can.Update();
-        });
+            protected void initialize() {
+                // Called just before this Command runs the first time
+
+            }
+
+            @Override
+            protected void execute() {
+                // Called repeatedly when this Command is scheduled to run
+                ldrive_can.SetColor(1, Color.BLUE, (float) 0.8);
+                ldrive_can.Update();
+
+            }
+
+            @Override
+            protected boolean isFinished() {
+                // Make this return true when this Command no longer needs to run execute()
+                return false;
+            }
+
+            @Override
+            protected void end() {
+                // Called once after isFinished returns true
+            }
+
+            // Called when another command which requires one or more of the same
+            // subsystems is scheduled to run
+            @Override
+            protected void interrupted() {
+                end();
+            }
+        };
     }
 
-    public Command killDaLights(boolean turnOn) {
-        return new InstantCommand("mata los lightos", this, () -> {
-            ldrive_can.SetColor(2, Color.OFF, (float) 0.8);
+    public Command killAllLights() {
+        // The command is named "Sample Command" and requires this subsystem.
+        return new Command("Turn on the color known as Azul", this) {
 
-            ldrive_can.Update();
-        });
+            protected void initialize() {
+                // Called just before this Command runs the first time
+
+            }
+
+            @Override
+            protected void execute() {
+                // Called repeatedly when this Command is scheduled to run
+                ldrive_can.SetColor(1, Color.OFF);
+
+            }
+
+            @Override
+            protected boolean isFinished() {
+                // Make this return true when this Command no longer needs to run execute()
+                return false;
+            }
+
+            @Override
+            protected void end() {
+                // Called once after isFinished returns true
+            }
+
+            // Called when another command which requires one or more of the same
+            // subsystems is scheduled to run
+            @Override
+            protected void interrupted() {
+                end();
+            }
+        };
     }
 
     public Command justBreathe(DigitalOutputDutyCycle color, int frequency) {

@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.maps.CurrentRobot;
 import frc.robot.subsystems.Drive;
+import frc.robot.subsystems.Leds;
 import frc.robot.subsystems.LiftSubsystem;
 import frc.robot.subsystems.Maflipulator;
 import frc.robot.subsystems.Manipulator;
@@ -34,7 +35,7 @@ public class Robot extends CommandRobot {
     final private LiftSubsystem lift = new LiftSubsystem(robotMap.getLiftMap());
     final private Manipulator manipulator = new Manipulator(robotMap.getManipulatorMap());
     public static ButtonXboxController driveController = new ButtonXboxController(5);
-
+    public static Leds leds = new Leds();
     private Command autonomousCommand;
     final private SendableChooser<Command> chooser = new SendableChooser<>();
 

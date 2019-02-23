@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.command.WaitCommand;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Robot;
 import frc.robot.RobotMap;
 
 public class Manipulator extends Subsystem {
@@ -50,6 +51,7 @@ public class Manipulator extends Subsystem {
     public void initDefaultCommand() {
         // Set the default command for a subsystem here.
         // setDefaultCommand(new MySpecialCommand());
+
     }
 
     // #region Command Chains
@@ -57,6 +59,37 @@ public class Manipulator extends Subsystem {
         CommandChain retValue = new CommandChain("Pick up Cargo");
         retValue.then(openBeak()).then(rollerIntake()).then(closeArms()).then(gamepieceCheck()).then(rollerStop());
         return retValue;
+    }
+
+    /*
+     * public Command ledHatchPanel() { if (gamepieceLimitSwitch.get()) { return new
+     * InstantCommand("turn on the green color", this, () -> {
+     * Robot.leds.turnOnGreen(true); });
+     * 
+     * } }
+     */
+    public Command ledHatchPanel() {
+        return new Command("turn on green", this) {
+            @Override
+            protected void execute() {
+                if (gamepieceLimitSwitch.get()) {
+                    Robot.leds.turnOnGreen(true);
+                } else {
+                    Robot.leds.turnOnGreen(false);
+                }
+            }
+
+            @Override
+            protected boolean isFinished() {
+                // return foldedBackLimitSwitch.get();
+                return false;
+            }
+
+            @Override
+            protected void end() {
+                // pivotPointsMotor.set(0);
+            }
+        };
     }
 
     public Command releaseCargo() {
