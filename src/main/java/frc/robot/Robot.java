@@ -141,8 +141,16 @@ public class Robot extends CommandRobot {
         xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.A).whenPressed(manipulator.openArms());
         xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.B).whenPressed(manipulator.closeArms());
         xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.Y).whenPressed(goodFlip());
-        driveController.getButton(ButtonXboxController.XBoxButton.A).whenPressed(drive.align());
+        driveController.getButton(ButtonXboxController.XBoxButton.A).whenPressed(align());
         manipulator.switchTrigger.whileActive(leds.turnOnGreen());
+    }
+
+    // this is the real command that aligns the robot. the other align command will
+    // not work as vision will not be on
+    public Command align() {
+        CommandChain retValue = new CommandChain("Align robot to score");
+        retValue.then(leds.turnOnVisionLights()).then(drive.turnToAlign()).then(leds.turnOffVisionLights());
+        return retValue;
     }
 
 }

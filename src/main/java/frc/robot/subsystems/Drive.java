@@ -175,9 +175,9 @@ public class Drive extends Subsystem {
     // // }
     // };
     // }
-
-    public Command align() {
-        return new Command("align", this) {
+// command used for command chain align
+    public Command turnToAlign() {
+        return new Command("Command used for command chain align", this) {
 
             NetworkTableInstance inst = NetworkTableInstance.getDefault();
             NetworkTable table = inst.getTable("Vision Correction Table");
@@ -222,4 +222,5 @@ public class Drive extends Subsystem {
                 .then(goXDistanceForward(1));
         return retValue;
     }
+
 }
