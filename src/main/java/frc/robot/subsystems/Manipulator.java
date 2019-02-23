@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.command.WaitCommand;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 import frc.robot.RobotMap;
+import frc.robot.triggers.LimitSwitchTrigger;
 
 public class Manipulator extends Subsystem {
 
@@ -22,6 +23,7 @@ public class Manipulator extends Subsystem {
     private DigitalInput gamepieceLimitSwitch;
     private DigitalInput foldedBackLimitSwitch;
     private DigitalInput intakePositionLimitSwitch;
+    public LimitSwitchTrigger switchTrigger;
 
     public Manipulator(final RobotMap.ManipulatorMap map) { // NOPMD
         super();
@@ -33,6 +35,7 @@ public class Manipulator extends Subsystem {
         gamepieceLimitSwitch = map.getGamepieceLimitSwitch();
         foldedBackLimitSwitch = map.getfoldedBackLimitSwitch();
         intakePositionLimitSwitch = map.getintakePositionLimitSwitch();
+        switchTrigger = new LimitSwitchTrigger(gamepieceLimitSwitch);
         addChildren();
         SmartDashboard.putData(openBeak());
         SmartDashboard.putData(closeBeak());
@@ -68,29 +71,6 @@ public class Manipulator extends Subsystem {
      * 
      * } }
      */
-    public Command ledHatchPanel() {
-        return new Command("turn on green", this) {
-            @Override
-            protected void execute() {
-                if (gamepieceLimitSwitch.get()) {
-                    Robot.leds.turnOnGreen(true);
-                } else {
-                    Robot.leds.turnOnGreen(false);
-                }
-            }
-
-            @Override
-            protected boolean isFinished() {
-                // return foldedBackLimitSwitch.get();
-                return false;
-            }
-
-            @Override
-            protected void end() {
-                // pivotPointsMotor.set(0);
-            }
-        };
-    }
 
     public Command releaseCargo() {
         CommandChain retValue = new CommandChain("Release Cargo");

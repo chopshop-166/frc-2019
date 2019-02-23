@@ -69,6 +69,14 @@ public class Leds extends Subsystem {
             @Override
             protected void end() {
                 // Called once after isFinished returns true
+                if (isBlueTeam()) {
+                    ldrive_can.SetColor(1, Color.OFF, (float) 0.8);
+
+                } else {
+                    ldrive_can.SetColor(3, Color.OFF, (float) 0.8);
+                }
+                ldrive_can.Update();
+
             }
 
             // Called when another command which requires one or more of the same
@@ -77,17 +85,13 @@ public class Leds extends Subsystem {
             protected void interrupted() {
                 end();
             }
+
         };
     }
 
     public Command turnOnGreen() {
         // The command is named "Sample Command" and requires this subsystem.
         return new Command("Turn on the color known as verde", this) {
-
-            protected void initialize() {
-                // Called just before this Command runs the first time
-
-            }
 
             @Override
             protected void execute() {
@@ -105,25 +109,16 @@ public class Leds extends Subsystem {
             @Override
             protected void end() {
                 // Called once after isFinished returns true
+                ldrive_can.SetColor(2, Color.OFF, (float) 0.8);
+
             }
 
-            // Called when another command which requires one or more of the same
-            // subsystems is scheduled to run
-            @Override
-            protected void interrupted() {
-                end();
-            }
         };
     }
 
     public Command turnOnRed() {
         // The command is named "Sample Command" and requires this subsystem.
         return new Command("Turn on the color known as rojo", this) {
-
-            protected void initialize() {
-                // Called just before this Command runs the first time
-
-            }
 
             @Override
             protected void execute() {
@@ -142,25 +137,16 @@ public class Leds extends Subsystem {
             @Override
             protected void end() {
                 // Called once after isFinished returns true
+                ldrive_can.SetColor(2, Color.OFF, (float) 0.8);
+
             }
 
-            // Called when another command which requires one or more of the same
-            // subsystems is scheduled to run
-            @Override
-            protected void interrupted() {
-                end();
-            }
         };
     }
 
     public Command turnOnBlue() {
         // The command is named "Sample Command" and requires this subsystem.
         return new Command("Turn on the color known as Azul", this) {
-
-            protected void initialize() {
-                // Called just before this Command runs the first time
-
-            }
 
             @Override
             protected void execute() {
@@ -178,26 +164,17 @@ public class Leds extends Subsystem {
 
             @Override
             protected void end() {
+                ldrive_can.SetColor(2, Color.OFF, (float) 0.8);
+
                 // Called once after isFinished returns true
             }
 
-            // Called when another command which requires one or more of the same
-            // subsystems is scheduled to run
-            @Override
-            protected void interrupted() {
-                end();
-            }
         };
     }
 
     public Command killAllLights() {
         // The command is named "Sample Command" and requires this subsystem.
         return new Command("Turn on the color known as Azul", this) {
-
-            protected void initialize() {
-                // Called just before this Command runs the first time
-
-            }
 
             @Override
             protected void execute() {
@@ -215,13 +192,6 @@ public class Leds extends Subsystem {
             @Override
             protected void end() {
                 // Called once after isFinished returns true
-            }
-
-            // Called when another command which requires one or more of the same
-            // subsystems is scheduled to run
-            @Override
-            protected void interrupted() {
-                end();
             }
         };
     }
