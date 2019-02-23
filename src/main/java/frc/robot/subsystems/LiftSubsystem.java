@@ -47,22 +47,22 @@ public class LiftSubsystem extends Subsystem {
     }
 
     public enum Heights {
-        // Loading Station
-        kLoadingStation(19.0),
-        // Low rocket cargo
-        kRocketCargoLow(27.5),
-        // Middle rocket hatch
-        kRocketHatchMid(47.0),
-        // Middle rocket cargo
-        kRocketCargoMid(55.5),
-        // Top rocket hatch
-        kRocketHatchHigh(63.0),
-        // Top rocket cargo
-        kRocketCargoHigh(83.5),
+        // Loading Station 19"
+        kLoadingStation(7.2),
+        // Low rocket cargo 27.5"
+        kRocketCargoLow(13.4),
+        // Middle rocket hatch 47"
+        kRocketHatchMid(45.1),
+        // Middle rocket cargo 55"
+        kRocketCargoMid(63.4),
+        // Top rocket hatch 75" (MAX HEIGHT)
+        kRocketHatchHigh(92.1),
+        // Top rocket cargo 83.5"
+        kRocketCargoHigh(0),
         // floor load
         kFloorLoad(0.0),
-        // cargo ship cargo
-        kCargoShipCargo(39.75),
+        // cargo ship cargo 39.75"
+        kCargoShipCargo(0),
         // Height needed to flip over
         kLiftFlipHeight(25);
 
@@ -197,7 +197,8 @@ public class LiftSubsystem extends Subsystem {
             protected boolean isFinished() {
                 // Make this return true when this Command no longer needs to run execute()
                 double currentHeight = heightEncoder.getDistance();
-                if (Math.abs(target.get() - currentHeight) < 1.0) {
+                if (Math.abs(target.get() - currentHeight) < 1.0
+                    || (target.get() > currentHeight && upperLimit.get())) {
                     return true;
                 } else {
                     return false;
