@@ -35,7 +35,7 @@ public class Robot extends CommandRobot {
     final private LiftSubsystem lift = new LiftSubsystem(robotMap.getLiftMap());
     final private Manipulator manipulator = new Manipulator(robotMap.getManipulatorMap());
     public static ButtonXboxController driveController = new ButtonXboxController(5);
-    public static Leds leds = new Leds();
+    // public static Leds leds = new Leds();
     private Command autonomousCommand;
     final private SendableChooser<Command> chooser = new SendableChooser<>();
 
@@ -142,7 +142,7 @@ public class Robot extends CommandRobot {
         xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.B).whenPressed(manipulator.closeArms());
         xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.Y).whenPressed(goodFlip());
         driveController.getButton(ButtonXboxController.XBoxButton.A).whenPressed(drive.align());
-        manipulator.switchTrigger.whileActive(leds.turnOnGreen());
+        // manipulator.switchTrigger.whileActive(leds.turnOnGreen());
     }
 
 }

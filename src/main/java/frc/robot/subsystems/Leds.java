@@ -19,7 +19,7 @@ public class Leds extends Subsystem {
         // Take values that the subsystem needs from the map, and store them in the
         // class
 
-        LightDriveCAN ldrive_can = new LightDriveCAN();
+        ldrive_can = new LightDriveCAN();
 
     }
 

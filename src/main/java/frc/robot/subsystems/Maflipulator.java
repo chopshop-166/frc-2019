@@ -19,15 +19,19 @@ public class Maflipulator extends Subsystem {
         kFront, kBack;
     }
 
-    private final static double FRONT_LOWER_ANGLE = 0.94;
-    private final static double FRONT_SCORING_ANGLE = 0.25;
+    //private final static double FRONT_LOWER_ANGLE = 0.94;
+    private final static double FRONT_SCORING_ANGLE = 0.88;
     private final static double FLIP_TO_FRONT_POSITION = FRONT_SCORING_ANGLE;
-    private final static double FRONT_UPPER_ANGLE = 0.69;
-    private final static double BACK_LOWER_ANGLE = .13;
-    private final static double BACK_SCORING_ANGLE = 0.75;
+    private final static double FRONT_UPPER_ANGLE = 0.73;
+    private final static double FRONT_LOWER_ANGLE = FRONT_SCORING_ANGLE;
+
+    //private final static double BACK_LOWER_ANGLE = .14;
+    private final static double BACK_SCORING_ANGLE = 0.19;
     private final static double FLIP_TO_BACK_POSITION = BACK_SCORING_ANGLE;
     private final static double BACK_UPPER_ANGLE = .42;
-    private final static double VERTICAL_ANGLE = .6;
+    private final static double BACK_LOWER_ANGLE = BACK_SCORING_ANGLE;
+
+    private final static double VERTICAL_ANGLE = .55;
 
     private final static double FLIP_MOTOR_SPEED = 1;
     
@@ -132,13 +136,13 @@ public class Maflipulator extends Subsystem {
             protected void execute() {
 
                 if (currentPosition == MaflipulatorSide.kFront) {
-                    if (anglePot.get() >= VERTICAL_ANGLE) {
+                    if (anglePot.get() <= VERTICAL_ANGLE) {
                         flipMotor.set(FLIP_DROPPING_SPEED);
                     } else {
                         flipMotor.set(FLIP_RAISING_SPEED);
                     }
                 } else {
-                    if (anglePot.get() <= VERTICAL_ANGLE) {
+                    if (anglePot.get() >= VERTICAL_ANGLE) {
                         flipMotor.set(-FLIP_DROPPING_SPEED);
                     } else {
                         flipMotor.set(-FLIP_RAISING_SPEED);
@@ -149,14 +153,11 @@ public class Maflipulator extends Subsystem {
             @Override
             protected boolean isFinished() {
 
-                if (anglePot.get() <= FRONT_SCORING_ANGLE && currentPosition == MaflipulatorSide.kBack) {
-                    System.out.println("Finished A");
+                if (anglePot.get() >= FRONT_SCORING_ANGLE && currentPosition == MaflipulatorSide.kBack) {
                     return true;
                 }
 
-                if (anglePot.get() >= BACK_SCORING_ANGLE && currentPosition == MaflipulatorSide.kFront) {
-                    //Finished B when "Y button" was pressed on 2/22/19 at end of night: Arms were on front and arms didnt angle up
-                    System.out.println("Finished B");
+                if (anglePot.get() <= BACK_SCORING_ANGLE && currentPosition == MaflipulatorSide.kFront) {
                     return true;
                 }
 
