@@ -18,6 +18,7 @@ import frc.robot.subsystems.Leds;
 import frc.robot.subsystems.LiftSubsystem;
 import frc.robot.subsystems.Maflipulator;
 import frc.robot.subsystems.Manipulator;
+import frc.robot.subsystems.LiftSubsystem.Heights;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -121,6 +122,28 @@ public class Robot extends CommandRobot {
         return retValue;
     }
 
+    public Command stowAndGo() {
+        CommandChain retValue = new CommandChain("Stow it and go!");
+        retValue.then(lift.goToHeight(Heights.kFloorLoad), maflipulator.stowAndGoPosition());
+        return retValue;
+    }
+
+    public Command levelOne() {
+        CommandChain retValue = new CommandChain("Level one");
+
+        retValue.then(lift.goToHeight(Heights.kLoadingStation), maflipulator.goToScoringPosition());
+        return retValue;
+
+    }
+
+    public Command levelTwo() {
+        CommandChain retValue = new CommandChain("Level 2");
+
+        retValue.then(lift.goToHeight(Heights.kRocketHatchMid), maflipulator.goToScoringPosition());
+        return retValue;
+
+    }
+
     public Command darkenCameras() {
         return new InstantCommand(() -> {
             cameraBack.setBrightness(0);
@@ -138,12 +161,19 @@ public class Robot extends CommandRobot {
     public void assignButtons() {
         xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.BUMPER_LEFT).whenPressed(manipulator.openBeak());
         xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.BUMPER_RIGHT.get()).whenPressed(manipulator.closeBeak());
-        xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.A).whenPressed(lift.goToHeight(LiftSubsystem.Heights.kLoadingStation));
-        xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.B).whenPressed(lift.goToHeight(LiftSubsystem.Heights.kRocketHatchMid));
-        xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.X).whenPressed(lift.goToHeight(LiftSubsystem.Heights.kRocketCargoHigh));
+        xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.A)
+                .whenPressed(lift.goToHeight(LiftSubsystem.Heights.kLoadingStation));
+        xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.B)
+                .whenPressed(lift.goToHeight(LiftSubsystem.Heights.kRocketHatchMid));
+        xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.X)
+                .whenPressed(lift.goToHeight(LiftSubsystem.Heights.kRocketCargoHigh));
         driveController.getButton(ButtonXboxController.XBoxButton.Y).whenPressed(goodFlip());
         driveController.getButton(ButtonXboxController.XBoxButton.A).whenPressed(drive.align());
         // manipulator.switchTrigger.whileActive(leds.turnOnGreen());
+        xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.A).whileHeld(levelOne());
+        xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.A).whenReleased(stowAndGo());
+        xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.B).whileHeld(levelTwo());
+        xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.B).whenReleased(stowAndGo());
     }
 
 }

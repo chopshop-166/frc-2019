@@ -19,13 +19,13 @@ public class Maflipulator extends Subsystem {
         kFront, kBack;
     }
 
-    //private final static double FRONT_LOWER_ANGLE = 0.94;
+    // private final static double FRONT_LOWER_ANGLE = 0.94;
     private final static double FRONT_SCORING_ANGLE = 0.88;
     private final static double FLIP_TO_FRONT_POSITION = FRONT_SCORING_ANGLE;
     private final static double FRONT_UPPER_ANGLE = 0.73;
     private final static double FRONT_LOWER_ANGLE = FRONT_SCORING_ANGLE;
 
-    //private final static double BACK_LOWER_ANGLE = .14;
+    // private final static double BACK_LOWER_ANGLE = .14;
     private final static double BACK_SCORING_ANGLE = 0.19;
     private final static double FLIP_TO_BACK_POSITION = BACK_SCORING_ANGLE;
     private final static double BACK_UPPER_ANGLE = .42;
@@ -34,7 +34,7 @@ public class Maflipulator extends Subsystem {
     private final static double VERTICAL_ANGLE = .55;
 
     private final static double FLIP_MOTOR_SPEED = 1;
-    
+
     private final static double FLIP_RAISING_SPEED = .75;
     private final static double FLIP_DROPPING_SPEED = .2;
 
@@ -223,6 +223,17 @@ public class Maflipulator extends Subsystem {
     public Command PIDPickupPosition() {
         return new ConditionalCommand("Pickup Position", moveToPosition(FRONT_LOWER_ANGLE),
                 moveToPosition(BACK_LOWER_ANGLE)) {
+            @Override
+            protected boolean condition() {
+                return currentPosition == MaflipulatorSide.kFront;
+            }
+
+        };
+    }
+
+    public Command stowAndGoPosition() {
+        return new ConditionalCommand("up position", moveToPosition(FRONT_UPPER_ANGLE),
+                moveToPosition(BACK_UPPER_ANGLE)) {
             @Override
             protected boolean condition() {
                 return currentPosition == MaflipulatorSide.kFront;
