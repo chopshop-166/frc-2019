@@ -43,7 +43,9 @@ public class LiftSubsystem extends Subsystem {
 
     private void registeredCommands() {
         SmartDashboard.putData("Loading Station", autoMoveLift(Heights.kLoadingStation));
-        SmartDashboard.putData("Loading Station", autoMoveLift(Heights.kRocketCargoMid));
+        SmartDashboard.putData("Loading Station", autoMoveLift(Heights.kRocketHatchMid));
+        SmartDashboard.putData("Loading Station", autoMoveLift(Heights.kRocketHatchHigh));
+
     }
 
     public enum Heights {
@@ -198,7 +200,7 @@ public class LiftSubsystem extends Subsystem {
                 // Make this return true when this Command no longer needs to run execute()
                 double currentHeight = heightEncoder.getDistance();
                 if (Math.abs(target.get() - currentHeight) < 1.0
-                    || (target.get() > currentHeight && upperLimit.get())) {
+                        || (target.get() > currentHeight && upperLimit.get())) {
                     return true;
                 } else {
                     return false;

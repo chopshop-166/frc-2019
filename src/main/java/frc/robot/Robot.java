@@ -144,6 +144,14 @@ public class Robot extends CommandRobot {
 
     }
 
+    public Command levelThree() {
+        CommandChain retValue = new CommandChain("Level 3");
+
+        retValue.then(lift.goToHeight(Heights.kRocketHatchHigh), maflipulator.goToScoringPosition());
+        return retValue;
+
+    }
+
     public Command darkenCameras() {
         return new InstantCommand(() -> {
             cameraBack.setBrightness(0);
@@ -161,12 +169,7 @@ public class Robot extends CommandRobot {
     public void assignButtons() {
         xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.BUMPER_LEFT).whenPressed(manipulator.openBeak());
         xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.BUMPER_RIGHT.get()).whenPressed(manipulator.closeBeak());
-        xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.A)
-                .whenPressed(lift.goToHeight(LiftSubsystem.Heights.kLoadingStation));
-        xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.B)
-                .whenPressed(lift.goToHeight(LiftSubsystem.Heights.kRocketHatchMid));
-        xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.X)
-                .whenPressed(lift.goToHeight(LiftSubsystem.Heights.kRocketCargoHigh));
+
         driveController.getButton(ButtonXboxController.XBoxButton.Y).whenPressed(goodFlip());
         driveController.getButton(ButtonXboxController.XBoxButton.A).whenPressed(drive.align());
         // manipulator.switchTrigger.whileActive(leds.turnOnGreen());
@@ -174,6 +177,8 @@ public class Robot extends CommandRobot {
         xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.A).whenReleased(stowAndGo());
         xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.B).whileHeld(levelTwo());
         xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.B).whenReleased(stowAndGo());
+        xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.X).whileHeld(levelThree());
+        xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.X).whenReleased(stowAndGo());
     }
 
 }
