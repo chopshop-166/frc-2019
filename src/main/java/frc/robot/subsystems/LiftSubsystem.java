@@ -162,7 +162,8 @@ public class LiftSubsystem extends Subsystem {
             @Override
             protected void execute() {
                 SmartDashboard.putNumber("Lift Height", heightEncoder.getDistance());
-                double liftSpeed = -Robot.xBoxCoPilot.getY(Hand.kRight);
+                double liftSpeed = Robot.xBoxCoPilot.getTriggerAxis(Hand.kLeft)
+                        - Robot.xBoxCoPilot.getTriggerAxis(Hand.kRight);
                 if (Math.abs(liftSpeed) <= .1) {
                     liftSpeed = 0;
                 }
