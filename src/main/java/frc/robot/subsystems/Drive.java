@@ -88,6 +88,42 @@ public class Drive extends Subsystem {
         };
     }
 
+    public Command leftSlowTurn() {
+        return new Command("Left Slow Turn", this) {
+
+            @Override
+            protected void execute() {
+                drive.arcadeDrive(0, -0.3);
+            }
+
+            @Override
+            protected boolean isFinished() {
+                return false;
+            }
+            @Override
+            protected void end(){
+            }
+        };
+    }
+
+    public Command rightSlowTurn() {
+        return new Command("Right Slow Turn", this) {
+
+            @Override
+            protected void execute() {
+                drive.arcadeDrive(0, 0.3);
+            }
+
+            @Override
+            protected boolean isFinished() {
+                return false;
+            }
+            @Override
+            protected void end(){
+            }
+        };
+    }
+
     public Command goXDistanceForward(double distance) {
         return new Command("GoXDistance", this) {
             @Override
