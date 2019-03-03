@@ -93,7 +93,7 @@ public class Drive extends Subsystem {
 
             @Override
             protected void execute() {
-                drive.arcadeDrive(0, -0.3);
+                drive.arcadeDrive(0, -0.53);
             }
 
             @Override
@@ -101,7 +101,8 @@ public class Drive extends Subsystem {
                 return false;
             }
             @Override
-            protected void end(){
+            protected void end(){ 
+                drive.arcadeDrive(0, 0);
             }
         };
     }
@@ -111,7 +112,7 @@ public class Drive extends Subsystem {
 
             @Override
             protected void execute() {
-                drive.arcadeDrive(0, 0.3);
+                drive.arcadeDrive(0, 0.5);
             }
 
             @Override
@@ -120,6 +121,7 @@ public class Drive extends Subsystem {
             }
             @Override
             protected void end(){
+                drive.arcadeDrive(0, 0);
             }
         };
     }

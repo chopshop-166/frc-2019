@@ -37,7 +37,7 @@ public class Robot extends CommandRobot {
     final private LiftSubsystem lift = new LiftSubsystem(robotMap.getLiftMap());
     final private Manipulator manipulator = new Manipulator(robotMap.getManipulatorMap());
     public static ButtonXboxController driveController = new ButtonXboxController(5);
-    // public static Leds leds = new Leds();
+    public static Leds leds = new Leds();
     private Command autonomousCommand;
     final private SendableChooser<Command> chooser = new SendableChooser<>();
 
@@ -59,6 +59,8 @@ public class Robot extends CommandRobot {
         cameraFront.setResolution(320, 240);
         cameraBack.setFPS(20);
         cameraFront.setFPS(20);
+        cameraFront.setExposureAuto();
+        cameraBack.setExposureAuto();
         videoSink = CameraServer.getInstance().getServer();
         videoSink.getProperty("compression").set(70);
         cameraBack.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
@@ -84,7 +86,8 @@ public class Robot extends CommandRobot {
      */
     @Override
     public void autonomousInit() {
-        autonomousCommand = chooser.getSelected();
+        //autonomousCommand = chooser.getSelected();
+        autonomousCommand = lift.homePos();
 
         // schedule the autonomous command (example)
         if (autonomousCommand != null) {
@@ -132,7 +135,7 @@ public class Robot extends CommandRobot {
     public Command levelOne() {
         CommandChain retValue = new CommandChain("Level one");
 
-        retValue.then(lift.goToHeight(Heights.kLoadingStation), maflipulator.goToScoringPosition());
+        retValue.then(lift.goToHeight(Heights.kLoadingStation));
         return retValue;
 
     }
@@ -173,16 +176,16 @@ public class Robot extends CommandRobot {
 
         driveController.getButton(ButtonXboxController.XBoxButton.Y).whenPressed(goodFlip());
         //driveController.getButton(ButtonXboxController.XBoxButton.A).whenPressed(drive.align());
-        driveController.getButton(ButtonXboxController.XBoxButton.BUMPER_LEFT).whenPressed(drive.leftSlowTurn());
-        driveController.getButton(ButtonXboxController.XBoxButton.BUMPER_RIGHT).whenPressed(drive.rightSlowTurn());
+        driveController.getButton(ButtonXboxController.XBoxButton.BUMPER_LEFT).whileHeld(drive.leftSlowTurn());
+        driveController.getButton(ButtonXboxController.XBoxButton.BUMPER_RIGHT).whileHeld(drive.rightSlowTurn());
         // manipulator.switchTrigger.whileActive(leds.turnOnGreen());
-        xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.A).whileHeld(levelOne());
-        xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.A).whenReleased(stowAndGo());
-        xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.B).whileHeld(levelTwo());
-        xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.B).whenReleased(stowAndGo());
-        xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.X).whileHeld(levelThree());
-        xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.X).whenReleased(stowAndGo());
-
+        xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.A).whenPressed(levelOne());
+        //xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.A).whenReleased(stowAndGo());
+        //xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.B).whileHeld(levelTwo());
+        // xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.B).whenReleased(stowAndGo());
+        // xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.X).whileHeld(levelThree());
+        // xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.X).whenReleased(stowAndGo());
+        // xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.STICK_LEFT).whenPressed(maflipulator.goToScoringPosition());
     }
 
 }

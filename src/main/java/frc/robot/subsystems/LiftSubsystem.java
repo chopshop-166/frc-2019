@@ -42,9 +42,13 @@ public class LiftSubsystem extends Subsystem {
     }
 
     private void registeredCommands() {
-        SmartDashboard.putData("Loading Station", autoMoveLift(Heights.kLoadingStation));
-        SmartDashboard.putData("Loading Station", autoMoveLift(Heights.kRocketHatchMid));
-        SmartDashboard.putData("Loading Station", autoMoveLift(Heights.kRocketHatchHigh));
+        SmartDashboard.putData("Loading Station", goToHeight(Heights.kLoadingStation));
+        SmartDashboard.putData("Rocket Hatch Mid", goToHeight(Heights.kRocketHatchMid));
+        SmartDashboard.putData("Rocket Hatch High", goToHeight(Heights.kRocketHatchHigh));
+
+        SmartDashboard.putData("Loading Station yay", autoMoveLift(Heights.kLoadingStation));
+        SmartDashboard.putData("Rocket Hatch Mid yay", autoMoveLift(Heights.kRocketHatchMid));
+        SmartDashboard.putData("Rocket Hatch High yay", autoMoveLift(Heights.kRocketHatchHigh));
 
     }
 
@@ -98,7 +102,7 @@ public class LiftSubsystem extends Subsystem {
     }
 
     private final static double AUTO_LIFT_SPEED_UP = 0.5;
-    private final static double AUTO_LIFT_SPEED_DOWN = -0.05;
+    private final static double AUTO_LIFT_SPEED_DOWN = -0.4;
 
     @Override
     public void initDefaultCommand() {
@@ -127,11 +131,12 @@ public class LiftSubsystem extends Subsystem {
     }
 
     public Command autoMoveLift(Heights target) {
-        return new PIDCommand("Auto Move Lift", 0, 0, 0, 0, this) {
+        return new PIDCommand("Auto Move Lift", .0213, 0, 0, 0, this) {
             @Override
             protected void initialize() {
                 brake.set(Value.kReverse);
                 setSetpoint(target.value);
+                getPIDController().setAbsoluteTolerance(1);
             }
 
             @Override
@@ -162,8 +167,8 @@ public class LiftSubsystem extends Subsystem {
             @Override
             protected void execute() {
                 SmartDashboard.putNumber("Lift Height", heightEncoder.getDistance());
-                double liftSpeed = Robot.xBoxCoPilot.getTriggerAxis(Hand.kLeft)
-                        - Robot.xBoxCoPilot.getTriggerAxis(Hand.kRight);
+                double liftSpeed = Robot.xBoxCoPilot.getTriggerAxis(Hand.kRight)
+                        - Robot.xBoxCoPilot.getTriggerAxis(Hand.kLeft);
                 if (Math.abs(liftSpeed) <= .1) {
                     liftSpeed = 0;
                 }
@@ -201,7 +206,8 @@ public class LiftSubsystem extends Subsystem {
                 // Make this return true when this Command no longer needs to run execute()
                 double currentHeight = heightEncoder.getDistance();
                 if (Math.abs(target.get() - currentHeight) < 1.0
-                        || (target.get() > currentHeight && upperLimit.get())) {
+                        || (target.get() > currentHeight && !upperLimit.get())
+                        || (target.get() < currentHeight && !lowerLimit.get())) {
                     return true;
                 } else {
                     return false;
