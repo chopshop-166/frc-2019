@@ -26,14 +26,15 @@ public class Maflipulator extends Subsystem {
     private final static double FRONT_LOWER_ANGLE = FRONT_SCORING_ANGLE;
 
     // private final static double BACK_LOWER_ANGLE = .14;
-    private final static double BACK_SCORING_ANGLE = 0.17;
+    private final static double BACK_SCORING_ANGLE = 0.2;
     private final static double FLIP_TO_BACK_POSITION = BACK_SCORING_ANGLE;
     private final static double BACK_UPPER_ANGLE = .42;
     private final static double BACK_LOWER_ANGLE = BACK_SCORING_ANGLE;
 
     private final static double VERTICAL_ANGLE = .55;
 
-    private final static double FLIP_MOTOR_SPEED = 1;
+    private final static double FLIP_MOTOR_SPEED = -1;
+    private final static double MANUAL_FLIP_MOTOR_SPEED = -.7;
 
     private final static double FLIP_RAISING_SPEED = .5;
     private final static double FLIP_DROPPING_SPEED = .5;
@@ -73,7 +74,7 @@ public class Maflipulator extends Subsystem {
     @Override
     public void initDefaultCommand() {
         // Set the default command for a subsystem here.
-        setDefaultCommand(manualRotate());
+        setDefaultCommand(pressRotate());
     }
 
     protected double restrict(double flipSpeed) {
@@ -119,6 +120,30 @@ public class Maflipulator extends Subsystem {
 
         };
     }
+
+    public Command pressRotate(){
+
+        return new Command("Press to Rotate", this) {
+
+            @Override
+            protected void execute() {
+                double flipSpeed = Robot.xBoxCoPilot.getY(Hand.kLeft) * MANUAL_FLIP_MOTOR_SPEED;
+                flipSpeed *= Math.abs(flipSpeed);
+                // flipSpeed = restrict(flipSpeed);
+                if (Math.abs(flipSpeed) < DEADBAND) {
+                    flipSpeed = 0;
+                }
+                flipMotor.set(flipSpeed);
+            }
+
+            @Override
+            protected boolean isFinished() {
+                return false;
+            }
+
+        };
+    }
+    
 
     public Command Flip() {
         return new ConditionalCommand("Flip", moveToPosition(FLIP_TO_FRONT_POSITION),

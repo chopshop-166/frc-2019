@@ -13,6 +13,10 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 public class Leds extends Subsystem {
     LightDriveCAN ldrive_can;
+    Color seafoam = new Color(150, 238, 150);
+    Color amber = new Color(255, 191, 0);
+    Color harlequin = new Color(43, 255, 0);
+    Color fuschia = new Color(255, 0, 255);
 
     public Leds() { // NOPMD
         super();
@@ -20,14 +24,9 @@ public class Leds extends Subsystem {
         // class
         
         ldrive_can = new LightDriveCAN();
-        if (isBlueTeam()) {
-            ldrive_can.SetColor(1, Color.BLUE, 1.0);
-            ldrive_can.SetColor(2, Color.BLUE, 1.0);
+        ldrive_can.SetColor(1, Color.BLUE, 1.0);
+        ldrive_can.SetColor(2, Color.BLUE, 1.0);
 
-        } else {
-            ldrive_can.SetColor(1, Color.RED, 1.0);
-            ldrive_can.SetColor(2, Color.RED, 1.0);
-        }
         ldrive_can.Update();
     }
 
