@@ -93,7 +93,7 @@ public class Drive extends Subsystem {
 
             @Override
             protected void execute() {
-                drive.arcadeDrive(0, -0.53);
+                drive.arcadeDrive(0, -0.5);
             }
 
             @Override
