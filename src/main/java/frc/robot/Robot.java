@@ -8,7 +8,6 @@ import edu.wpi.cscore.UsbCamera;
 import edu.wpi.cscore.VideoSink;
 import edu.wpi.cscore.VideoSource.ConnectionStrategy;
 import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -17,9 +16,9 @@ import frc.robot.maps.CurrentRobot;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Leds;
 import frc.robot.subsystems.LiftSubsystem;
+import frc.robot.subsystems.LiftSubsystem.Heights;
 import frc.robot.subsystems.Maflipulator;
 import frc.robot.subsystems.Manipulator;
-import frc.robot.subsystems.LiftSubsystem.Heights;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -62,7 +61,7 @@ public class Robot extends CommandRobot {
         // cameraFront.setExposureAuto();
         // cameraBack.setExposureAuto();
         // videoSink = CameraServer.getInstance().getServer();
-        //videoSink.getProperty("compression").set(30);
+        // videoSink.getProperty("compression").set(30);
         cameraBack.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
         cameraFront.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
         // Initialize autonomous chooser
@@ -86,7 +85,7 @@ public class Robot extends CommandRobot {
      */
     @Override
     public void autonomousInit() {
-        //autonomousCommand = chooser.getSelected();
+        // autonomousCommand = chooser.getSelected();
         autonomousCommand = lift.homePos();
 
         // schedule the autonomous command (example)
@@ -107,16 +106,16 @@ public class Robot extends CommandRobot {
     }
 
     // public Command switchCameras() {
-    //     return new InstantCommand(() -> {
-    //         System.out.println("Camera 0" + cameraBackActive);
-    //         if (!cameraBackActive) {
-    //             videoSink.setSource(cameraBack);
-    //             cameraBackActive = !cameraBackActive;
-    //         } else {
-    //             videoSink.setSource(cameraFront);
-    //             cameraBackActive = !cameraBackActive;
-    //         }
-    //     });
+    // return new InstantCommand(() -> {
+    // System.out.println("Camera 0" + cameraBackActive);
+    // if (!cameraBackActive) {
+    // videoSink.setSource(cameraBack);
+    // cameraBackActive = !cameraBackActive;
+    // } else {
+    // videoSink.setSource(cameraFront);
+    // cameraBackActive = !cameraBackActive;
+    // }
+    // });
     // }
 
     public Command goodFlip() {
@@ -165,24 +164,36 @@ public class Robot extends CommandRobot {
 
     public Command brightenCameras() {
         return new InstantCommand(() -> {
-            //cameraBack.setExposureAuto();
+            // cameraBack.setExposureAuto();
             cameraFront.setExposureAuto();
         });
     }
 
-    public void assignButtons() {
-        xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.BUMPER_LEFT).whenPressed(manipulator.openBeak());
-        xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.BUMPER_RIGHT.get()).whenPressed(manipulator.closeBeak());
+    public CommandChain LEDOpenBeak() {
+        CommandChain retValue = new CommandChain("Close Beak and Turn n Green LEDs");
+        retValue.then(manipulator.openBeak()).then(leds.turnOnGreen());
+        return retValue;
+    }
 
-        //driveController.getButton(ButtonXboxController.XBoxButton.Y).whenPressed(goodFlip());
-        //driveController.getButton(ButtonXboxController.XBoxButton.A).whenPressed(drive.align());
+    public CommandChain LEDCloseBeak() {
+        CommandChain retValue = new CommandChain("Close Beak and reset LEDs");
+        retValue.then(manipulator.closeBeak()).then(leds.getDefaultCommand());
+        return retValue;
+    }
+
+    public void assignButtons() {
+        xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.BUMPER_LEFT).whenPressed(LEDOpenBeak());
+        xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.BUMPER_RIGHT.get()).whenPressed(LEDCloseBeak());
+
+        // driveController.getButton(ButtonXboxController.XBoxButton.Y).whenPressed(goodFlip());
+        // driveController.getButton(ButtonXboxController.XBoxButton.A).whenPressed(drive.align());
         driveController.getButton(ButtonXboxController.XBoxButton.BUMPER_LEFT).whileHeld(drive.leftSlowTurn());
         driveController.getButton(ButtonXboxController.XBoxButton.BUMPER_RIGHT).whileHeld(drive.rightSlowTurn());
         // manipulator.switchTrigger.whileActive(leds.turnOnGreen());
-        //xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.A).whenPressed(levelOne());
-        //xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.A).whileHeld(maflipulator.pressRotate());
-        //xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.A).whenReleased(stowAndGo());
-        //xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.B).whileHeld(levelTwo());
+        // xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.A).whenPressed(levelOne());
+        // xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.A).whileHeld(maflipulator.pressRotate());
+        // xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.A).whenReleased(stowAndGo());
+        // xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.B).whileHeld(levelTwo());
         // xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.B).whenReleased(stowAndGo());
         // xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.X).whileHeld(levelThree());
         // xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.X).whenReleased(stowAndGo());

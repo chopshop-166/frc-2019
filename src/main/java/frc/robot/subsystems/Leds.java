@@ -1,15 +1,13 @@
 package frc.robot.subsystems;
 
 import com.chopshop166.chopshoplib.outputs.DigitalOutputDutyCycle;
-import com.mach.LightDrive.*;
+import com.mach.LightDrive.Color;
+import com.mach.LightDrive.LightDriveCAN;
 
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.command.Command;
-import edu.wpi.first.wpilibj.command.InstantCommand;
-import edu.wpi.first.wpilibj.command.Subsystem;
-import frc.robot.RobotMap;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.command.Subsystem;
 
 public class Leds extends Subsystem {
     LightDriveCAN ldrive_can;
@@ -22,7 +20,7 @@ public class Leds extends Subsystem {
         super();
         // Take values that the subsystem needs from the map, and store them in the
         // class
-        
+
         ldrive_can = new LightDriveCAN();
         ldrive_can.SetColor(1, Color.BLUE, 1.0);
         ldrive_can.SetColor(2, Color.BLUE, 1.0);
