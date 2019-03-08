@@ -205,8 +205,7 @@ public class LiftSubsystem extends Subsystem {
             protected boolean isFinished() {
                 // Make this return true when this Command no longer needs to run execute()
                 double currentHeight = heightEncoder.getDistance();
-                if (Math.abs(target.get() - currentHeight) < 1.0
-                        || (target.get() > currentHeight && !upperLimit.get())
+                if (Math.abs(target.get() - currentHeight) < 1.0 || (target.get() > currentHeight && !upperLimit.get())
                         || (target.get() < currentHeight && !lowerLimit.get())) {
                     return true;
                 } else {
