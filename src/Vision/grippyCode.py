@@ -3,12 +3,13 @@ import cv2
 import numpy as np
 import threading
 import math
-from networktables import NetworkTables
+#from networktables import NetworkTables
 
 
 cond = threading.Condition()
 notified = [False]
 
+print ("open cv version {}".format(cv2.__version__))
 
 def connectionListener(connected, info):
     print(info, '; Connected=%s' % connected)
@@ -17,12 +18,12 @@ def connectionListener(connected, info):
         cond.notify()
 
 
-NetworkTables.initialize(server='10.1.66.2')
-NetworkTables.addConnectionListener(connectionListener, immediateNotify=True)
-table = NetworkTables.getTable('Vision Correction Table')
-with cond:
-    if not notified[0]:
-        cond.wait()
+#NetworkTables.initialize(server='10.1.66.2')
+#NetworkTables.addConnectionListener(connectionListener, immediateNotify=True)
+#table = NetworkTables.getTable('Vision Correction Table')
+#with cond:
+#    if not notified[0]:
+#        cond.wait()
 
 #cap = cv2.VideoCapture(1)
 cap = cv2.VideoCapture("http://10.1.66.2:1181/?action=stream")
@@ -102,8 +103,9 @@ def normalizeImage(pairMidpoint):
     return fullPairMidpoint
 
 
+
 # MAIN LOOP
-while(True):
+while True:
     # capture image
     ret, frame = cap.read()
     cv2.waitKey(300)
