@@ -1,5 +1,7 @@
 package frc.robot;
 
+import java.util.Arrays;
+
 import com.chopshop166.chopshoplib.CommandRobot;
 import com.chopshop166.chopshoplib.commands.CommandChain;
 import com.chopshop166.chopshoplib.controls.ButtonXboxController;
@@ -171,7 +173,7 @@ public class Robot extends CommandRobot {
 
     public CommandChain LEDOpenBeak() {
         CommandChain retValue = new CommandChain("Close Beak and Turn n Green LEDs");
-        retValue.then(manipulator.openBeak()).then(leds.turnOnGreen());
+        retValue.then(manipulator.openBeak()).then(leds.turnOnGreen(Arrays.asList(1, 2)));
         return retValue;
     }
 
