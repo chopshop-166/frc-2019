@@ -145,7 +145,7 @@ public class Leds extends Subsystem {
 
     public Command turnOnBlue() {
         // The command is named "Sample Command" and requires this subsystem.
-        return new Command("Turn on the color known as Azul", this) {
+        return new Command("Turn on the color known as azul", this) {
 
             @Override
             protected void execute() {
