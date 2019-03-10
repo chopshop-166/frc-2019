@@ -98,12 +98,14 @@ public class Tempest implements RobotMap {
 
             @Override
             public SendableSpeedController getRight() {
-                return SendableSpeedController.wrap(new SpeedControllerGroup(new WPI_TalonSRX(2), new WPI_TalonSRX(3)));
+                SpeedControllerGroup right = new SpeedControllerGroup(new WPI_TalonSRX(4), new WPI_TalonSRX(1));
+                return SendableSpeedController.wrap(right);
             }
 
             @Override
             public SendableSpeedController getLeft() {
-                return SendableSpeedController.wrap(new SpeedControllerGroup(new WPI_TalonSRX(4), new WPI_TalonSRX(1)));
+                SpeedControllerGroup left = new SpeedControllerGroup(new WPI_TalonSRX(2), new WPI_TalonSRX(3));
+                return SendableSpeedController.wrap(left);
             }
 
             @Override

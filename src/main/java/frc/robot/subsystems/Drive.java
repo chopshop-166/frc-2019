@@ -56,9 +56,13 @@ public class Drive extends Subsystem {
         addChild(gyro);
     }
 
-    private final double visionCorrectionMultiplier = .25;
+    private final double visionCorrectionMultiplier = 2;
     private final double visionCorrectionSpeed = 0.2;
     private final double visionCorrectionRange = 0.1;
+
+    private final double slowTurnSpeed = 0.3;
+
+    private final double driveDeadband = 0.05;
 
     double gyroCorrection;
     PIDController gyroDrivePID;
@@ -93,7 +97,7 @@ public class Drive extends Subsystem {
 
             @Override
             protected void execute() {
-                drive.arcadeDrive(0, -0.5);
+                drive.arcadeDrive(0, -slowTurnSpeed);
             }
 
             @Override
@@ -112,7 +116,7 @@ public class Drive extends Subsystem {
 
             @Override
             protected void execute() {
-                drive.arcadeDrive(0, 0.5);
+                drive.arcadeDrive(0, slowTurnSpeed);
             }
 
             @Override
@@ -220,19 +224,32 @@ public class Drive extends Subsystem {
             NetworkTableInstance inst = NetworkTableInstance.getDefault();
             NetworkTable table = inst.getTable("Vision Correction Table");
             double visionCorrectionFactor = table.getEntry("Vision Correction").getDouble(0);
+            boolean visionConfirmation = table.getEntry("Vision Found").getBoolean(false);
+            double visionTurnSpeed; 
 
             @Override
             protected void execute() {
                 visionCorrectionFactor = table.getEntry("Vision Correction").getDouble(0);
-                drive.arcadeDrive(0, visionCorrectionMultiplier * visionCorrectionFactor);
+                visionConfirmation = table.getEntry("Vision Found").getBoolean(false);
+                // drive.arcadeDrive(0, visionCorrectionMultiplier * visionCorrectionFactor);
+                if ((visionCorrectionFactor > driveDeadband) && (visionConfirmation == true))
+                    visionTurnSpeed = slowTurnSpeed;
+                else if ((visionCorrectionFactor < -driveDeadband) && (visionConfirmation == true))
+                    visionTurnSpeed = -slowTurnSpeed;
+                else
+                    visionTurnSpeed = 0;
+
+                drive.arcadeDrive(- Robot.driveController.getTriggerAxis(Hand.kRight)
+                + Robot.driveController.getTriggerAxis(Hand.kLeft), visionTurnSpeed);
             }
 
             @Override
             protected boolean isFinished() {
-                if (visionCorrectionFactor <= visionCorrectionRange && visionCorrectionFactor >= -visionCorrectionRange)
-                    return true;
-                else
-                    return false;
+                // if (visionCorrectionFactor <= visionCorrectionRange && visionCorrectionFactor >= -visionCorrectionRange)
+                //     return true;
+                // else
+                    // return false;
+                return false;
             }
 
             @Override
@@ -241,6 +258,35 @@ public class Drive extends Subsystem {
             }
         };
     }
+
+    // public Command autoVision() {
+    //     return new PIDCommand("Auto Vision", 0, 0, 0, 0, this) {
+    //         @Override
+    //         protected void initialize() {
+
+    //         }
+
+    //         @Override
+    //         protected void usePIDOutput(final double heightCorrection) {
+
+    //         }
+
+    //         @Override
+    //         protected void end() {
+
+    //         }
+
+    //         @Override
+    //         protected double returnPIDInput() {
+    //             return gyro.get();
+    //         }
+
+    //         @Override
+    //         protected boolean isFinished() {
+    //             return getPIDController();
+    //         }
+    //     };
+    // }
 
     public Command extendPiston() {
         return new InstantCommand("Extend Piston", this, () -> {

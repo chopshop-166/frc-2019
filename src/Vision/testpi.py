@@ -57,9 +57,9 @@ class gripV2:
         """initializes all values to presets or None if need to be set
         """
 
-        self.__hsl_threshold_hue = [44, 94]
-        self.__hsl_threshold_saturation = [147, 255.0]
-        self.__hsl_threshold_luminance = [37, 255.0]
+        self.__hsl_threshold_hue = [66, 92]
+        self.__hsl_threshold_saturation = [172, 255.0]
+        self.__hsl_threshold_luminance = [53, 255.0]
 
         self.hsl_threshold_output = None
 
@@ -117,8 +117,16 @@ configFile = "/boot/frc.json"
 
 class CameraConfig: pass
 
+rightAngle = -15
+leftAngle = -75
+deadzone = 15
+
 team = None
 server = False
+width = None
+height = None
+imageMidpoint = None
+
 cameraConfigs = []
 
 """Report parse error."""
@@ -128,6 +136,9 @@ def parseError(str):
 """Read single camera configuration."""
 def readCameraConfig(config):
     cam = CameraConfig()
+    global width
+    global height
+    global imageMidpoint
 
     # name
     try:
@@ -141,6 +152,19 @@ def readCameraConfig(config):
         cam.path = config["path"]
     except KeyError:
         parseError("camera '{}': could not read path".format(cam.name))
+        return False
+
+    try:
+        width = config["width"]
+        imageMidpoint = (width / 2)
+    except KeyError:
+        parseError("could not read width")
+        return False
+
+    try:
+        height = config["height"]
+    except KeyError:
+        parseError("could not read height")
         return False
 
     # stream properties
@@ -257,10 +281,6 @@ def findPairs(contourList):
 
 
 def normalizeImage(pairMidpoint):
-    global imageMidpoint
-    width = frame.shape[1]
-    height = frame.shape[2]
-    imageMidpoint = (width / 2)
     pairPointOrient = (pairMidpoint - imageMidpoint)
     fullPairMidpoint = (pairPointOrient / imageMidpoint)
     # prints after ewww math THIS IS THE CONTOUR MIDPOINT from...
@@ -274,7 +294,8 @@ if __name__ == "__main__":
     # read configuration
     if not readConfig():
         sys.exit(1)
-
+    
+    print("width: {} height: {} Midpoint: {}".format(width, height, imageMidpoint))
     # start NetworkTables
     ntinst = NetworkTablesInstance.getDefault()
     if server:
@@ -284,6 +305,7 @@ if __name__ == "__main__":
         print("Setting up NetworkTables client for team {}".format(team))
         ntinst.startClientTeam(team)
 
+    table = ntinst.getTable('Vision Correction Table')
 
     # start cameras
     cameras = []
@@ -291,9 +313,10 @@ if __name__ == "__main__":
         cameras.append(startCamera(cameraConfig))
 
     cvSink = CameraServer.getInstance().getVideo()
+    outputStream = CameraServer.getInstance().putVideo("Front Camera", width, height)
 
     #Preallocating the frame object
-    frame = np.zeros(shape=(240, 320, 3), dtype=np.uint8)
+    frame = np.zeros(shape=(height, width, 3), dtype=np.uint8)
 
     goalFinder = gripV2()
 
@@ -302,12 +325,13 @@ if __name__ == "__main__":
     while True:
     # capture image
         cvSink.grabFrame(frame)
-        #cv2.waitKey(300)
+        #cv2.waitKey(1)
 
         width = frame.shape[1]
         height = frame.shape[0]
-        M = cv2.getRotationMatrix2D((width/2, height/2), 90, 1)
-        frame = cv2.warpAffine(frame, M, (width, height))
+        # M is used for rotational value of the image and is put in after frame in the line below
+        # M = cv2.getRotationMatrix2D((width/2, height/2), 90, 1)
+        #frame = cv2.warpAffine(frame, M, (width, height))
 
         # process with GRIP stuff
         goalFinder.process(frame)
@@ -329,7 +353,10 @@ if __name__ == "__main__":
                     (bestPair[1][0][1] + bestPair[0][0][1]) / 2))
                 table.putNumber("Vision Correction",
                                 normalizeImage(rectangleMidpoint[0]))
-                cv2.circle(frame, (rectangleMidpoint), 7, (0, 255, 0), -1)
+                print("Normalized: {}".format(rectangleMidpoint[0]))
+                cv2.circle(frame, (rectangleMidpoint), 3, (0, 255, 0), -1)
             else:
                 table.putBoolean("Vision Found", False)
+                print("NO VISION")
 
+        outputStream.putFrame(frame)
