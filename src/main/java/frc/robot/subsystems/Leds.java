@@ -181,6 +181,53 @@ public class Leds extends Subsystem {
             }
         };
     }
+    public Command blinkLights(List banks, Color color, int frequency) {
+        // The command is named "Sample Command" and requires this subsystem.
+        return new Command("Makes the lights go blink", this) {
+            int counter = 0;
+            boolean lightsOn = true;
+            @Override
+            
+            protected void initialize(){
+                counter = 0;
+                Iterator<Integer> it = banks.iterator();
+                while (it.hasNext()) {
+                    ldrive_can.SetColor(it.next(), color, 1.0);
+                }
+                lightsOn = true;
+            }
+            @Override
+            protected void execute() {
+                // Called repeatedly when this Command is scheduled to run
+                if(counter %  frequency == 0){
+                    if(lightsOn == true){
+                        Iterator<Integer> it = banks.iterator();
+                        while (it.hasNext()) {
+                            ldrive_can.SetColor(it.next(), Color.OFF, 1.0);
+                        }
+                        lightsOn = false;
+                    } else {
+                        Iterator<Integer> it = banks.iterator();
+                        while (it.hasNext()) {
+                            ldrive_can.SetColor(it.next(), color, 1.0);
+                        }
+                        lightsOn = false;
+                    }
+                    
+                }
+                
+                ldrive_can.Update();
+                counter ++;
+
+            }
+
+            @Override
+            protected boolean isFinished() {
+                // Make this return true when this Command no longer needs to run execute()
+                return false;
+            }
+        };
+    }
 
     public Command justBreathe(DigitalOutputDutyCycle color, int frequency) {
         // The command is named "Sample Command" and requires this subsystem.
