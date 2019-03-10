@@ -15,6 +15,8 @@ public class Leds extends Subsystem {
     Color amber = new Color(255, 191, 0);
     Color harlequin = new Color(43, 255, 0);
     Color fuschia = new Color(255, 0, 255);
+    private final static int leftBank = 1;
+    private final static int rightBank = 2;
 
     public Leds() { // NOPMD
         super();
@@ -22,8 +24,8 @@ public class Leds extends Subsystem {
         // class
 
         ldrive_can = new LightDriveCAN();
-        ldrive_can.SetColor(1, Color.BLUE, 1.0);
-        ldrive_can.SetColor(2, Color.BLUE, 1.0);
+        ldrive_can.SetColor(leftBank, Color.BLUE, 1.0);
+        ldrive_can.SetColor(rightBank, Color.BLUE, 1.0);
 
         ldrive_can.Update();
     }
@@ -49,14 +51,12 @@ public class Leds extends Subsystem {
             protected void initialize() {
                 // Called just before this Command runs the first time
                 if (isBlueTeam()) {
-                    ldrive_can.SetColor(1, Color.BLUE, 1.0);
-                    ldrive_can.SetColor(2, Color.BLUE, 1.0);
-                    ldrive_can.SetColor(3, Color.BLUE, 1.0);
-                    ldrive_can.SetColor(4, Color.BLUE, 1.0);
+                    ldrive_can.SetColor(leftBank, Color.BLUE, 1.0);
+                    ldrive_can.SetColor(rightBank, Color.BLUE, 1.0);
 
                 } else {
-                    ldrive_can.SetColor(1, Color.RED, 1.0);
-                    ldrive_can.SetColor(2, Color.RED, 1.0);
+                    ldrive_can.SetColor(leftBank, Color.RED, 1.0);
+                    ldrive_can.SetColor(rightBank, Color.RED, 1.0);
                 }
                 ldrive_can.Update();
             }
@@ -92,7 +92,7 @@ public class Leds extends Subsystem {
             @Override
             protected void execute() {
                 // Called repeatedly when this Command is scheduled to run
-                ldrive_can.SetColor(2, Color.GREEN, (float) 0.8);
+                ldrive_can.SetColor(rightBank, Color.GREEN, (float) 0.8);
                 ldrive_can.Update();
             }
 
@@ -105,7 +105,7 @@ public class Leds extends Subsystem {
             @Override
             protected void end() {
                 // Called once after isFinished returns true
-                ldrive_can.SetColor(2, Color.OFF, (float) 0.8);
+                ldrive_can.SetColor(rightBank, Color.OFF, (float) 0.8);
 
             }
 
@@ -119,7 +119,9 @@ public class Leds extends Subsystem {
             @Override
             protected void execute() {
                 // Called repeatedly when this Command is scheduled to run
-                ldrive_can.SetColor(3, Color.RED, (float) 0.8);
+                ldrive_can.SetColor(leftBank, Color.RED, (float) 0.8);
+                ldrive_can.SetColor(rightBank, Color.RED, (float) 0.8);
+
                 ldrive_can.Update();
 
             }
@@ -133,7 +135,8 @@ public class Leds extends Subsystem {
             @Override
             protected void end() {
                 // Called once after isFinished returns true
-                ldrive_can.SetColor(2, Color.OFF, (float) 0.8);
+                ldrive_can.SetColor(leftBank, Color.OFF, (float) 0.8);
+                ldrive_can.SetColor(rightBank, Color.OFF, (float) 0.8);
 
             }
 
@@ -147,7 +150,9 @@ public class Leds extends Subsystem {
             @Override
             protected void execute() {
                 // Called repeatedly when this Command is scheduled to run
-                ldrive_can.SetColor(1, Color.BLUE, (float) 0.8);
+                ldrive_can.SetColor(leftBank, Color.BLUE, (float) 0.8);
+                ldrive_can.SetColor(rightBank, Color.BLUE, (float) 0.8);
+
                 ldrive_can.Update();
 
             }
@@ -160,7 +165,8 @@ public class Leds extends Subsystem {
 
             @Override
             protected void end() {
-                ldrive_can.SetColor(2, Color.OFF, (float) 0.8);
+                ldrive_can.SetColor(leftBank, Color.OFF, (float) 0.8);
+                ldrive_can.SetColor(rightBank, Color.OFF, (float) 0.8);
 
                 // Called once after isFinished returns true
             }
@@ -175,7 +181,8 @@ public class Leds extends Subsystem {
             @Override
             protected void execute() {
                 // Called repeatedly when this Command is scheduled to run
-                ldrive_can.SetColor(1, Color.OFF);
+                ldrive_can.SetColor(leftBank, Color.OFF);
+                ldrive_can.SetColor(rightBank, Color.OFF);
 
             }
 
