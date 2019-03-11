@@ -173,7 +173,7 @@ public class Robot extends CommandRobot {
 
     public CommandChain LEDOpenBeak() {
         CommandChain retValue = new CommandChain("Close Beak and Turn n Green LEDs");
-        retValue.then(manipulator.openBeak()).then(leds.turnOnGreen(Arrays.asList(1, 2)));
+        retValue.then(manipulator.openBeak()).then(leds.turnOnGreen(1, 2));
         return retValue;
     }
 

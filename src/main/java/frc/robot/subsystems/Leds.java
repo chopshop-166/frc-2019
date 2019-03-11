@@ -36,7 +36,7 @@ public class Leds extends Subsystem {
 
     @Override
     public void initDefaultCommand() {
-        setDefaultCommand(setTeamColor(Arrays.asList(1, 2)));
+        setDefaultCommand(setTeamColor());
     }
 
     private boolean isBlueTeam() {
@@ -48,22 +48,23 @@ public class Leds extends Subsystem {
         }
     }
 
-    public Command setTeamColor(List<Integer> v) {
+    public Command setTeamColor(Integer... banks) {
 
         return new Command("Set team color", this) {
 
             protected void initialize() {
                 // Called just before this Command runs the first time
+                Color color;
+
                 if (isBlueTeam()) {
-                    Iterator<Integer> it = v.iterator();
-                    while (it.hasNext()) {
-                        ldrive_can.SetColor(it.next(), Color.BLUE, 1.0);
-                    }
+                    color = Color.BLUE;
+
                 } else {
-                    Iterator<Integer> it = v.iterator();
-                    while (it.hasNext()) {
-                        ldrive_can.SetColor(it.next(), Color.RED, 1.0);
-                    }
+                    color = Color.RED;
+                }
+                for (Integer currentBank : banks) {
+                    ldrive_can.SetColor(currentBank, Color.OFF, 1.0);
+
                 }
                 ldrive_can.Update();
             }
@@ -92,16 +93,16 @@ public class Leds extends Subsystem {
         };
     }
 
-    public Command turnOnGreen(List v) {
+    public Command turnOnGreen(Integer... banks) {
         // The command is named "Sample Command" and requires this subsystem.
         return new Command("Turn on the color known as verde", this) {
 
             @Override
             protected void execute() {
                 // Called repeatedly when this Command is scheduled to run
-                Iterator<Integer> it = v.iterator();
-                while (it.hasNext()) {
-                    ldrive_can.SetColor(it.next(), Color.GREEN, 1.0);
+                for (Integer currentBank : banks) {
+                    ldrive_can.SetColor(currentBank, Color.GREEN, 1.0);
+
                 }
                 ldrive_can.Update();
             }
@@ -114,15 +115,15 @@ public class Leds extends Subsystem {
         };
     }
 
-    public Command turnOnRed(List v) {
+    public Command turnOnRed(Integer... banks) {
         return new Command("Turn on the color known as rojo", this) {
 
             @Override
             protected void execute() {
                 // Called repeatedly when this Command is scheduled to run
-                Iterator<Integer> it = v.iterator();
-                while (it.hasNext()) {
-                    ldrive_can.SetColor(it.next(), Color.RED, 1.0);
+                for (Integer currentBank : banks) {
+                    ldrive_can.SetColor(currentBank, Color.BLUE, 1.0);
+
                 }
                 ldrive_can.Update();
 
@@ -136,18 +137,17 @@ public class Leds extends Subsystem {
         };
     }
 
-    public Command turnOnBlue(List v) {
+    public Command turnOnBlue(Integer... banks) {
         // The command is named "Sample Command" and requires this subsystem.
         return new Command("Turn on the color known as azul", this) {
 
             @Override
             protected void execute() {
                 // Called repeatedly when this Command is scheduled to run
-                Iterator<Integer> it = v.iterator();
-                while (it.hasNext()) {
-                    ldrive_can.SetColor(it.next(), Color.BLUE, 1.0);
-                }
+                for (Integer currentBank : banks) {
+                    ldrive_can.SetColor(currentBank, Color.BLUE, 1.0);
 
+                }
                 ldrive_can.Update();
 
             }
@@ -160,16 +160,16 @@ public class Leds extends Subsystem {
         };
     }
 
-    public Command killAllLights(List v) {
+    public Command killAllLights(Integer... banks) {
         // The command is named "Sample Command" and requires this subsystem.
         return new Command("Turn on the color known as Azul", this) {
 
             @Override
             protected void execute() {
                 // Called repeatedly when this Command is scheduled to run
-                Iterator<Integer> it = v.iterator();
-                while (it.hasNext()) {
-                    ldrive_can.SetColor(it.next(), Color.OFF, 1.0);
+                for (Integer currentBank : banks) {
+                    ldrive_can.SetColor(currentBank, Color.OFF, 1.0);
+
                 }
                 ldrive_can.Update();
             }
@@ -181,43 +181,47 @@ public class Leds extends Subsystem {
             }
         };
     }
-    public Command blinkLights(List banks, Color color, int frequency) {
+
+    public Command blinkLights(Color color, int frequency, Integer... banks) {
         // The command is named "Sample Command" and requires this subsystem.
         return new Command("Makes the lights go blink", this) {
             int counter = 0;
             boolean lightsOn = true;
+            Color color;
+
             @Override
-            
-            protected void initialize(){
+
+            protected void initialize() {
                 counter = 0;
-                Iterator<Integer> it = banks.iterator();
-                while (it.hasNext()) {
-                    ldrive_can.SetColor(it.next(), color, 1.0);
-                }
+                // for (Integer currentBank : banks) {
+                // ldrive_can.SetColor(currentBank, color, 1.0);
+
+                // }
                 lightsOn = true;
+                // Color color;
             }
+
             @Override
             protected void execute() {
+                // Color color;
+
                 // Called repeatedly when this Command is scheduled to run
-                if(counter %  frequency == 0){
-                    if(lightsOn == true){
-                        Iterator<Integer> it = banks.iterator();
-                        while (it.hasNext()) {
-                            ldrive_can.SetColor(it.next(), Color.OFF, 1.0);
-                        }
+                if (counter % frequency == 0) {
+                    if (lightsOn == true) {
+                        color = Color.BLUE;
                         lightsOn = false;
                     } else {
-                        Iterator<Integer> it = banks.iterator();
-                        while (it.hasNext()) {
-                            ldrive_can.SetColor(it.next(), color, 1.0);
-                        }
+                        color = Color.OFF;
                         lightsOn = false;
                     }
-                    
+
                 }
-                
+                for (Integer currentBank : banks) {
+                    ldrive_can.SetColor(currentBank, color, 1.0);
+                }
+
                 ldrive_can.Update();
-                counter ++;
+                counter++;
 
             }
 
