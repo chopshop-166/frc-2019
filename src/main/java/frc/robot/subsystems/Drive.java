@@ -14,8 +14,10 @@ import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.InstantCommand;
+import edu.wpi.first.wpilibj.command.PIDCommand;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 import frc.robot.RobotMap;
 
@@ -29,6 +31,8 @@ public class Drive extends Subsystem {
     private Encoder rightEncoder;
     private PIDGyro gyro;
     private DifferentialDrive drive;
+    NetworkTableInstance inst; // = NetworkTableInstance.getDefault();
+    NetworkTable table; // inst.getTable("Vision Correction Table");
 
     public Drive(final RobotMap.DriveMap map) { // NOPMD
         super();
@@ -47,6 +51,11 @@ public class Drive extends Subsystem {
         });
         drive = new DifferentialDrive(left, right);
         addChildren();
+
+        inst = NetworkTableInstance.getDefault();
+        table = inst.getTable("Vision Correction Table");
+
+        SmartDashboard.putData("VISIONNNNN", visionPID());
     }
 
     private void addChildren() {
@@ -80,8 +89,8 @@ public class Drive extends Subsystem {
             @Override
             protected void execute() {
                 drive.arcadeDrive(
-                        - Robot.driveController.getTriggerAxis(Hand.kRight)
-                                 + Robot.driveController.getTriggerAxis(Hand.kLeft),
+                        -Robot.driveController.getTriggerAxis(Hand.kRight)
+                                + Robot.driveController.getTriggerAxis(Hand.kLeft),
                         Robot.driveController.getX(Hand.kLeft));
             }
 
@@ -104,8 +113,9 @@ public class Drive extends Subsystem {
             protected boolean isFinished() {
                 return false;
             }
+
             @Override
-            protected void end(){ 
+            protected void end() {
                 drive.arcadeDrive(0, 0);
             }
         };
@@ -123,8 +133,9 @@ public class Drive extends Subsystem {
             protected boolean isFinished() {
                 return false;
             }
+
             @Override
-            protected void end(){
+            protected void end() {
                 drive.arcadeDrive(0, 0);
             }
         };
@@ -220,12 +231,9 @@ public class Drive extends Subsystem {
 
     public Command align() {
         return new Command("align", this) {
-
-            NetworkTableInstance inst = NetworkTableInstance.getDefault();
-            NetworkTable table = inst.getTable("Vision Correction Table");
             double visionCorrectionFactor = table.getEntry("Vision Correction").getDouble(0);
             boolean visionConfirmation = table.getEntry("Vision Found").getBoolean(false);
-            double visionTurnSpeed; 
+            double visionTurnSpeed;
 
             @Override
             protected void execute() {
@@ -239,16 +247,17 @@ public class Drive extends Subsystem {
                 else
                     visionTurnSpeed = 0;
 
-                drive.arcadeDrive(- Robot.driveController.getTriggerAxis(Hand.kRight)
-                + Robot.driveController.getTriggerAxis(Hand.kLeft), visionTurnSpeed);
+                drive.arcadeDrive(-Robot.driveController.getTriggerAxis(Hand.kRight)
+                        + Robot.driveController.getTriggerAxis(Hand.kLeft), visionTurnSpeed);
             }
 
             @Override
             protected boolean isFinished() {
-                // if (visionCorrectionFactor <= visionCorrectionRange && visionCorrectionFactor >= -visionCorrectionRange)
-                //     return true;
+                // if (visionCorrectionFactor <= visionCorrectionRange && visionCorrectionFactor
+                // >= -visionCorrectionRange)
+                // return true;
                 // else
-                    // return false;
+                // return false;
                 return false;
             }
 
@@ -259,34 +268,38 @@ public class Drive extends Subsystem {
         };
     }
 
-    // public Command autoVision() {
-    //     return new PIDCommand("Auto Vision", 0, 0, 0, 0, this) {
-    //         @Override
-    //         protected void initialize() {
+    public Command visionPID() {
+        return new PIDCommand("Vision PID", .8, 0.0, 0.0, this) {
+            PIDController visionPIDController;
 
-    //         }
+            @Override
+            protected void initialize() {
+                visionPIDController = getPIDController();
+                visionPIDController.setAbsoluteTolerance(0.05);
 
-    //         @Override
-    //         protected void usePIDOutput(final double heightCorrection) {
+            }
 
-    //         }
+            @Override
+            protected boolean isFinished() {
+                return visionPIDController.onTarget();
+            }
 
-    //         @Override
-    //         protected void end() {
+            @Override
+            protected double returnPIDInput() {
+                if (table.getEntry("Vision Found").getBoolean(false) == true) {
+                    return table.getEntry("Vision Correction").getDouble(0);
+                } else {
+                    return 0;
+                }
+            }
 
-    //         }
-
-    //         @Override
-    //         protected double returnPIDInput() {
-    //             return gyro.get();
-    //         }
-
-    //         @Override
-    //         protected boolean isFinished() {
-    //             return getPIDController();
-    //         }
-    //     };
-    // }
+            @Override
+            protected void usePIDOutput(double visionOutput) {
+                drive.arcadeDrive(-Robot.driveController.getTriggerAxis(Hand.kRight)
+                        + Robot.driveController.getTriggerAxis(Hand.kLeft), visionOutput);
+            }
+        };
+    }
 
     public Command extendPiston() {
         return new InstantCommand("Extend Piston", this, () -> {
