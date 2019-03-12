@@ -14,6 +14,7 @@ import numpy as np
 from cscore import CameraServer, VideoSource, UsbCamera, MjpegServer
 from networktables import NetworkTablesInstance
 
+
 #   JSON format:
 #   {
 #       "team": <team number>,
@@ -68,7 +69,6 @@ class gripV2:
 
         self.find_contours_output = None
 
-
     def process(self, source0):
         """
         Runs the pipeline and sets all outputs to new values.
@@ -80,7 +80,6 @@ class gripV2:
         # Step Find_Contours0:
         self.__find_contours_input = self.hsl_threshold_output
         (self.find_contours_output) = self.__find_contours(self.__find_contours_input, self.__find_contours_external_only)
-
 
     @staticmethod
     def __hsl_threshold(input, hue, sat, lum):
@@ -94,7 +93,7 @@ class gripV2:
             A black and white numpy.ndarray.
         """
         out = cv2.cvtColor(input, cv2.COLOR_BGR2HLS)
-        return cv2.inRange(out, (hue[0], lum[0], sat[0]),  (hue[1], lum[1], sat[1]))
+        return cv2.inRange(out, (hue[0], lum[0], sat[0]), (hue[1], lum[1], sat[1]))
 
     @staticmethod
     def __find_contours(input, external_only):
@@ -110,12 +109,15 @@ class gripV2:
         else:
             mode = cv2.RETR_LIST
         method = cv2.CHAIN_APPROX_SIMPLE
-        im2, contours, hierarchy =cv2.findContours(input, mode=mode, method=method)
+        im2, contours, hierarchy = cv2.findContours(input, mode=mode, method=method)
         return contours
+
 
 configFile = "/boot/frc.json"
 
+
 class CameraConfig: pass
+
 
 rightAngle = -15
 leftAngle = -75
@@ -130,10 +132,15 @@ imageMidpoint = None
 cameraConfigs = []
 
 """Report parse error."""
+
+
 def parseError(str):
     print("config error in '" + configFile + "': " + str, file=sys.stderr)
 
+
 """Read single camera configuration."""
+
+
 def readCameraConfig(config):
     cam = CameraConfig()
     global width
@@ -175,7 +182,10 @@ def readCameraConfig(config):
     cameraConfigs.append(cam)
     return True
 
+
 """Read configuration file."""
+
+
 def readConfig():
     global team
     global server
@@ -222,7 +232,10 @@ def readConfig():
 
     return True
 
+
 """Start running the camera."""
+
+
 def startCamera(config):
     print("Starting camera '{}' on {}".format(config.name, config.path))
     inst = CameraServer.getInstance()
@@ -237,6 +250,7 @@ def startCamera(config):
 
     return camera
 
+
 def findPairOffset(pair):
     leftcX = pair[0][0][0]
     rightcX = pair[1][0][0]
@@ -244,12 +258,13 @@ def findPairOffset(pair):
     pairOffset = abs(imageMidpoint - pairMidpoint)
     return pairOffset
 
+
 def findPairs(contourList):
     rightRectList = []
     leftRectList = []
     rectPairList = []
 
-    #print ("Number of Rectangles: {}".format(len(contourList)))
+    # print ("Number of Rectangles: {}".format(len(contourList)))
 
     for contour in contourList:
         rectangleBox = cv2.minAreaRect(contour)
@@ -273,7 +288,7 @@ def findPairs(contourList):
 
     closestCenterPair = None
     for pair in rectPairList:
-        #print ("rectangle pair coordinates: {}, {}".format(pair[0][0][0],pair[1][0][0]))
+        # print ("rectangle pair coordinates: {}, {}".format(pair[0][0][0],pair[1][0][0]))
         if closestCenterPair is None or findPairOffset(pair) < findPairOffset(closestCenterPair):
             closestCenterPair = pair
 
@@ -286,6 +301,7 @@ def normalizeImage(pairMidpoint):
     # prints after ewww math THIS IS THE CONTOUR MIDPOINT from...
     # Contour Midpoint Scale (-1 to 1)
     return fullPairMidpoint
+
 
 if __name__ == "__main__":
     if len(sys.argv) >= 2:
@@ -315,7 +331,7 @@ if __name__ == "__main__":
     cvSink = CameraServer.getInstance().getVideo()
     outputStream = CameraServer.getInstance().putVideo("Front Camera", width, height)
 
-    #Preallocating the frame object
+    # Preallocating the frame object
     frame = np.zeros(shape=(height, width, 3), dtype=np.uint8)
 
     goalFinder = gripV2()
@@ -325,13 +341,13 @@ if __name__ == "__main__":
     while True:
     # capture image
         cvSink.grabFrame(frame)
-        #cv2.waitKey(1)
+        # cv2.waitKey(1)
 
         width = frame.shape[1]
         height = frame.shape[0]
         # M is used for rotational value of the image and is put in after frame in the line below
         # M = cv2.getRotationMatrix2D((width/2, height/2), 90, 1)
-        #frame = cv2.warpAffine(frame, M, (width, height))
+        # frame = cv2.warpAffine(frame, M, (width, height))
 
         # process with GRIP stuff
         goalFinder.process(frame)
@@ -353,10 +369,10 @@ if __name__ == "__main__":
                     (bestPair[1][0][1] + bestPair[0][0][1]) / 2))
                 table.putNumber("Vision Correction",
                                 normalizeImage(rectangleMidpoint[0]))
-                print("Normalized: {}".format(rectangleMidpoint[0]))
                 cv2.circle(frame, (rectangleMidpoint), 3, (0, 255, 0), -1)
             else:
                 table.putBoolean("Vision Found", False)
-                print("NO VISION")
+        else:
+            table.putBoolean("Vision Found", False)
 
         outputStream.putFrame(frame)
