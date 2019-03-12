@@ -62,7 +62,7 @@ public class Robot extends CommandRobot {
         // cameraFront.setExposureAuto();
         // cameraBack.setExposureAuto();
         // videoSink = CameraServer.getInstance().getServer();
-        //videoSink.getProperty("compression").set(30);
+        // videoSink.getProperty("compression").set(30);
         cameraBack.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
         cameraFront.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
         // Initialize autonomous chooser
@@ -86,7 +86,6 @@ public class Robot extends CommandRobot {
      */
     @Override
     public void autonomousInit() {
-        //autonomousCommand = chooser.getSelected();
         autonomousCommand = lift.homePos();
 
         // schedule the autonomous command (example)
@@ -107,16 +106,16 @@ public class Robot extends CommandRobot {
     }
 
     // public Command switchCameras() {
-    //     return new InstantCommand(() -> {
-    //         System.out.println("Camera 0" + cameraBackActive);
-    //         if (!cameraBackActive) {
-    //             videoSink.setSource(cameraBack);
-    //             cameraBackActive = !cameraBackActive;
-    //         } else {
-    //             videoSink.setSource(cameraFront);
-    //             cameraBackActive = !cameraBackActive;
-    //         }
-    //     });
+    // return new InstantCommand(() -> {
+    // System.out.println("Camera 0" + cameraBackActive);
+    // if (!cameraBackActive) {
+    // videoSink.setSource(cameraBack);
+    // cameraBackActive = !cameraBackActive;
+    // } else {
+    // videoSink.setSource(cameraFront);
+    // cameraBackActive = !cameraBackActive;
+    // }
+    // });
     // }
 
     public Command goodFlip() {
@@ -165,7 +164,7 @@ public class Robot extends CommandRobot {
 
     public Command brightenCameras() {
         return new InstantCommand(() -> {
-            //cameraBack.setExposureAuto();
+            // cameraBack.setExposureAuto();
             cameraFront.setExposureAuto();
         });
     }
@@ -174,15 +173,15 @@ public class Robot extends CommandRobot {
         xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.BUMPER_LEFT).whenPressed(manipulator.openBeak());
         xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.BUMPER_RIGHT.get()).whenPressed(manipulator.closeBeak());
 
-        //driveController.getButton(ButtonXboxController.XBoxButton.Y).whenPressed(goodFlip());
-        //driveController.getButton(ButtonXboxController.XBoxButton.A).whenPressed(drive.align());
+        // driveController.getButton(ButtonXboxController.XBoxButton.Y).whenPressed(goodFlip());
+        // driveController.getButton(ButtonXboxController.XBoxButton.A).whenPressed(drive.align());
         driveController.getButton(ButtonXboxController.XBoxButton.BUMPER_LEFT).whileHeld(drive.leftSlowTurn());
         driveController.getButton(ButtonXboxController.XBoxButton.BUMPER_RIGHT).whileHeld(drive.rightSlowTurn());
         // manipulator.switchTrigger.whileActive(leds.turnOnGreen());
-        //xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.A).whenPressed(levelOne());
-        //xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.A).whileHeld(maflipulator.pressRotate());
-        //xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.A).whenReleased(stowAndGo());
-        //xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.B).whileHeld(levelTwo());
+        // xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.A).whenPressed(levelOne());
+        // xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.A).whileHeld(maflipulator.pressRotate());
+        // xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.A).whenReleased(stowAndGo());
+        // xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.B).whileHeld(levelTwo());
         // xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.B).whenReleased(stowAndGo());
         // xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.X).whileHeld(levelThree());
         // xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.X).whenReleased(stowAndGo());

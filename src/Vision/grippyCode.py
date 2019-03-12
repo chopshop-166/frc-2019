@@ -136,6 +136,8 @@ while(True):
             cv2.circle(frame, (rectangleMidpoint), 7, (0, 255, 0), -1)
         else:
             table.putBoolean("Vision Found", False)
+    else:
+        table.putBoolean("Vision Found", False)
 
             # should put a value from -1 to 1 depending on pair midpoint offset from image midpoint
 

@@ -22,7 +22,7 @@ public class Leds extends Subsystem {
         super();
         // Take values that the subsystem needs from the map, and store them in the
         // class
-        
+
         ldrive_can = new LightDriveCAN();
         ldrive_can.SetColor(1, Color.BLUE, 1.0);
         ldrive_can.SetColor(2, Color.BLUE, 1.0);
@@ -68,22 +68,6 @@ public class Leds extends Subsystem {
                 // Make this return true when this Command no longer needs to run execute()
                 return false;
             }
-
-            @Override
-            protected void end() {
-                // Called once after isFinished returns true
-                // ldrive_can.SetColor(1, Colors.OFF, 0);
-                // ldrive_can.SetColor(1, Color.OFF, 0);
-                // ldrive_can.Update();
-            }
-
-            // Called when another command which requires one or more of the same
-            // subsystems is scheduled to run
-            @Override
-            protected void interrupted() {
-                end();
-            }
-
         };
     }
 
