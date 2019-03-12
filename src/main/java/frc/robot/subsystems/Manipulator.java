@@ -16,9 +16,9 @@ import frc.robot.triggers.LimitSwitchTrigger;
 
 public class Manipulator extends Subsystem {
 
-    private SendableSpeedController pivotPointsMotor;
     private SendableSpeedController rollersMotor;
     private DoubleSolenoid beaksPiston;
+    private DoubleSolenoid armsPiston;
     private DigitalInput gamepieceLimitSwitch;
     private DigitalInput foldedBackLimitSwitch;
     private DigitalInput intakePositionLimitSwitch;
@@ -28,9 +28,9 @@ public class Manipulator extends Subsystem {
         super();
         // Take values that the subsystem needs from the map, and store them in the
         // class
-        pivotPointsMotor = map.getpivotPointsMotor();
         rollersMotor = map.getrollersMotor();
         beaksPiston = map.getbeaksPiston();
+        armsPiston = map.getArmsPiston()
         gamepieceLimitSwitch = map.getGamepieceLimitSwitch();
         foldedBackLimitSwitch = map.getfoldedBackLimitSwitch();
         intakePositionLimitSwitch = map.getintakePositionLimitSwitch();
@@ -41,9 +41,9 @@ public class Manipulator extends Subsystem {
     }
 
     public void addChildren() {
-        addChild(pivotPointsMotor);
         addChild(rollersMotor);
         addChild(beaksPiston);
+        addChild(armsPiston);
         addChild(gamepieceLimitSwitch);
         addChild(foldedBackLimitSwitch);
         addChild(intakePositionLimitSwitch);
@@ -98,6 +98,18 @@ public class Manipulator extends Subsystem {
         });
     }
 
+    public Command extendArms() {
+        return new InstantCommand("Extend Arms", this, () -> {
+            armsPiston.set(Value.kForward);
+        });
+    }
+
+    public Command retractArms() {
+        return new InstantCommand("Retract Arms", this, () -> {
+            armsPiston.set(Value.kReverse);
+        });
+    }
+
     public Command rollerIntake() {
         return new InstantCommand("Intake Rollers", this, () -> {
             rollersMotor.set(.2);
@@ -114,44 +126,6 @@ public class Manipulator extends Subsystem {
         return new InstantCommand("Stop Rollers", this, () -> {
             rollersMotor.set(0);
         });
-    }
-
-    public Command openArms() {
-        return new Command("Open Arms", this) {
-            @Override
-            protected void execute() {
-                pivotPointsMotor.set(.2);
-            }
-
-            @Override
-            protected boolean isFinished() {
-                return foldedBackLimitSwitch.get();
-            }
-
-            @Override
-            protected void end() {
-                pivotPointsMotor.set(0);
-            }
-        };
-    }
-
-    public Command closeArms() {
-        return new Command("Close Arms", this) {
-            @Override
-            protected void execute() {
-                pivotPointsMotor.set(-.2);
-            }
-
-            @Override
-            protected boolean isFinished() {
-                return intakePositionLimitSwitch.get();
-            }
-
-            @Override
-            protected void end() {
-                pivotPointsMotor.set(0);
-            }
-        };
     }
 
     public Command gamepieceCheck() {

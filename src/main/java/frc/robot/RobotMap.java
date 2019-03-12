@@ -45,6 +45,8 @@ public interface RobotMap {
 
         DoubleSolenoid getbeaksPiston();
 
+        DoubleSolenoid getArmsPiston();
+
         DigitalInput getGamepieceLimitSwitch();
 
         DigitalInput getfoldedBackLimitSwitch();
