@@ -69,7 +69,7 @@ public class Drive extends Subsystem {
     private final double visionCorrectionSpeed = 0.2;
     private final double visionCorrectionRange = 0.1;
 
-    private final double slowTurnSpeed = 0.3;
+    private final double slowTurnSpeed = 0.5;
 
     private final double driveDeadband = 0.05;
 
@@ -241,9 +241,9 @@ public class Drive extends Subsystem {
                 visionConfirmation = table.getEntry("Vision Found").getBoolean(false);
                 // drive.arcadeDrive(0, visionCorrectionMultiplier * visionCorrectionFactor);
                 if ((visionCorrectionFactor > driveDeadband) && (visionConfirmation == true))
-                    visionTurnSpeed = slowTurnSpeed;
+                    visionTurnSpeed = 0.3;
                 else if ((visionCorrectionFactor < -driveDeadband) && (visionConfirmation == true))
-                    visionTurnSpeed = -slowTurnSpeed;
+                    visionTurnSpeed = -0.3;
                 else
                     visionTurnSpeed = 0;
 
@@ -269,7 +269,7 @@ public class Drive extends Subsystem {
     }
 
     public Command visionPID() {
-        return new PIDCommand("Vision PID", .8, 0.0, 0.0, this) {
+        return new PIDCommand("Vision PID", .7, 0.05, 0.0, this) {
             PIDController visionPIDController;
 
             @Override
@@ -289,14 +289,14 @@ public class Drive extends Subsystem {
                 if (table.getEntry("Vision Found").getBoolean(false) == true) {
                     return table.getEntry("Vision Correction").getDouble(0);
                 } else {
+                    visionPIDController.reset();
                     return 0;
                 }
             }
 
             @Override
             protected void usePIDOutput(double visionOutput) {
-                drive.arcadeDrive(-Robot.driveController.getTriggerAxis(Hand.kRight)
-                        + Robot.driveController.getTriggerAxis(Hand.kLeft), visionOutput);
+                drive.arcadeDrive(-.5, -visionOutput);
             }
         };
     }
