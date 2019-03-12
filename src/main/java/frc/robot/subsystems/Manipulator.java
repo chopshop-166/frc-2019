@@ -11,7 +11,9 @@ import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.command.WaitCommand;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Robot;
 import frc.robot.RobotMap;
+import frc.robot.triggers.LimitSwitchTrigger;
 
 public class Manipulator extends Subsystem {
 
@@ -21,6 +23,7 @@ public class Manipulator extends Subsystem {
     private DigitalInput gamepieceLimitSwitch;
     private DigitalInput foldedBackLimitSwitch;
     private DigitalInput intakePositionLimitSwitch;
+    public LimitSwitchTrigger switchTrigger;
 
     public Manipulator(final RobotMap.ManipulatorMap map) { // NOPMD
         super();
@@ -32,6 +35,7 @@ public class Manipulator extends Subsystem {
         gamepieceLimitSwitch = map.getGamepieceLimitSwitch();
         foldedBackLimitSwitch = map.getfoldedBackLimitSwitch();
         intakePositionLimitSwitch = map.getintakePositionLimitSwitch();
+        switchTrigger = new LimitSwitchTrigger(gamepieceLimitSwitch);
         addChildren();
         SmartDashboard.putData(openBeak());
         SmartDashboard.putData(closeBeak());
@@ -50,6 +54,7 @@ public class Manipulator extends Subsystem {
     public void initDefaultCommand() {
         // Set the default command for a subsystem here.
         // setDefaultCommand(new MySpecialCommand());
+
     }
 
     // #region Command Chains
@@ -58,6 +63,14 @@ public class Manipulator extends Subsystem {
         retValue.then(openBeak()).then(rollerIntake()).then(closeArms()).then(gamepieceCheck()).then(rollerStop());
         return retValue;
     }
+
+    /*
+     * public Command ledHatchPanel() { if (gamepieceLimitSwitch.get()) { return new
+     * InstantCommand("turn on the green color", this, () -> {
+     * Robot.leds.turnOnGreen(true); });
+     * 
+     * } }
+     */
 
     public Command releaseCargo() {
         CommandChain retValue = new CommandChain("Release Cargo");

@@ -76,14 +76,52 @@ public class Drive extends Subsystem {
             @Override
             protected void execute() {
                 drive.arcadeDrive(
-                        Robot.driveController.getTriggerAxis(Hand.kRight)
-                                - Robot.driveController.getTriggerAxis(Hand.kLeft),
+                        - Robot.driveController.getTriggerAxis(Hand.kRight)
+                                 + Robot.driveController.getTriggerAxis(Hand.kLeft),
                         Robot.driveController.getX(Hand.kLeft));
             }
 
             @Override
             protected boolean isFinished() {
                 return false;
+            }
+        };
+    }
+
+    public Command leftSlowTurn() {
+        return new Command("Left Slow Turn", this) {
+
+            @Override
+            protected void execute() {
+                drive.arcadeDrive(0, -0.53);
+            }
+
+            @Override
+            protected boolean isFinished() {
+                return false;
+            }
+            @Override
+            protected void end(){ 
+                drive.arcadeDrive(0, 0);
+            }
+        };
+    }
+
+    public Command rightSlowTurn() {
+        return new Command("Right Slow Turn", this) {
+
+            @Override
+            protected void execute() {
+                drive.arcadeDrive(0, 0.5);
+            }
+
+            @Override
+            protected boolean isFinished() {
+                return false;
+            }
+            @Override
+            protected void end(){
+                drive.arcadeDrive(0, 0);
             }
         };
     }
