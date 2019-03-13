@@ -39,7 +39,6 @@ public interface RobotMap {
 
     interface ManipulatorMap {
 
-        SendableSpeedController getpivotPointsMotor();
 
         SendableSpeedController getrollersMotor();
 

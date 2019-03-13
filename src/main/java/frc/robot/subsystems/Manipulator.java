@@ -49,6 +49,8 @@ public class Manipulator extends Subsystem {
         addChild(intakePositionLimitSwitch);
     }
 
+    double rollerspeed = 0;
+
     @Override
     public void initDefaultCommand() {
         // Set the default command for a subsystem here.
@@ -112,13 +114,13 @@ public class Manipulator extends Subsystem {
 
     public Command rollerIntake() {
         return new InstantCommand("Intake Rollers", this, () -> {
-            rollersMotor.set(.2);
+            rollersMotor.set(rollerspeed);
         });
     }
 
     public Command rollerEject() {
         return new InstantCommand("Eject Rollers", this, () -> {
-            rollersMotor.set(-.2);
+            rollersMotor.set(-rollerspeed);
         });
     }
 
@@ -139,4 +141,34 @@ public class Manipulator extends Subsystem {
         };
     }
     // #endregion
-}
+    
+    public Command Intake() {
+        return new Command("Intake Ball", this) {
+
+            @Override
+            protected void initialize() {
+                armsPiston.set(Value.kForward);
+                rollersMotor.set(rollerspeed);
+            }
+
+            @Override
+            protected void end() {
+                armsPiston.set(Value.kReverse);
+                rollersMotor.set(0);
+            }
+
+        }
+    }
+
+        public TimedCommand Eject() {
+            return new TimedCommand("Eject Ball", 1) {
+                @Override
+                protected void initialize( {
+                    rollersMotor.set(-rollerspeed);
+                })
+
+                @Override
+                protected void end() {
+                    rollersMotor.set(0);
+                }
+            }

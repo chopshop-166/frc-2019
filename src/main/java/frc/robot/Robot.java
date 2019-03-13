@@ -200,6 +200,8 @@ public class Robot extends CommandRobot {
         // xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.X).whileHeld(levelThree());
         // xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.X).whenReleased(stowAndGo());
         // xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.STICK_LEFT).whenPressed(maflipulator.goToScoringPosition());
+        xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.Y).whileHeld(manipulator.Intake());
+        xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.STICK_RIGHT).whenPressed(manipulator.Eject());
     }
 
 }
