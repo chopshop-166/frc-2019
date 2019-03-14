@@ -9,6 +9,7 @@ import edu.wpi.cscore.VideoSink;
 import edu.wpi.cscore.VideoSource.ConnectionStrategy;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
+import edu.wpi.first.wpilibj.buttons.POVButton;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -38,14 +39,13 @@ public class Robot extends CommandRobot {
     final private LiftSubsystem lift = new LiftSubsystem(robotMap.getLiftMap());
     final private Manipulator manipulator = new Manipulator(robotMap.getManipulatorMap());
     public static ButtonXboxController driveController = new ButtonXboxController(5);
+    POVButton povDown = new POVButton(xBoxCoPilot, 270);
+    POVButton povUp = new POVButton(xBoxCoPilot, 90);
+    POVButton povRight = new POVButton(xBoxCoPilot, 0);
+    POVButton povLeft = new POVButton(xBoxCoPilot, 180);
     public static Leds leds = new Leds();
     private Command autonomousCommand;
     final private SendableChooser<Command> chooser = new SendableChooser<>();
-
-    // private UsbCamera cameraBack;
-    // private UsbCamera cameraFront;
-    // private VideoSink videoSink;
-    // private boolean cameraBackActive = true;
 
     /**
      * This function is run when the robot is first started up and should be used
@@ -132,26 +132,66 @@ public class Robot extends CommandRobot {
         return retValue;
     }
 
-    public Command levelOne() {
-        CommandChain retValue = new CommandChain("Level one");
+    public Command goToLoadingStation() {
+        CommandChain retValue = new CommandChain("Go to Loading Station");
 
         retValue.then(lift.goToHeight(Heights.kLoadingStation));
         return retValue;
 
     }
 
-    public Command levelTwo() {
-        CommandChain retValue = new CommandChain("Level 2");
+    public Command goToRocketMiddleHatch() {
+        CommandChain retValue = new CommandChain("Go to Rocket Middle Hatch");
 
         retValue.then(lift.goToHeight(Heights.kRocketHatchMid), maflipulator.goToScoringPosition());
         return retValue;
 
     }
 
-    public Command levelThree() {
-        CommandChain retValue = new CommandChain("Level 3");
+    public Command goToRocketHighHatch() {
+        CommandChain retValue = new CommandChain("Go to Rocket High Hatch");
 
         retValue.then(lift.goToHeight(Heights.kRocketHatchHigh), maflipulator.goToScoringPosition());
+        return retValue;
+
+    }
+
+    public Command goToRocketHighCargo() {
+        CommandChain retValue = new CommandChain("Go to Rocket High Cargo");
+
+        retValue.then(lift.goToHeight(Heights.kRocketCargoHigh), maflipulator.goToScoringPosition());
+        return retValue;
+
+    }
+
+    public Command goToRocketMiddleCargo() {
+        CommandChain retValue = new CommandChain("Go to Rocket Middle Cargo");
+
+        retValue.then(lift.goToHeight(Heights.kRocketCargoMid), maflipulator.goToScoringPosition());
+        return retValue;
+
+    }
+
+    public Command goToRocketLowCargo() {
+        CommandChain retValue = new CommandChain("Go to Rocket Low Cargo");
+
+        retValue.then(lift.goToHeight(Heights.kRocketCargoLow), maflipulator.goToScoringPosition());
+        return retValue;
+
+    }
+
+    public Command goToFloorLoad() {
+        CommandChain retValue = new CommandChain("Go to Floor Load");
+
+        retValue.then(lift.goToHeight(Heights.kFloorLoad), maflipulator.goToScoringPosition());
+        return retValue;
+
+    }
+
+    public Command goToCargoShipCargo() {
+        CommandChain retValue = new CommandChain("Go to Cargo Ship Cargo");
+
+        retValue.then(lift.goToHeight(Heights.kCargoShipCargo), maflipulator.goToScoringPosition());
         return retValue;
 
     }
@@ -178,15 +218,38 @@ public class Robot extends CommandRobot {
         driveController.getButton(ButtonXboxController.XBoxButton.A).whileHeld(drive.visionPID());
         driveController.getButton(ButtonXboxController.XBoxButton.BUMPER_LEFT).whileHeld(drive.leftSlowTurn());
         driveController.getButton(ButtonXboxController.XBoxButton.BUMPER_RIGHT).whileHeld(drive.rightSlowTurn());
+
         // manipulator.switchTrigger.whileActive(leds.turnOnGreen());
-        // xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.A).whenPressed(levelOne());
+
+        xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.A).whileHeld(goToLoadingStation());
+        xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.A).whenReleased(stowAndGo());
+
+        xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.Y).whenReleased(stowAndGo());
+        xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.Y).whileHeld(goToFloorLoad());
+
+        povUp.whenReleased(stowAndGo());
+        povUp.whileHeld(goToCargoShipCargo());
+
+        povDown.whenReleased(stowAndGo());
+        povDown.whileHeld(goToRocketLowCargo());
+
         // xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.A).whileHeld(maflipulator.pressRotate());
         // xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.A).whenReleased(stowAndGo());
-        // xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.B).whileHeld(levelTwo());
-        // xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.B).whenReleased(stowAndGo());
-        // xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.X).whileHeld(levelThree());
-        // xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.X).whenReleased(stowAndGo());
+
+        xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.B).whileHeld(goToRocketMiddleHatch());
+        xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.B).whenReleased(stowAndGo());
+
+        povRight.whenReleased(stowAndGo());
+        povRight.whileHeld(goToRocketMiddleCargo());
+
+        xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.X).whileHeld(goToRocketHighHatch());
+        xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.X).whenReleased(stowAndGo());
+        povLeft.whenReleased(stowAndGo());
+        povLeft.whileHeld(goToRocketHighCargo());
+
+        // xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.STICK_LEFT).whenReleased(stowAndGo());
         // xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.STICK_LEFT).whenPressed(maflipulator.goToScoringPosition());
+
     }
 
 }
