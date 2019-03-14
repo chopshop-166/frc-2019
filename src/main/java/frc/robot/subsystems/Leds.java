@@ -284,4 +284,53 @@ public class Leds extends Subsystem {
             }
         };
     }
+
+    public Command turnOnVisionLights () {
+        return new InstantCommand ("turn on the color known as vision", this, () - > {
+            ldrive_can.SetColor(3, Color.GREEN, 1);
+        });
+    }
+    
+    public Command turnOffVisionLights () {
+        return new InstantCommand ("turn off the color known as vision", this, () - > {
+            ldrive_can.SetColor(3, Color.OFF, 1);
+        });
+    }
+    
+     public Command blinkVisionLights(int frequency) {
+        return new Command("Blink Vision Lights", this) {
+            int counter = 0;
+            boolean lightsOn = true;
+
+            @Override
+            protected void initialize(){
+                counter = 0;
+                ldrive_can.SetColor(3, Color.GREEN, 1.0);
+                lightsOn = true;
+            }
+            @Override
+            protected void execute() {
+                if(counter %  frequency == 0){
+                    if(lightsOn == true){
+                        ldrive_can.SetColor(3, Color.OFF, 1.0);
+                        lightsOn = false;
+                    } else {
+                        ldrive_can.SetColor(3, Color.GREEN, 1.0);
+                        lightsOn = false;
+                    }
+                    
+                }
+                
+                ldrive_can.Update();
+                counter ++;
+
+            }
+
+            @Override
+            protected boolean isFinished() {
+                return false;
+            }
+        };
+    }
+
 }
