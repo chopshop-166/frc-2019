@@ -89,8 +89,8 @@ public class Drive extends Subsystem {
             @Override
             protected void execute() {
                 drive.arcadeDrive(
-                        -Robot.driveController.getTriggerAxis(Hand.kRight)
-                                + Robot.driveController.getTriggerAxis(Hand.kLeft),
+                        +Robot.driveController.getTriggerAxis(Hand.kRight)
+                                - Robot.driveController.getTriggerAxis(Hand.kLeft),
                         Robot.driveController.getX(Hand.kLeft));
             }
 
@@ -106,7 +106,7 @@ public class Drive extends Subsystem {
 
             @Override
             protected void execute() {
-                drive.arcadeDrive(0, slowTurnSpeed);
+                drive.arcadeDrive(0, -slowTurnSpeed);
             }
 
             @Override
@@ -126,7 +126,7 @@ public class Drive extends Subsystem {
 
             @Override
             protected void execute() {
-                drive.arcadeDrive(0, -slowTurnSpeed);
+                drive.arcadeDrive(0, slowTurnSpeed);
             }
 
             @Override

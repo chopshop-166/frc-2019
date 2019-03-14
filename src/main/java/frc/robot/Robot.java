@@ -221,34 +221,41 @@ public class Robot extends CommandRobot {
 
         // manipulator.switchTrigger.whileActive(leds.turnOnGreen());
 
-        xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.A).whileHeld(goToLoadingStation());
-        xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.A).whenReleased(stowAndGo());
-
-        xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.Y).whenReleased(stowAndGo());
-        xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.Y).whileHeld(goToFloorLoad());
-
-        povUp.whenReleased(stowAndGo());
-        povUp.whileHeld(goToCargoShipCargo());
-
-        povDown.whenReleased(stowAndGo());
-        povDown.whileHeld(goToRocketLowCargo());
-
-        // xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.A).whileHeld(maflipulator.pressRotate());
+        // xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.A).whileHeld(goToLoadingStation());
         // xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.A).whenReleased(stowAndGo());
 
-        xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.B).whileHeld(goToRocketMiddleHatch());
-        xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.B).whenReleased(stowAndGo());
+        // xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.Y).whenReleased(stowAndGo());
+        // xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.Y).whileHeld(goToFloorLoad());
 
-        povRight.whenReleased(stowAndGo());
-        povRight.whileHeld(goToRocketMiddleCargo());
+        // // povUp.whenReleased(stowAndGo());
+        // // povUp.whileHeld(goToCargoShipCargo());
 
-        xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.X).whileHeld(goToRocketHighHatch());
-        xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.X).whenReleased(stowAndGo());
-        povLeft.whenReleased(stowAndGo());
-        povLeft.whileHeld(goToRocketHighCargo());
+        // // povDown.whenReleased(stowAndGo());
+        // // povDown.whileHeld(goToRocketLowCargo());
 
+        // //
+        // xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.A).whileHeld(maflipulator.pressRotate());
+        // //
+        // xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.A).whenReleased(stowAndGo());
+
+        // xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.B).whileHeld(goToRocketMiddleHatch());
+        // xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.B).whenReleased(stowAndGo());
+
+        // povRight.whenReleased(stowAndGo());
+        // povRight.whileHeld(goToRocketMiddleCargo());
+
+        // xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.X).whileHeld(goToRocketHighHatch());
+        // xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.X).whenReleased(stowAndGo());
+        // povLeft.whenReleased(stowAndGo());
+        // povLeft.whileHeld(goToRocketHighCargo());
+
+        // //
         // xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.STICK_LEFT).whenReleased(stowAndGo());
+        // //
         // xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.STICK_LEFT).whenPressed(maflipulator.goToScoringPosition());
+
+        // xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.STICK_RIGHT).whenReleased(stowAndGo());
+        // xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.STICK_RIGHT).whenPressed(manipulator.releaseCargo());
 
     }
 
