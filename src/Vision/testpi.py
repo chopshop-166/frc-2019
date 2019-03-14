@@ -243,7 +243,7 @@ def startCamera(config):
     server = inst.startAutomaticCapture(camera=camera, return_server=True)
 
     camera.setConfigJson(json.dumps(config.config))
-    camera.setConnectionStrategy(VideoSource.ConnectionStrategy.kKeepOpen)
+    camera.setConnectionstrategy(VideoSource.Connectionstrategy.kKeepOpen)
 
     if config.streamConfig is not None:
         server.setConfigJson(json.dumps(config.streamConfig))
@@ -329,7 +329,7 @@ if __name__ == "__main__":
         cameras.append(startCamera(cameraConfig))
 
     cvSink = CameraServer.getInstance().getVideo()
-    outputStream = CameraServer.getInstance().putVideo("Front Camera", width, height)
+    outputstream = CameraServer.getInstance().putVideo("Front Camera", width, height)
 
     # Preallocating the frame object
     frame = np.zeros(shape=(height, width, 3), dtype=np.uint8)
@@ -375,4 +375,4 @@ if __name__ == "__main__":
         else:
             table.putBoolean("Vision Found", False)
 
-        outputStream.putFrame(frame)
+        outputstream.putFrame(frame)

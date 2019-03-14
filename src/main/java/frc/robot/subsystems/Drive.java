@@ -31,8 +31,8 @@ public class Drive extends Subsystem {
     private Encoder rightEncoder;
     private PIDGyro gyro;
     private DifferentialDrive drive;
-    NetworkTableInstance inst; // = NetworkTableInstance.getDefault();
-    NetworkTable table; // inst.getTable("Vision Correction Table");
+    NetworkTableInstance inst;
+    NetworkTable table;
 
     public Drive(final RobotMap.DriveMap map) { // NOPMD
         super();
@@ -106,7 +106,7 @@ public class Drive extends Subsystem {
 
             @Override
             protected void execute() {
-                drive.arcadeDrive(0, -slowTurnSpeed);
+                drive.arcadeDrive(0, slowTurnSpeed);
             }
 
             @Override
@@ -126,7 +126,7 @@ public class Drive extends Subsystem {
 
             @Override
             protected void execute() {
-                drive.arcadeDrive(0, slowTurnSpeed);
+                drive.arcadeDrive(0, -slowTurnSpeed);
             }
 
             @Override
@@ -239,25 +239,21 @@ public class Drive extends Subsystem {
             protected void execute() {
                 visionCorrectionFactor = table.getEntry("Vision Correction").getDouble(0);
                 visionConfirmation = table.getEntry("Vision Found").getBoolean(false);
+
                 // drive.arcadeDrive(0, visionCorrectionMultiplier * visionCorrectionFactor);
-                if ((visionCorrectionFactor > driveDeadband) && (visionConfirmation == true))
+                if ((visionCorrectionFactor > driveDeadband) && (visionConfirmation))
                     visionTurnSpeed = 0.3;
-                else if ((visionCorrectionFactor < -driveDeadband) && (visionConfirmation == true))
+                else if ((visionCorrectionFactor < -driveDeadband) && (visionConfirmation))
                     visionTurnSpeed = -0.3;
                 else
                     visionTurnSpeed = 0;
 
-                drive.arcadeDrive(-Robot.driveController.getTriggerAxis(Hand.kRight)
-                        + Robot.driveController.getTriggerAxis(Hand.kLeft), visionTurnSpeed);
+                drive.arcadeDrive(Robot.driveController.getTriggerAxis(Hand.kRight)
+                        - Robot.driveController.getTriggerAxis(Hand.kLeft), visionTurnSpeed);
             }
 
             @Override
             protected boolean isFinished() {
-                // if (visionCorrectionFactor <= visionCorrectionRange && visionCorrectionFactor
-                // >= -visionCorrectionRange)
-                // return true;
-                // else
-                // return false;
                 return false;
             }
 
