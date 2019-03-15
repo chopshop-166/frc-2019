@@ -50,25 +50,7 @@ public class Robot extends CommandRobot {
     @Override
     public void robotInit() {
         // Initialize OI here
-        // cameraBack = CameraServer.getInstance().startAutomaticCapture(0);
-        // cameraFront = CameraServer.getInstance().startAutomaticCapture(1);
-        // cameraBack.setResolution(320, 240);
-        // cameraFront.setResolution(320, 240);
-        // // cameraBack.setFPS(20);
-        // cameraFront.setFPS(20);
-        // cameraFront.setExposureAuto();
-        // cameraBack.setExposureAuto();
-        // videoSink = CameraServer.getInstance().getServer();
-        // videoSink.getProperty("compression").set(30);
-        // cameraBack.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
-        // cameraFront.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
-        // // Initialize autonomous chooser
-        // chooser.setDefaultOption("Default Auto", exampleSubsystem.sampleCommand());
-        // chooser.addOption("My Auto", new MyAutoCommand());
-        // SmartDashboard.putData("Auto mode", chooser);
-        // SmartDashboard.putData("Switch Cameras", switchCameras());
         // SmartDashboard.putData("Good Flip", goodFlip());
-        // SmartDashboard.putData("Darken Cameras", darkenCameras());
         assignButtons();
     }
 
