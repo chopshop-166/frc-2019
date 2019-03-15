@@ -46,12 +46,25 @@ public class LiftSubsystem extends Subsystem {
         SmartDashboard.putData("Rocket Hatch Mid", goToHeight(Heights.kRocketHatchMid));
         SmartDashboard.putData("Rocket Hatch High", goToHeight(Heights.kRocketHatchHigh));
 
-        SmartDashboard.putData("Loading Station yay", autoMoveLift(Heights.kLoadingStation));
-        SmartDashboard.putData("Rocket Hatch Mid yay", autoMoveLift(Heights.kRocketHatchMid));
-        SmartDashboard.putData("Rocket Hatch High yay", autoMoveLift(Heights.kRocketHatchHigh));
+        SmartDashboard.putData("Floor Load Cargo", goToHeight(Heights.kFloorLoad));
+        SmartDashboard.putData("Rocket Cargo Load", goToHeight(Heights.kRocketCargoLow));
+        SmartDashboard.putData("Rocket Cargo Middle", goToHeight(Heights.kRocketCargoMid));
+        SmartDashboard.putData("Rocket Cargo High", goToHeight(Heights.kRocketCargoHigh));
+        SmartDashboard.putData("Cargo Ship Cargo", goToHeight(Heights.kCargoShipCargo));
+
+        SmartDashboard.putData("Floor Load Cargo Auto", goToHeight(Heights.kFloorLoad));
+        SmartDashboard.putData("Rocket Cargo Load Auto", goToHeight(Heights.kRocketCargoLow));
+        SmartDashboard.putData("Rocket Cargo Middle Auto", goToHeight(Heights.kRocketCargoMid));
+        SmartDashboard.putData("Rocket Cargo High Auto", goToHeight(Heights.kRocketCargoHigh));
+        SmartDashboard.putData("Cargo Ship Cargo Auto", goToHeight(Heights.kCargoShipCargo));
+
+        SmartDashboard.putData("Loading Station Auto", autoMoveLift(Heights.kLoadingStation));
+        SmartDashboard.putData("Rocket Hatch Mid Auto", autoMoveLift(Heights.kRocketHatchMid));
+        SmartDashboard.putData("Rocket Hatch High Auto", autoMoveLift(Heights.kRocketHatchHigh));
 
     }
 
+    // urgay
     public enum Heights {
         // Loading Station 19"
         kLoadingStation(7.2),
@@ -59,13 +72,13 @@ public class LiftSubsystem extends Subsystem {
         kRocketCargoLow(13.4),
         // Middle rocket hatch 47"
         kRocketHatchMid(45.1),
-        // Middle rocket cargo 55"
+        // Middle rocket cargo 55.5"
         kRocketCargoMid(63.4),
         // Top rocket hatch 75" (MAX HEIGHT)
         kRocketHatchHigh(92.1),
         // Top rocket cargo 83.5"
         kRocketCargoHigh(0),
-        // floor load
+        // floor load 0"
         kFloorLoad(0.0),
         // cargo ship cargo 39.75"
         kCargoShipCargo(0),
@@ -205,8 +218,7 @@ public class LiftSubsystem extends Subsystem {
             protected boolean isFinished() {
                 // Make this return true when this Command no longer needs to run execute()
                 double currentHeight = heightEncoder.getDistance();
-                if (Math.abs(target.get() - currentHeight) < 1.0
-                        || (target.get() > currentHeight && !upperLimit.get())
+                if (Math.abs(target.get() - currentHeight) < 1.0 || (target.get() > currentHeight && !upperLimit.get())
                         || (target.get() < currentHeight && !lowerLimit.get())) {
                     return true;
                 } else {

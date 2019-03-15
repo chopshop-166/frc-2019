@@ -74,7 +74,7 @@ public class Maflipulator extends Subsystem {
     @Override
     public void initDefaultCommand() {
         // Set the default command for a subsystem here.
-        setDefaultCommand(pressRotate());
+        setDefaultCommand(manualRotate());
     }
 
     protected double restrict(double flipSpeed) {
@@ -121,7 +121,7 @@ public class Maflipulator extends Subsystem {
         };
     }
 
-    public Command pressRotate(){
+    public Command pressRotate() {
 
         return new Command("Press to Rotate", this) {
 
@@ -143,7 +143,6 @@ public class Maflipulator extends Subsystem {
 
         };
     }
-    
 
     public Command Flip() {
         return new ConditionalCommand("Flip", moveToPosition(FLIP_TO_FRONT_POSITION),

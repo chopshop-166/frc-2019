@@ -9,6 +9,7 @@ from networktables import NetworkTables
 cond = threading.Condition()
 notified = [False]
 
+print ("open cv version {}".format(cv2.__version__))
 
 def connectionListener(connected, info):
     print(info, '; Connected=%s' % connected)
@@ -17,15 +18,15 @@ def connectionListener(connected, info):
         cond.notify()
 
 
-NetworkTables.initialize(server='10.1.66.2')
+NetworkTables.initialize(server='10.1.66.4')
 NetworkTables.addConnectionListener(connectionListener, immediateNotify=True)
 table = NetworkTables.getTable('Vision Correction Table')
 with cond:
     if not notified[0]:
         cond.wait()
 
-#cap = cv2.VideoCapture(1)
-cap = cv2.VideoCapture("http://10.1.66.2:1181/?action=stream")
+cap = cv2.VideoCapture(1)
+cap = cv2.VideoCapture("http://10.1.66.5:1181/?action=stream")
 cap.set(10, 30)
 
 goalFinder = gripV2.gripV2()
@@ -102,15 +103,16 @@ def normalizeImage(pairMidpoint):
     return fullPairMidpoint
 
 
+
 # MAIN LOOP
-while(True):
+while True:
     # capture image
     ret, frame = cap.read()
-    cv2.waitKey(300)
+    cv2.waitKey(1)
 
     width = frame.shape[1]
     height = frame.shape[0]
-    M = cv2.getRotationMatrix2D((width/2, height/2), 90, 1)
+    M = cv2.getRotationMatrix2D((width/2, height/2), 0, 1)
     frame = cv2.warpAffine(frame, M, (width, height))
 
     # process with GRIP stuff
@@ -133,7 +135,7 @@ while(True):
                 (bestPair[1][0][1] + bestPair[0][0][1]) / 2))
             table.putNumber("Vision Correction",
                             normalizeImage(rectangleMidpoint[0]))
-            cv2.circle(frame, (rectangleMidpoint), 7, (0, 255, 0), -1)
+            cv2.circle(frame, (rectangleMidpoint), 5, (0, 255, 0), -1)
         else:
             table.putBoolean("Vision Found", False)
     else:

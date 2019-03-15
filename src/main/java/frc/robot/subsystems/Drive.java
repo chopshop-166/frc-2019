@@ -6,6 +6,7 @@ import com.chopshop166.chopshoplib.sensors.Lidar;
 import com.chopshop166.chopshoplib.sensors.PIDGyro;
 
 import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
@@ -14,8 +15,10 @@ import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.InstantCommand;
+import edu.wpi.first.wpilibj.command.PIDCommand;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 import frc.robot.RobotMap;
 
@@ -29,6 +32,8 @@ public class Drive extends Subsystem {
     private Encoder rightEncoder;
     private PIDGyro gyro;
     private DifferentialDrive drive;
+    NetworkTableInstance inst;
+    NetworkTable table;
 
     public Drive(final RobotMap.DriveMap map) { // NOPMD
         super();
@@ -47,6 +52,11 @@ public class Drive extends Subsystem {
         });
         drive = new DifferentialDrive(left, right);
         addChildren();
+
+        inst = NetworkTableInstance.getDefault();
+        table = inst.getTable("Vision Correction Table");
+
+        SmartDashboard.putData("VISIONNNNN", visionPID());
     }
 
     private void addChildren() {
@@ -56,9 +66,13 @@ public class Drive extends Subsystem {
         addChild(gyro);
     }
 
-    private final double visionCorrectionMultiplier = .25;
+    private final double visionCorrectionMultiplier = 2;
     private final double visionCorrectionSpeed = 0.2;
     private final double visionCorrectionRange = 0.1;
+
+    private final double slowTurnSpeed = 0.5;
+
+    private final double driveDeadband = 0.05;
 
     double gyroCorrection;
     PIDController gyroDrivePID;
@@ -76,8 +90,8 @@ public class Drive extends Subsystem {
             @Override
             protected void execute() {
                 drive.arcadeDrive(
-                        - Robot.driveController.getTriggerAxis(Hand.kRight)
-                                 + Robot.driveController.getTriggerAxis(Hand.kLeft),
+                        +Robot.driveController.getTriggerAxis(Hand.kRight)
+                                - Robot.driveController.getTriggerAxis(Hand.kLeft),
                         Robot.driveController.getX(Hand.kLeft));
             }
 
@@ -93,15 +107,16 @@ public class Drive extends Subsystem {
 
             @Override
             protected void execute() {
-                drive.arcadeDrive(0, -0.53);
+                drive.arcadeDrive(0, -slowTurnSpeed);
             }
 
             @Override
             protected boolean isFinished() {
                 return false;
             }
+
             @Override
-            protected void end(){ 
+            protected void end() {
                 drive.arcadeDrive(0, 0);
             }
         };
@@ -112,15 +127,16 @@ public class Drive extends Subsystem {
 
             @Override
             protected void execute() {
-                drive.arcadeDrive(0, 0.5);
+                drive.arcadeDrive(0, slowTurnSpeed);
             }
 
             @Override
             protected boolean isFinished() {
                 return false;
             }
+
             @Override
-            protected void end(){
+            protected void end() {
                 drive.arcadeDrive(0, 0);
             }
         };
@@ -216,28 +232,72 @@ public class Drive extends Subsystem {
 
     public Command align() {
         return new Command("align", this) {
-
-            NetworkTableInstance inst = NetworkTableInstance.getDefault();
-            NetworkTable table = inst.getTable("Vision Correction Table");
             double visionCorrectionFactor = table.getEntry("Vision Correction").getDouble(0);
+            boolean visionConfirmation = table.getEntry("Vision Found").getBoolean(false);
+            double visionTurnSpeed;
 
             @Override
             protected void execute() {
                 visionCorrectionFactor = table.getEntry("Vision Correction").getDouble(0);
-                drive.arcadeDrive(0, visionCorrectionMultiplier * visionCorrectionFactor);
+                visionConfirmation = table.getEntry("Vision Found").getBoolean(false);
+
+                // drive.arcadeDrive(0, visionCorrectionMultiplier * visionCorrectionFactor);
+                if ((visionCorrectionFactor > driveDeadband) && visionConfirmation)
+                    visionTurnSpeed = 0.3;
+                else if ((visionCorrectionFactor < -driveDeadband) && visionConfirmation)
+                    visionTurnSpeed = -0.3;
+                else
+                    visionTurnSpeed = 0;
+
+                drive.arcadeDrive(Robot.driveController.getTriggerAxis(Hand.kRight)
+                        - Robot.driveController.getTriggerAxis(Hand.kLeft), visionTurnSpeed);
             }
 
             @Override
             protected boolean isFinished() {
-                if (visionCorrectionFactor <= visionCorrectionRange && visionCorrectionFactor >= -visionCorrectionRange)
-                    return true;
-                else
-                    return false;
+                return false;
             }
 
             @Override
             protected void end() {
                 drive.stopMotor();
+            }
+        };
+    }
+
+    public Command visionPID() {
+        return new PIDCommand("Vision PID", .72, .009, 0.0, this) {
+            PIDController visionPIDController;
+            NetworkTableEntry visionFound;
+            NetworkTableEntry visionCorrection;
+
+            @Override
+            protected void initialize() {
+                visionPIDController = getPIDController();
+                visionPIDController.setAbsoluteTolerance(0.05);
+                visionFound = table.getEntry("Vision Found");
+                visionCorrection = table.getEntry("Vision Correction");
+
+            }
+
+            @Override
+            protected boolean isFinished() {
+                return visionPIDController.onTarget();
+            }
+
+            @Override
+            protected double returnPIDInput() {
+                if (visionFound.getBoolean(false) == true) {
+                    return visionCorrection.getDouble(0);
+                } else {
+                    visionPIDController.reset();
+                    return 0;
+                }
+            }
+
+            @Override
+            protected void usePIDOutput(double visionOutput) {
+                drive.arcadeDrive(.55, -visionOutput);
             }
         };
     }
