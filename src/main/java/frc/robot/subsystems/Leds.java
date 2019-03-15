@@ -1,15 +1,18 @@
 package frc.robot.subsystems;
 
-import com.chopshop166.chopshoplib.outputs.DigitalOutputDutyCycle;
-import com.mach.LightDrive.*;
+import java.util.List;
+import java.util.Arrays;
+import java.util.Iterator;
 
+import com.chopshop166.chopshoplib.outputs.DigitalOutputDutyCycle;
+import com.mach.LightDrive.Color;
+import com.mach.LightDrive.LightDriveCAN;
+
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.command.Subsystem;
-import frc.robot.RobotMap;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 public class Leds extends Subsystem {
     LightDriveCAN ldrive_can;
@@ -17,6 +20,8 @@ public class Leds extends Subsystem {
     Color amber = new Color(255, 191, 0);
     Color harlequin = new Color(43, 255, 0);
     Color fuschia = new Color(255, 0, 255);
+    private final static int leftBank = 1;
+    private final static int rightBank = 2;
 
     public Leds() { // NOPMD
         super();
@@ -24,8 +29,8 @@ public class Leds extends Subsystem {
         // class
 
         ldrive_can = new LightDriveCAN();
-        ldrive_can.SetColor(1, Color.BLUE, 1.0);
-        ldrive_can.SetColor(2, Color.BLUE, 1.0);
+        ldrive_can.SetColor(leftBank, Color.BLUE, 1.0);
+        ldrive_can.SetColor(rightBank, Color.BLUE, 1.0);
 
         ldrive_can.Update();
     }
@@ -44,21 +49,23 @@ public class Leds extends Subsystem {
         }
     }
 
-    public Command setTeamColor() {
-        // The command is named "Sample Command" and requires this subsystem.
+    public Command setTeamColor(Integer... banks) {
+
         return new Command("Set team color", this) {
 
             protected void initialize() {
                 // Called just before this Command runs the first time
+                Color color;
+
                 if (isBlueTeam()) {
-                    ldrive_can.SetColor(1, Color.BLUE, 1.0);
-                    ldrive_can.SetColor(2, Color.BLUE, 1.0);
-                    ldrive_can.SetColor(3, Color.BLUE, 1.0);
-                    ldrive_can.SetColor(4, Color.BLUE, 1.0);
+                    color = Color.BLUE;
 
                 } else {
-                    ldrive_can.SetColor(1, Color.RED, 1.0);
-                    ldrive_can.SetColor(2, Color.RED, 1.0);
+                    color = Color.RED;
+                }
+                for (Integer currentBank : banks) {
+                    ldrive_can.SetColor(currentBank, Color.OFF, 1.0);
+
                 }
                 ldrive_can.Update();
             }
@@ -71,14 +78,17 @@ public class Leds extends Subsystem {
         };
     }
 
-    public Command turnOnGreen() {
+    public Command turnOnGreen(Integer... banks) {
         // The command is named "Sample Command" and requires this subsystem.
         return new Command("Turn on the color known as verde", this) {
 
             @Override
             protected void execute() {
                 // Called repeatedly when this Command is scheduled to run
-                ldrive_can.SetColor(2, Color.GREEN, (float) 0.8);
+                for (Integer currentBank : banks) {
+                    ldrive_can.SetColor(currentBank, Color.GREEN, 1.0);
+
+                }
                 ldrive_can.Update();
             }
 
@@ -87,25 +97,19 @@ public class Leds extends Subsystem {
                 // Make this return true when this Command no longer needs to run execute()
                 return false;
             }
-
-            @Override
-            protected void end() {
-                // Called once after isFinished returns true
-                ldrive_can.SetColor(2, Color.OFF, (float) 0.8);
-
-            }
-
         };
     }
 
-    public Command turnOnRed() {
-        // The command is named "Sample Command" and requires this subsystem.
+    public Command turnOnRed(Integer... banks) {
         return new Command("Turn on the color known as rojo", this) {
 
             @Override
             protected void execute() {
                 // Called repeatedly when this Command is scheduled to run
-                ldrive_can.SetColor(3, Color.RED, (float) 0.8);
+                for (Integer currentBank : banks) {
+                    ldrive_can.SetColor(currentBank, Color.BLUE, 1.0);
+
+                }
                 ldrive_can.Update();
 
             }
@@ -115,25 +119,20 @@ public class Leds extends Subsystem {
                 // Make this return true when this Command no longer needs to run execute()
                 return false;
             }
-
-            @Override
-            protected void end() {
-                // Called once after isFinished returns true
-                ldrive_can.SetColor(2, Color.OFF, (float) 0.8);
-
-            }
-
         };
     }
 
-    public Command turnOnBlue() {
+    public Command turnOnBlue(Integer... banks) {
         // The command is named "Sample Command" and requires this subsystem.
-        return new Command("Turn on the color known as Azul", this) {
+        return new Command("Turn on the color known as azul", this) {
 
             @Override
             protected void execute() {
                 // Called repeatedly when this Command is scheduled to run
-                ldrive_can.SetColor(1, Color.BLUE, (float) 0.8);
+                for (Integer currentBank : banks) {
+                    ldrive_can.SetColor(currentBank, Color.BLUE, 1.0);
+
+                }
                 ldrive_can.Update();
 
             }
@@ -143,26 +142,21 @@ public class Leds extends Subsystem {
                 // Make this return true when this Command no longer needs to run execute()
                 return false;
             }
-
-            @Override
-            protected void end() {
-                ldrive_can.SetColor(2, Color.OFF, (float) 0.8);
-
-                // Called once after isFinished returns true
-            }
-
         };
     }
 
-    public Command killAllLights() {
+    public Command killAllLights(Integer... banks) {
         // The command is named "Sample Command" and requires this subsystem.
         return new Command("Turn on the color known as Azul", this) {
 
             @Override
             protected void execute() {
                 // Called repeatedly when this Command is scheduled to run
-                ldrive_can.SetColor(1, Color.OFF);
+                for (Integer currentBank : banks) {
+                    ldrive_can.SetColor(currentBank, Color.OFF, 1.0);
 
+                }
+                ldrive_can.Update();
             }
 
             @Override
@@ -170,10 +164,56 @@ public class Leds extends Subsystem {
                 // Make this return true when this Command no longer needs to run execute()
                 return false;
             }
+        };
+    }
+
+    public Command blinkLights(Color color, int frequency, Integer... banks) {
+        // The command is named "Sample Command" and requires this subsystem.
+        return new Command("Makes the lights go blink", this) {
+            int counter = 0;
+            boolean lightsOn = true;
+            Color color;
 
             @Override
-            protected void end() {
-                // Called once after isFinished returns true
+
+            protected void initialize() {
+                counter = 0;
+                // for (Integer currentBank : banks) {
+                // ldrive_can.SetColor(currentBank, color, 1.0);
+
+                // }
+                lightsOn = true;
+                // Color color;
+            }
+
+            @Override
+            protected void execute() {
+                // Color color;
+
+                // Called repeatedly when this Command is scheduled to run
+                if (counter % frequency == 0) {
+                    if (lightsOn == true) {
+                        color = Color.BLUE;
+                        lightsOn = false;
+                    } else {
+                        color = Color.OFF;
+                        lightsOn = false;
+                    }
+
+                }
+                for (Integer currentBank : banks) {
+                    ldrive_can.SetColor(currentBank, color, 1.0);
+                }
+
+                ldrive_can.Update();
+                counter++;
+
+            }
+
+            @Override
+            protected boolean isFinished() {
+                // Make this return true when this Command no longer needs to run execute()
+                return false;
             }
         };
     }
@@ -229,4 +269,54 @@ public class Leds extends Subsystem {
             }
         };
     }
+
+    public Command turnOnVisionLights() {
+        return new InstantCommand("turn on the color known as vision", this, () -> {
+            ldrive_can.SetColor(3, Color.GREEN, 1);
+        });
+    }
+
+    public Command turnOffVisionLights() {
+        return new InstantCommand("turn off the color known as vision", this, () -> {
+            ldrive_can.SetColor(3, Color.OFF, 1);
+        });
+    }
+
+    public Command blinkVisionLights(int frequency) {
+        return new Command("Blink Vision Lights", this) {
+            int counter = 0;
+            boolean lightsOn = true;
+
+            @Override
+            protected void initialize() {
+                counter = 0;
+                ldrive_can.SetColor(3, Color.GREEN, 1.0);
+                lightsOn = true;
+            }
+
+            @Override
+            protected void execute() {
+                if (counter % frequency == 0) {
+                    if (lightsOn == true) {
+                        ldrive_can.SetColor(3, Color.OFF, 1.0);
+                        lightsOn = false;
+                    } else {
+                        ldrive_can.SetColor(3, Color.GREEN, 1.0);
+                        lightsOn = false;
+                    }
+
+                }
+
+                ldrive_can.Update();
+                counter++;
+
+            }
+
+            @Override
+            protected boolean isFinished() {
+                return false;
+            }
+        };
+    }
+
 }

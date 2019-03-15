@@ -1,5 +1,7 @@
 package frc.robot;
 
+import java.util.Arrays;
+
 import com.chopshop166.chopshoplib.CommandRobot;
 import com.chopshop166.chopshoplib.commands.CommandChain;
 import com.chopshop166.chopshoplib.controls.ButtonXboxController;
@@ -15,9 +17,9 @@ import frc.robot.maps.Tempest;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Leds;
 import frc.robot.subsystems.LiftSubsystem;
+import frc.robot.subsystems.LiftSubsystem.Heights;
 import frc.robot.subsystems.Maflipulator;
 import frc.robot.subsystems.Manipulator;
-import frc.robot.subsystems.LiftSubsystem.Heights;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -50,7 +52,7 @@ public class Robot extends CommandRobot {
     @Override
     public void robotInit() {
         // Initialize OI here
-        // SmartDashboard.putData("Good Flip", goodFlip());
+        SmartDashboard.putData("Good Flip", goodFlip());
         assignButtons();
     }
 
@@ -161,9 +163,21 @@ public class Robot extends CommandRobot {
 
     }
 
+    public CommandChain LEDOpenBeak() {
+        CommandChain retValue = new CommandChain("Close Beak and Turn n Green LEDs");
+        retValue.then(manipulator.openBeak()).then(leds.turnOnGreen(1, 2));
+        return retValue;
+    }
+
+    public CommandChain LEDCloseBeak() {
+        CommandChain retValue = new CommandChain("Close Beak and reset LEDs");
+        retValue.then(manipulator.closeBeak()).then(leds.getDefaultCommand());
+        return retValue;
+    }
+
     public void assignButtons() {
-        xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.BUMPER_LEFT).whenPressed(manipulator.openBeak());
-        xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.BUMPER_RIGHT.get()).whenPressed(manipulator.closeBeak());
+        xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.BUMPER_LEFT).whenPressed(LEDOpenBeak());
+        xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.BUMPER_RIGHT.get()).whenPressed(LEDCloseBeak());
 
         driveController.getButton(ButtonXboxController.XBoxButton.Y).whenPressed(goodFlip());
         driveController.getButton(ButtonXboxController.XBoxButton.A).whileHeld(drive.visionPID());

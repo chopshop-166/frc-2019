@@ -9,17 +9,17 @@ import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.command.TimedCommand;
 import edu.wpi.first.wpilibj.command.WaitCommand;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.Robot;
 import frc.robot.RobotMap;
 import frc.robot.triggers.LimitSwitchTrigger;
 
 public class Manipulator extends Subsystem {
 
-    private SendableSpeedController pivotPointsMotor;
     private SendableSpeedController rollersMotor;
     private DoubleSolenoid beaksPiston;
+    private DoubleSolenoid armsPiston;
     private DigitalInput gamepieceLimitSwitch;
     private DigitalInput foldedBackLimitSwitch;
     private DigitalInput intakePositionLimitSwitch;
@@ -29,9 +29,9 @@ public class Manipulator extends Subsystem {
         super();
         // Take values that the subsystem needs from the map, and store them in the
         // class
-        pivotPointsMotor = map.getpivotPointsMotor();
         rollersMotor = map.getrollersMotor();
         beaksPiston = map.getbeaksPiston();
+        armsPiston = map.getArmsPiston();
         gamepieceLimitSwitch = map.getGamepieceLimitSwitch();
         foldedBackLimitSwitch = map.getfoldedBackLimitSwitch();
         intakePositionLimitSwitch = map.getintakePositionLimitSwitch();
@@ -42,13 +42,15 @@ public class Manipulator extends Subsystem {
     }
 
     public void addChildren() {
-        addChild(pivotPointsMotor);
         addChild(rollersMotor);
         addChild(beaksPiston);
+        addChild(armsPiston);
         addChild(gamepieceLimitSwitch);
         addChild(foldedBackLimitSwitch);
         addChild(intakePositionLimitSwitch);
     }
+
+    double rollerspeed = 0;
 
     @Override
     public void initDefaultCommand() {
@@ -60,7 +62,7 @@ public class Manipulator extends Subsystem {
     // #region Command Chains
     public Command pickUpCargo() {
         CommandChain retValue = new CommandChain("Pick up Cargo");
-        retValue.then(openBeak()).then(rollerIntake()).then(closeArms()).then(gamepieceCheck()).then(rollerStop());
+        retValue.then(openBeak()).then(rollerIntake()).then(retractArms()).then(gamepieceCheck()).then(rollerStop());
         return retValue;
     }
 
@@ -80,7 +82,7 @@ public class Manipulator extends Subsystem {
 
     public Command pickUpHatch() {
         CommandChain retValue = new CommandChain("Pick Up Hatch");
-        retValue.then(closeBeak()).then(openArms()).then(gamepieceCheck()).then(openBeak());
+        retValue.then(closeBeak()).then(retractArms()).then(gamepieceCheck()).then(openBeak());
         return retValue;
     }
 
@@ -99,15 +101,27 @@ public class Manipulator extends Subsystem {
         });
     }
 
+    public Command extendArms() {
+        return new InstantCommand("Extend Arms", this, () -> {
+            armsPiston.set(Value.kForward);
+        });
+    }
+
+    public Command retractArms() {
+        return new InstantCommand("Retract Arms", this, () -> {
+            armsPiston.set(Value.kReverse);
+        });
+    }
+
     public Command rollerIntake() {
         return new InstantCommand("Intake Rollers", this, () -> {
-            rollersMotor.set(.2);
+            rollersMotor.set(rollerspeed);
         });
     }
 
     public Command rollerEject() {
         return new InstantCommand("Eject Rollers", this, () -> {
-            rollersMotor.set(-.2);
+            rollersMotor.set(-rollerspeed);
         });
     }
 
@@ -115,44 +129,6 @@ public class Manipulator extends Subsystem {
         return new InstantCommand("Stop Rollers", this, () -> {
             rollersMotor.set(0);
         });
-    }
-
-    public Command openArms() {
-        return new Command("Open Arms", this) {
-            @Override
-            protected void execute() {
-                pivotPointsMotor.set(.2);
-            }
-
-            @Override
-            protected boolean isFinished() {
-                return foldedBackLimitSwitch.get();
-            }
-
-            @Override
-            protected void end() {
-                pivotPointsMotor.set(0);
-            }
-        };
-    }
-
-    public Command closeArms() {
-        return new Command("Close Arms", this) {
-            @Override
-            protected void execute() {
-                pivotPointsMotor.set(-.2);
-            }
-
-            @Override
-            protected boolean isFinished() {
-                return intakePositionLimitSwitch.get();
-            }
-
-            @Override
-            protected void end() {
-                pivotPointsMotor.set(0);
-            }
-        };
     }
 
     public Command gamepieceCheck() {
@@ -166,4 +142,46 @@ public class Manipulator extends Subsystem {
         };
     }
     // #endregion
+
+    public Command Intake() {
+        return new Command("Intake Ball", this) {
+
+            @Override
+            protected void initialize() {
+                armsPiston.set(Value.kForward);
+                rollersMotor.set(rollerspeed);
+            }
+
+            @Override
+            protected boolean isFinished() {
+                return false;
+            }
+
+            @Override
+            protected void end() {
+                armsPiston.set(Value.kReverse);
+                rollersMotor.set(0);
+            }
+        };
+    }
+
+    public TimedCommand Eject() {
+        return new TimedCommand("Eject Ball", 1) {
+
+            @Override
+            protected void initialize() {
+                rollersMotor.set(-rollerspeed);
+            }
+
+            @Override
+            protected boolean isFinished() {
+                return false;
+            }
+
+            @Override
+            protected void end() {
+                rollersMotor.set(0);
+            }
+        };
+    }
 }
