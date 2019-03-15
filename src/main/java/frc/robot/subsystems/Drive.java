@@ -6,6 +6,7 @@ import com.chopshop166.chopshoplib.sensors.Lidar;
 import com.chopshop166.chopshoplib.sensors.PIDGyro;
 
 import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
@@ -241,9 +242,9 @@ public class Drive extends Subsystem {
                 visionConfirmation = table.getEntry("Vision Found").getBoolean(false);
 
                 // drive.arcadeDrive(0, visionCorrectionMultiplier * visionCorrectionFactor);
-                if ((visionCorrectionFactor > driveDeadband) && (visionConfirmation))
+                if ((visionCorrectionFactor > driveDeadband) && visionConfirmation)
                     visionTurnSpeed = 0.3;
-                else if ((visionCorrectionFactor < -driveDeadband) && (visionConfirmation))
+                else if ((visionCorrectionFactor < -driveDeadband) && visionConfirmation)
                     visionTurnSpeed = -0.3;
                 else
                     visionTurnSpeed = 0;
@@ -267,11 +268,15 @@ public class Drive extends Subsystem {
     public Command visionPID() {
         return new PIDCommand("Vision PID", .72, .009, 0.0, this) {
             PIDController visionPIDController;
+            NetworkTableEntry visionFound;
+            NetworkTableEntry visionCorrection;
 
             @Override
             protected void initialize() {
                 visionPIDController = getPIDController();
                 visionPIDController.setAbsoluteTolerance(0.05);
+                visionFound = table.getEntry("Vision Found");
+                visionCorrection = table.getEntry("Vision Correction");
 
             }
 
@@ -282,8 +287,8 @@ public class Drive extends Subsystem {
 
             @Override
             protected double returnPIDInput() {
-                if (table.getEntry("Vision Found").getBoolean(false) == true) {
-                    return table.getEntry("Vision Correction").getDouble(0);
+                if (visionFound.getBoolean(false) == true) {
+                    return visionCorrection.getDouble(0);
                 } else {
                     visionPIDController.reset();
                     return 0;

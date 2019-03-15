@@ -36,11 +36,11 @@ from networktables import NetworkTablesInstance
 #                       "value": <property value>
 #                   }
 #               ],
-#               "stream": {                              // optional
+#               "modeeam": {                              // optional
 #                   "properties": [
 #                       {
-#                           "name": <stream property name>
-#                           "value": <stream property value>
+#                           "name": <modeeam property name>
+#                           "value": <modeeam property value>
 #                       }
 #                   ]
 #               }
@@ -134,8 +134,8 @@ cameraConfigs = []
 """Report parse error."""
 
 
-def parseError(str):
-    print("config error in '" + configFile + "': " + str, file=sys.stderr)
+def parseError(mode):
+    print("config error in '" + configFile + "': " + mode, file=sys.stderr)
 
 
 """Read single camera configuration."""
@@ -174,8 +174,8 @@ def readCameraConfig(config):
         parseError("could not read height")
         return False
 
-    # stream properties
-    cam.streamConfig = config.get("stream")
+    # modeeam properties
+    cam.modeeamConfig = config.get("modeeam")
 
     cam.config = config
 
@@ -212,13 +212,13 @@ def readConfig():
 
     # ntmode (optional)
     if "ntmode" in j:
-        str = j["ntmode"]
-        if str.lower() == "client":
+        mode = j["ntmode"]
+        if mode.lower() == "client":
             server = False
-        elif str.lower() == "server":
+        elif mode.lower() == "server":
             server = True
         else:
-            parseError("could not understand ntmode value '{}'".format(str))
+            parseError("could not understand ntmode value '{}'".format(mode))
 
     # cameras
     try:
@@ -243,10 +243,10 @@ def startCamera(config):
     server = inst.startAutomaticCapture(camera=camera, return_server=True)
 
     camera.setConfigJson(json.dumps(config.config))
-    camera.setConnectionstrategy(VideoSource.Connectionstrategy.kKeepOpen)
+    camera.setConnectionmodeategy(VideoSource.Connectionmodeategy.kKeepOpen)
 
-    if config.streamConfig is not None:
-        server.setConfigJson(json.dumps(config.streamConfig))
+    if config.modeeamConfig is not None:
+        server.setConfigJson(json.dumps(config.modeeamConfig))
 
     return camera
 
@@ -329,7 +329,7 @@ if __name__ == "__main__":
         cameras.append(startCamera(cameraConfig))
 
     cvSink = CameraServer.getInstance().getVideo()
-    outputstream = CameraServer.getInstance().putVideo("Front Camera", width, height)
+    outputmodeeam = CameraServer.getInstance().putVideo("Front Camera", width, height)
 
     # Preallocating the frame object
     frame = np.zeros(shape=(height, width, 3), dtype=np.uint8)
@@ -375,4 +375,4 @@ if __name__ == "__main__":
         else:
             table.putBoolean("Vision Found", False)
 
-        outputstream.putFrame(frame)
+        outputmodeeam.putFrame(frame)
