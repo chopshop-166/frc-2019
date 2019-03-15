@@ -4,10 +4,6 @@ import com.chopshop166.chopshoplib.CommandRobot;
 import com.chopshop166.chopshoplib.commands.CommandChain;
 import com.chopshop166.chopshoplib.controls.ButtonXboxController;
 
-import edu.wpi.cscore.UsbCamera;
-import edu.wpi.cscore.VideoSink;
-import edu.wpi.cscore.VideoSource.ConnectionStrategy;
-import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.buttons.POVButton;
 import edu.wpi.first.wpilibj.command.Command;
@@ -106,19 +102,6 @@ public class Robot extends CommandRobot {
         }
     }
 
-    // public Command switchCameras() {
-    // return new InstantCommand(() -> {
-    // System.out.println("Camera 0" + cameraBackActive);
-    // if (!cameraBackActive) {
-    // videoSink.setSource(cameraBack);
-    // cameraBackActive = !cameraBackActive;
-    // } else {
-    // videoSink.setSource(cameraFront);
-    // cameraBackActive = !cameraBackActive;
-    // }
-    // });
-    // }
-
     public Command goodFlip() {
         CommandChain retValue = new CommandChain("Good Flip");
 
@@ -195,20 +178,6 @@ public class Robot extends CommandRobot {
         return retValue;
 
     }
-
-    // public Command darkenCameras() {
-    // return new InstantCommand(() -> {
-    // // cameraBack.setBrightness(0);
-    // cameraFront.setBrightness(0);
-    // });
-    // }
-
-    // public Command brightenCameras() {
-    // return new InstantCommand(() -> {
-    // //cameraBack.setExposureAuto();
-    // cameraFront.setExposureAuto();
-    // });
-    // }
 
     public void assignButtons() {
         xBoxCoPilot.getButton(ButtonXboxController.XBoxButton.BUMPER_LEFT).whenPressed(manipulator.openBeak());
