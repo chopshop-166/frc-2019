@@ -58,7 +58,7 @@ public class Leds extends Subsystem {
                     color = Color.RED;
                 }
                 for (Integer currentBank : banks) {
-                    ldrive_can.SetColor(currentBank, Color.OFF, 1.0);
+                    ldrive_can.SetColor(currentBank, color, 1.0);
 
                 }
                 ldrive_can.Update();
@@ -95,7 +95,7 @@ public class Leds extends Subsystem {
             @Override
             protected void execute() {
                 for (Integer currentBank : banks) {
-                    ldrive_can.SetColor(currentBank, Color.BLUE, 1.0);
+                    ldrive_can.SetColor(currentBank, Color.RED, 1.0);
                 }
                 ldrive_can.Update();
             }

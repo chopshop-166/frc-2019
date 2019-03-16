@@ -4,8 +4,11 @@ import com.chopshop166.chopshoplib.CommandRobot;
 import com.chopshop166.chopshoplib.commands.CommandChain;
 import com.chopshop166.chopshoplib.controls.ButtonXboxController;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.buttons.POVButton;
 import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.maps.CurrentRobot;
@@ -69,6 +72,10 @@ public class Robot extends CommandRobot {
         if (autonomousCommand != null) {
             autonomousCommand.start();
         }
+        Shuffleboard.startRecording();
+        DriverStation ds = DriverStation.getInstance();
+        Shuffleboard.addEventMarker(ds.getEventName() + " " + ds.getMatchType() + " " + ds.getMatchNumber(),
+                EventImportance.kNormal);
     }
 
     @Override
@@ -80,6 +87,12 @@ public class Robot extends CommandRobot {
         if (autonomousCommand != null) {
             autonomousCommand.cancel();
         }
+        Shuffleboard.addEventMarker("Sandstorm has ended", EventImportance.kNormal);
+    }
+
+    @Override
+    public void disabledInit() {
+        Shuffleboard.stopRecording();
     }
 
     public Command goodFlip() {
@@ -167,18 +180,25 @@ public class Robot extends CommandRobot {
 
     public CommandChain LEDCloseBeak() {
         CommandChain retValue = new CommandChain("Close Beak and reset LEDs");
-        retValue.then(manipulator.closeBeak()).then(leds.getDefaultCommand());
+        retValue.then(manipulator.closeBeak()).then(leds.setTeamColor());
         return retValue;
     }
 
     public void assignButtons() {
-        xBoxCoPilot.getButton(XBoxButton.BUMPER_LEFT).whenPressed(LEDOpenBeak());
-        xBoxCoPilot.getButton(XBoxButton.BUMPER_RIGHT.get()).whenPressed(LEDCloseBeak());
+        xBoxCoPilot.getButton(XBoxButton.BUMPER_LEFT).whenPressed(manipulator.openBeak());
+        xBoxCoPilot.getButton(XBoxButton.BUMPER_RIGHT.get()).whenPressed(manipulator.closeBeak());
 
         driveController.getButton(XBoxButton.Y).whenPressed(goodFlip());
         driveController.getButton(XBoxButton.A).whileHeld(drive.visionPID());
         driveController.getButton(XBoxButton.BUMPER_LEFT).whileHeld(drive.leftSlowTurn());
         driveController.getButton(XBoxButton.BUMPER_RIGHT).whileHeld(drive.rightSlowTurn());
+
+        xBoxCoPilot.getButton(XBoxButton.X).whenPressed(manipulator.extendArms());
+        xBoxCoPilot.getButton(XBoxButton.B).whenPressed(manipulator.retractArms());
+        xBoxCoPilot.getButton(XBoxButton.A).whenPressed(manipulator.Eject());
+        xBoxCoPilot.getButton(XBoxButton.Y).whileHeld(manipulator.Intake());
+        // xBoxCoPilot.getButton(XBoxButton.A).whenPressed(manipulator.extendArms());
+        // xBoxCoPilot.getButton(XBoxButton.A).whenPressed(manipulator.extendArms());
 
         // manipulator.switchTrigger.whileActive(leds.turnOnGreen());
 
@@ -209,8 +229,6 @@ public class Robot extends CommandRobot {
         // //
         // xBoxCoPilot.getButton(XBoxButton.STICK_LEFT).whenReleased(stowAndGo());
         // xBoxCoPilot.getButton(XBoxButton.STICK_LEFT).whenPressed(maflipulator.goToScoringPosition());
-        // xBoxCoPilot.getButton(XBoxButton.STICK_RIGHT).whenPressed(manipulator.Eject());
-        // xBoxCoPilot.getButton(XBoxButton.STICK_RIGHT).whenPressed(manipulator.Intake());
 
     }
 
