@@ -62,7 +62,9 @@ public class CurrentRobot implements RobotMap {
 
             @Override
             public SendableSpeedController getrollersMotor() {
-                return new MockSpeedController();
+                WPI_TalonSRX cargoMotorController = new WPI_TalonSRX(10);
+                cargoMotorController.configContinuousCurrentLimit(5);
+                return SendableSpeedController.wrap(cargoMotorController);
             }
 
             @Override
@@ -87,7 +89,7 @@ public class CurrentRobot implements RobotMap {
 
             @Override
             public DoubleSolenoid getArmsPiston() {
-                return null;
+                return new DoubleSolenoid(2, 3);
             }
         };
     }
@@ -145,7 +147,7 @@ public class CurrentRobot implements RobotMap {
 
             @Override
             public SendableSpeedController getFlipMotor() {
-                return SendableSpeedController.wrap(new WPI_TalonSRX(10));
+                return SendableSpeedController.wrap(new WPI_VictorSPX(9));
             }
 
             @Override

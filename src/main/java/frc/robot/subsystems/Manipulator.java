@@ -132,7 +132,7 @@ public class Manipulator extends Subsystem {
     }
 
     public Command gamepieceCheck() {
-        // This command will pick up a ball
+        // This command will check if a gamepiece is held
         return new Command("Check for Gamepiece", this) {
 
             @Override
@@ -166,16 +166,11 @@ public class Manipulator extends Subsystem {
     }
 
     public TimedCommand Eject() {
-        return new TimedCommand("Eject Ball", 1) {
+        return new TimedCommand("Eject Ball", 1, this) {
 
             @Override
             protected void initialize() {
                 rollersMotor.set(-rollerspeed);
-            }
-
-            @Override
-            protected boolean isFinished() {
-                return false;
             }
 
             @Override
