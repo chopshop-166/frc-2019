@@ -102,6 +102,24 @@ public class Drive extends Subsystem {
         };
     }
 
+    public Command driveBackWards() {
+        return new Command("driveBackwards", this) {
+
+            @Override
+            protected void execute() {
+                drive.arcadeDrive(
+                        -Robot.driveController.getTriggerAxis(Hand.kRight)
+                                + Robot.driveController.getTriggerAxis(Hand.kLeft),
+                        Robot.driveController.getX(Hand.kLeft));
+            }
+
+            @Override
+            protected boolean isFinished() {
+                return false;
+            }
+        };
+    }
+
     public Command leftSlowTurn() {
         return new Command("Left Slow Turn", this) {
 

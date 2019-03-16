@@ -72,6 +72,7 @@ public class Robot extends CommandRobot {
         if (autonomousCommand != null) {
             autonomousCommand.start();
         }
+        // we can know the match types and event names and match number
         Shuffleboard.startRecording();
         DriverStation ds = DriverStation.getInstance();
         Shuffleboard.addEventMarker(ds.getEventName() + " " + ds.getMatchType() + " " + ds.getMatchNumber(),
@@ -84,6 +85,7 @@ public class Robot extends CommandRobot {
         // teleop starts running. If you want the autonomous to
         // continue until interrupted by another command, remove
         // this line or comment it out.
+        // This will record the details of the match
         if (autonomousCommand != null) {
             autonomousCommand.cancel();
         }
@@ -192,6 +194,8 @@ public class Robot extends CommandRobot {
         driveController.getButton(XBoxButton.A).whileHeld(drive.visionPID());
         driveController.getButton(XBoxButton.BUMPER_LEFT).whileHeld(drive.leftSlowTurn());
         driveController.getButton(XBoxButton.BUMPER_RIGHT).whileHeld(drive.rightSlowTurn());
+        driveController.getButton(XBoxButton.START).whenPressed(maflipulator.cancel());
+        driveController.getButton(XBoxButton.X).toggleWhenPressed(drive.driveBackWards());
 
         xBoxCoPilot.getButton(XBoxButton.X).whenPressed(manipulator.extendArms());
         xBoxCoPilot.getButton(XBoxButton.B).whenPressed(manipulator.retractArms());

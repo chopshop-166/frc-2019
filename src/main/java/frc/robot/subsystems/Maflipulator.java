@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.ConditionalCommand;
+import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.command.PIDCommand;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.interfaces.Potentiometer;
@@ -74,7 +75,7 @@ public class Maflipulator extends Subsystem {
     @Override
     public void initDefaultCommand() {
         // Set the default command for a subsystem here.
-        setDefaultCommand(manualRotate());
+        setDefaultCommand(pressRotate());
     }
 
     protected double restrict(double flipSpeed) {
@@ -264,5 +265,10 @@ public class Maflipulator extends Subsystem {
             }
 
         };
+    }
+
+    public Command cancel() {
+        return new InstantCommand("cancel", this, () -> {
+        });
     }
 }

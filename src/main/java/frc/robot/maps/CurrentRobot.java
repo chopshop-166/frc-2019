@@ -63,7 +63,7 @@ public class CurrentRobot implements RobotMap {
             @Override
             public SendableSpeedController getrollersMotor() {
                 WPI_TalonSRX cargoMotorController = new WPI_TalonSRX(10);
-                cargoMotorController.configContinuousCurrentLimit(5);
+                cargoMotorController.configContinuousCurrentLimit(20);
                 return SendableSpeedController.wrap(cargoMotorController);
             }
 

@@ -50,7 +50,7 @@ public class Manipulator extends Subsystem {
         addChild(intakePositionLimitSwitch);
     }
 
-    double rollerspeed = 0;
+    double rollerspeed = .7;
 
     @Override
     public void initDefaultCommand() {
