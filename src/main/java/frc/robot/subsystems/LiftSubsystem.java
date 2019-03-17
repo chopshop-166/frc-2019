@@ -75,7 +75,7 @@ public class LiftSubsystem extends Subsystem {
         // Middle rocket cargo 55.5"
         kRocketCargoMid(63.4),
         // Top rocket hatch 75" (MAX HEIGHT)
-        kRocketHatchHigh(92.1),
+        kRocketHatchHigh(90),
         // Top rocket cargo 83.5"
         kRocketCargoHigh(0),
         // floor load 0"
@@ -83,7 +83,7 @@ public class LiftSubsystem extends Subsystem {
         // cargo ship cargo 39.75"
         kCargoShipCargo(0),
         // Height needed to flip over
-        kLiftFlipHeight(25);
+        kLiftFlipHeight(35);
 
         private double value;
 
@@ -144,12 +144,12 @@ public class LiftSubsystem extends Subsystem {
     }
 
     public Command autoMoveLift(Heights target) {
-        return new PIDCommand("Auto Move Lift", .0213, 0, 0, 0, this) {
+        return new PIDCommand("Auto Move Lift", .0016, 0.0002, 0, 0, this) {
             @Override
             protected void initialize() {
                 brake.set(Value.kReverse);
                 setSetpoint(target.value);
-                getPIDController().setAbsoluteTolerance(1);
+                getPIDController().setAbsoluteTolerance(4);
             }
 
             @Override
