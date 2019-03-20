@@ -82,7 +82,7 @@ public class Tempest implements RobotMap {
 
             @Override
             public DoubleSolenoid getArmsPiston() {
-                return null;
+                return new DoubleSolenoid(0, 1);
             }
         };
     }
