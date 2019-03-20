@@ -129,19 +129,4 @@ public class Tempest implements RobotMap {
             }
         };
     }
-
-    public MaflipulatorMap getMaflipulatorMap() {
-        return new MaflipulatorMap() {
-
-            @Override
-            public SendableSpeedController getFlipMotor() {
-                return SendableSpeedController.wrap(new WPI_TalonSRX(5));
-            }
-
-            @Override
-            public Potentiometer getMaflipulatorPot() {
-                return new MockPotentiometer();
-            }
-        };
-    }
 }

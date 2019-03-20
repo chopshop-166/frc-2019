@@ -70,7 +70,7 @@ public class Drive extends Subsystem {
     private final double visionCorrectionSpeed = 0.2;
     private final double visionCorrectionRange = 0.1;
 
-    private final double slowTurnSpeed = 0.65;
+    private final double slowTurnSpeed = 0.4;
 
     private final double driveDeadband = 0.05;
 

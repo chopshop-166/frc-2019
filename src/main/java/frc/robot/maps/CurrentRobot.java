@@ -140,22 +140,4 @@ public class CurrentRobot implements RobotMap {
             }
         };
     }
-
-    @Override
-    public MaflipulatorMap getMaflipulatorMap() {
-        return new MaflipulatorMap() {
-
-            @Override
-            public SendableSpeedController getFlipMotor() {
-                return SendableSpeedController.wrap(new WPI_VictorSPX(9));
-            }
-
-            @Override
-            public Potentiometer getMaflipulatorPot() {
-                AnalogPotentiometer potentiometer = new AnalogPotentiometer(3);
-                return potentiometer;
-
-            }
-        };
-    }
 }

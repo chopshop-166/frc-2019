@@ -39,7 +39,6 @@ public interface RobotMap {
 
     interface ManipulatorMap {
 
-
         SendableSpeedController getrollersMotor();
 
         DoubleSolenoid getbeaksPiston();
@@ -69,14 +68,5 @@ public interface RobotMap {
         Encoder getRightEncoder();
 
         PIDGyro getGyro();
-    }
-
-    MaflipulatorMap getMaflipulatorMap();
-
-    public interface MaflipulatorMap {
-
-        SendableSpeedController getFlipMotor();
-
-        Potentiometer getMaflipulatorPot();
     }
 }

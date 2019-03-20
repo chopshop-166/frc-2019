@@ -18,7 +18,6 @@ import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Leds;
 import frc.robot.subsystems.LiftSubsystem;
 import frc.robot.subsystems.LiftSubsystem.Heights;
-import frc.robot.subsystems.Maflipulator;
 import frc.robot.subsystems.Manipulator;
 import com.chopshop166.chopshoplib.controls.ButtonXboxController.XBoxButton;
 
@@ -33,7 +32,6 @@ public class Robot extends CommandRobot {
 
     final private RobotMap robotMap = new CurrentRobot();
     final public static ButtonXboxController xBoxCoPilot = new ButtonXboxController(1);
-    final private Maflipulator maflipulator = new Maflipulator(robotMap.getMaflipulatorMap());
     final private Drive drive = new Drive(robotMap.getDriveMap());
     final private LiftSubsystem lift = new LiftSubsystem(robotMap.getLiftMap());
     final private Manipulator manipulator = new Manipulator(robotMap.getManipulatorMap());
@@ -55,7 +53,6 @@ public class Robot extends CommandRobot {
     @Override
     public void robotInit() {
         // Initialize OI here
-        SmartDashboard.putData("Good Flip", goodFlip());
         cameraBack = CameraServer.getInstance().startAutomaticCapture(0);
         cameraBack.setResolution(160, 120);
         assignButtons();
@@ -103,83 +100,6 @@ public class Robot extends CommandRobot {
         Shuffleboard.stopRecording();
     }
 
-    public Command goodFlip() {
-        CommandChain retValue = new CommandChain("Good Flip");
-
-        retValue.then(lift.goToAtLeast(Heights.kLiftFlipHeight)).then(maflipulator.crappyFlip());
-        return retValue;
-    }
-
-    public Command stowAndGo() {
-        CommandChain retValue = new CommandChain("Stow it and go!");
-        retValue.then(lift.goToHeight(Heights.kFloorLoad), maflipulator.stowAndGoPosition());
-        return retValue;
-    }
-
-    public Command goToLoadingStation() {
-        CommandChain retValue = new CommandChain("Go to Loading Station");
-
-        retValue.then(lift.goToHeight(Heights.kLoadingStation));
-        return retValue;
-
-    }
-
-    public Command goToRocketMiddleHatch() {
-        CommandChain retValue = new CommandChain("Go to Rocket Middle Hatch");
-
-        retValue.then(lift.goToHeight(Heights.kRocketHatchMid), maflipulator.goToScoringPosition());
-        return retValue;
-
-    }
-
-    public Command goToRocketHighHatch() {
-        CommandChain retValue = new CommandChain("Go to Rocket High Hatch");
-
-        retValue.then(lift.goToHeight(Heights.kRocketHatchHigh), maflipulator.goToScoringPosition());
-        return retValue;
-
-    }
-
-    public Command goToRocketHighCargo() {
-        CommandChain retValue = new CommandChain("Go to Rocket High Cargo");
-
-        retValue.then(lift.goToHeight(Heights.kRocketCargoHigh), maflipulator.goToScoringPosition());
-        return retValue;
-
-    }
-
-    public Command goToRocketMiddleCargo() {
-        CommandChain retValue = new CommandChain("Go to Rocket Middle Cargo");
-
-        retValue.then(lift.goToHeight(Heights.kRocketCargoMid), maflipulator.goToScoringPosition());
-        return retValue;
-
-    }
-
-    public Command goToRocketLowCargo() {
-        CommandChain retValue = new CommandChain("Go to Rocket Low Cargo");
-
-        retValue.then(lift.goToHeight(Heights.kRocketCargoLow), maflipulator.goToScoringPosition());
-        return retValue;
-
-    }
-
-    public Command goToFloorLoad() {
-        CommandChain retValue = new CommandChain("Go to Floor Load");
-
-        retValue.then(lift.goToHeight(Heights.kFloorLoad), maflipulator.goToScoringPosition());
-        return retValue;
-
-    }
-
-    public Command goToCargoShipCargo() {
-        CommandChain retValue = new CommandChain("Go to Cargo Ship Cargo");
-
-        retValue.then(lift.goToHeight(Heights.kCargoShipCargo), maflipulator.goToScoringPosition());
-        return retValue;
-
-    }
-
     public CommandChain LEDOpenBeak() {
         CommandChain retValue = new CommandChain("Beak Open & Green LED");
         retValue.then(manipulator.openBeak()).then(leds.turnOnGreen(1, 2));
@@ -193,55 +113,17 @@ public class Robot extends CommandRobot {
     }
 
     public void assignButtons() {
-        xBoxCoPilot.getButton(XBoxButton.BUMPER_LEFT).whenPressed(LEDOpenBeak());
-        xBoxCoPilot.getButton(XBoxButton.BUMPER_RIGHT.get()).whenPressed(LEDCloseBeak());
-
-        // driveController.getButton(XBoxButton.Y).whenPressed(gosodFlip());
         driveController.getButton(XBoxButton.A).whileHeld(drive.visionPID());
         driveController.getButton(XBoxButton.BUMPER_RIGHT).whileHeld(drive.leftSlowTurn());
         driveController.getButton(XBoxButton.BUMPER_LEFT).whileHeld(drive.rightSlowTurn());
-        driveController.getButton(XBoxButton.START).whenPressed(maflipulator.cancel());
-        driveController.getButton(XBoxButton.Y).toggleWhenPressed(drive.driveBackwards());
-
-        // xBoxCoPilot.getButton(XBoxButton.X).whenPressed(manipulator.extendArms());
-        // xBoxCoPilot.getButton(XBoxButton.B).whenPressed(manipulator.retractArms());
+        driveController.getButton(XBoxButton.Y).toggleWhenPressed(drive.driveBackWards());
         driveController.getButton(XBoxButton.X).whenPressed(manipulator.extendArms());
         driveController.getButton(XBoxButton.B).whenPressed(manipulator.retractArms());
-        // xBoxCoPilot.getButton(XBoxButton.A).whenPressed(manipulator.Eject());
-        // xBoxCoPilot.getButton(XBoxButton.Y).whileHeld(manipulator.Intake());
-        // xBoxCoPilot.getButton(XBoxButton.A).whenPressed(manipulator.extendArms());
-        // xBoxCoPilot.getButton(XBoxButton.A).whenPressed(manipulator.extendArms());
 
-        // manipulator.switchTrigger.whileActive(leds.turnOnGreen());
-
-        // xBoxCoPilot.getButton(XBoxButton.A).whileHeld(goToLoadingStation());
-        // xBoxCoPilot.getButton(XBoxButton.A).whenReleased(stowAndGo());
-        // xBoxCoPilot.getButton(XBoxButton.Y).whenReleased(stowAndGo());
-        // xBoxCoPilot.getButton(XBoxButton.Y).whileHeld(goToFloorLoad());
-
-        // // povUp.whenReleased(stowAndGo());
-        // // povUp.whileHeld(goToCargoShipCargo());
-
-        // // povDown.whenReleased(stowAndGo());
-        // // povDown.whileHeld(goToRocketLowCargo());
-
-        // xBoxCoPilot.getButton(XBoxButton.A).whileHeld(maflipulator.pressRotate());
-        // xBoxCoPilot.getButton(XBoxButton.A).whenReleased(stowAndGo());
         xBoxCoPilot.getButton(XBoxButton.B).whenPressed(lift.goToHeight(Heights.kRocketHatchMid));
         xBoxCoPilot.getButton(XBoxButton.X).whenPressed(lift.goToHeight(Heights.kRocketHatchHigh));
-        // xBoxCoPilot.getButton(XBoxButton.B).whenReleased(stowAndGo());
-
-        // povRight.whenReleased(stowAndGo());
-        // povRight.whileHeld(goToRocketMiddleCargo());
-
-        // xBoxCoPilot.getButton(XBoxButton.X).whileHeld(goToRocketHighHatch());
-        // xBoxCoPilot.getButton(XBoxButton.X).whenReleased(stowAndGo());
-        // povLeft.whenReleased(stowAndGo());
-        // povLeft.whileHeld(goToRocketHighCargo());
-
-        // //
-        // xBoxCoPilot.getButton(XBoxButton.STICK_LEFT).whenReleased(stowAndGo());
-        // xBoxCoPilot.getButton(XBoxButton.STICK_LEFT).whenPressed(maflipulator.goToScoringPosition());
+        xBoxCoPilot.getButton(XBoxButton.BUMPER_LEFT).whenPressed(LEDOpenBeak());
+        xBoxCoPilot.getButton(XBoxButton.BUMPER_RIGHT.get()).whenPressed(LEDCloseBeak());
 
     }
 
