@@ -376,3 +376,27 @@ if __name__ == "__main__":
             table.putBoolean("Vision Found", False)
 
         outputmodeeam.putFrame(frame)
+
+# therealvisioncode
+#         insert vision
+#  = hatch panel placement
+#  = work well
+# +ballo vision   
+#  +that good code
+#     +even better code
+# reflective tape
+# +LEDs
+#  = reflection
+
+# reflection
+# +camera
+#  = feedback to computer
+
+# feedback to computer
+# +software
+#  = computer tells robot to do thing
+
+# computer tells robot to do thing
+# +robot
+# +having game piece
+#  = game piece PLACED ! 
