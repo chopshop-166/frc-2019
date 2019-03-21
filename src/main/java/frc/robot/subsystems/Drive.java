@@ -102,8 +102,8 @@ public class Drive extends Subsystem {
         };
     }
 
-    public Command driveBackWards() {
-        return new Command("driveBackwards", this) {
+    public Command driveBackwards() {
+        return new Command("Drive Backwards", this) {
 
             @Override
             protected void execute() {

@@ -114,13 +114,13 @@ public class Manipulator extends Subsystem {
     }
 
     public Command rollerIntake() {
-        return new InstantCommand("Intake Rollers", this, () -> {
+        return new InstantCommand("intake Rollers", this, () -> {
             rollersMotor.set(rollerspeed);
         });
     }
 
     public Command rollerEject() {
-        return new InstantCommand("Eject Rollers", this, () -> {
+        return new InstantCommand("eject Rollers", this, () -> {
             rollersMotor.set(-rollerspeed);
         });
     }
@@ -143,8 +143,8 @@ public class Manipulator extends Subsystem {
     }
     // #endregion
 
-    public Command Intake() {
-        return new Command("Intake Ball", this) {
+    public Command intake() {
+        return new Command("intake Ball", this) {
 
             @Override
             protected void initialize() {
@@ -165,8 +165,8 @@ public class Manipulator extends Subsystem {
         };
     }
 
-    public TimedCommand Eject() {
-        return new TimedCommand("Eject Ball", 1, this) {
+    public TimedCommand eject() {
+        return new TimedCommand("eject Ball", 1, this) {
 
             @Override
             protected void initialize() {

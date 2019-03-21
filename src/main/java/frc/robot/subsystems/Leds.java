@@ -16,16 +16,16 @@ public class Leds extends Subsystem {
     Color amber = new Color(255, 191, 0);
     Color harlequin = new Color(43, 255, 0);
     Color fuschia = new Color(255, 0, 255);
-    private final static int leftBank = 1;
-    private final static int rightBank = 2;
-    private final static int visionBank = 3;
+    private final static int LEFT_BANK = 1;
+    private final static int RIGHT_BANK = 2;
+    private final static int VISION_BANK = 3;
 
     public Leds() {
         super();
 
         ldrive_can = new LightDriveCAN();
-        ldrive_can.SetColor(leftBank, Color.BLUE, 1.0);
-        ldrive_can.SetColor(rightBank, Color.BLUE, 1.0);
+        ldrive_can.SetColor(LEFT_BANK, Color.BLUE, 1.0);
+        ldrive_can.SetColor(RIGHT_BANK, Color.BLUE, 1.0);
 
         ldrive_can.Update();
     }
@@ -227,13 +227,13 @@ public class Leds extends Subsystem {
 
     public Command turnOnVisionLights() {
         return new InstantCommand("Vision Light On", this, () -> {
-            ldrive_can.SetColor(visionBank, Color.GREEN, 1);
+            ldrive_can.SetColor(VISION_BANK, Color.GREEN, 1);
         });
     }
 
     public Command turnOffVisionLights() {
         return new InstantCommand("Vision Light Off", this, () -> {
-            ldrive_can.SetColor(visionBank, Color.OFF, 1);
+            ldrive_can.SetColor(VISION_BANK, Color.OFF, 1);
         });
     }
 
@@ -245,7 +245,7 @@ public class Leds extends Subsystem {
             @Override
             protected void initialize() {
                 counter = 0;
-                ldrive_can.SetColor(visionBank, Color.GREEN, 1.0);
+                ldrive_can.SetColor(VISION_BANK, Color.GREEN, 1.0);
                 lightsOn = true;
             }
 
@@ -253,10 +253,10 @@ public class Leds extends Subsystem {
             protected void execute() {
                 if (counter % frequency == 0) {
                     if (lightsOn == true) {
-                        ldrive_can.SetColor(visionBank, Color.OFF, 1.0);
+                        ldrive_can.SetColor(VISION_BANK, Color.OFF, 1.0);
                         lightsOn = false;
                     } else {
-                        ldrive_can.SetColor(visionBank, Color.GREEN, 1.0);
+                        ldrive_can.SetColor(VISION_BANK, Color.GREEN, 1.0);
                         lightsOn = false;
                     }
                 }
