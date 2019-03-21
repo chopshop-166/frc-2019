@@ -60,11 +60,6 @@ public class PracticeBot implements RobotMap {
             }
 
             @Override
-            public SendableSpeedController getpivotPointsMotor() {
-                return new MockSpeedController();
-            }
-
-            @Override
             public DigitalInput getintakePositionLimitSwitch() {
                 return new DigitalInput(1);
             }
@@ -82,6 +77,11 @@ public class PracticeBot implements RobotMap {
             @Override
             public DigitalInput getGamepieceLimitSwitch() {
                 return new DigitalInput(3);
+            }
+
+            @Override
+            public DoubleSolenoid getArmsPiston() {
+                return new DoubleSolenoid(7, 8);
             }
         };
     }

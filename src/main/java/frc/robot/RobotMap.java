@@ -39,11 +39,12 @@ public interface RobotMap {
 
     interface ManipulatorMap {
 
-        SendableSpeedController getpivotPointsMotor();
 
         SendableSpeedController getrollersMotor();
 
         DoubleSolenoid getbeaksPiston();
+
+        DoubleSolenoid getArmsPiston();
 
         DigitalInput getGamepieceLimitSwitch();
 

@@ -35,6 +35,7 @@ public class CurrentRobot implements RobotMap {
             @Override
             public CANSparkMax getMotor() {
                 liftMotor.setInverted(true);
+                liftMotor.setOpenLoopRampRate(.5);
                 return liftMotor;
             }
 
@@ -61,12 +62,9 @@ public class CurrentRobot implements RobotMap {
 
             @Override
             public SendableSpeedController getrollersMotor() {
-                return new MockSpeedController();
-            }
-
-            @Override
-            public SendableSpeedController getpivotPointsMotor() {
-                return new MockSpeedController();
+                WPI_TalonSRX cargoMotorController = new WPI_TalonSRX(10);
+                cargoMotorController.configContinuousCurrentLimit(20);
+                return SendableSpeedController.wrap(cargoMotorController);
             }
 
             @Override
@@ -87,6 +85,11 @@ public class CurrentRobot implements RobotMap {
             @Override
             public DigitalInput getGamepieceLimitSwitch() {
                 return new DigitalInput(4);
+            }
+
+            @Override
+            public DoubleSolenoid getArmsPiston() {
+                return new DoubleSolenoid(2, 3);
             }
         };
     }
@@ -144,7 +147,7 @@ public class CurrentRobot implements RobotMap {
 
             @Override
             public SendableSpeedController getFlipMotor() {
-                return SendableSpeedController.wrap(new WPI_TalonSRX(10));
+                return SendableSpeedController.wrap(new WPI_VictorSPX(9));
             }
 
             @Override

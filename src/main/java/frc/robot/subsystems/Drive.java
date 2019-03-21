@@ -70,7 +70,7 @@ public class Drive extends Subsystem {
     private final double visionCorrectionSpeed = 0.2;
     private final double visionCorrectionRange = 0.1;
 
-    private final double slowTurnSpeed = 0.5;
+    private final double slowTurnSpeed = 0.65;
 
     private final double driveDeadband = 0.05;
 
@@ -92,6 +92,24 @@ public class Drive extends Subsystem {
                 drive.arcadeDrive(
                         +Robot.driveController.getTriggerAxis(Hand.kRight)
                                 - Robot.driveController.getTriggerAxis(Hand.kLeft),
+                        Robot.driveController.getX(Hand.kLeft));
+            }
+
+            @Override
+            protected boolean isFinished() {
+                return false;
+            }
+        };
+    }
+
+    public Command driveBackwards() {
+        return new Command("Drive Backwards", this) {
+
+            @Override
+            protected void execute() {
+                drive.arcadeDrive(
+                        -Robot.driveController.getTriggerAxis(Hand.kRight)
+                                + Robot.driveController.getTriggerAxis(Hand.kLeft),
                         Robot.driveController.getX(Hand.kLeft));
             }
 

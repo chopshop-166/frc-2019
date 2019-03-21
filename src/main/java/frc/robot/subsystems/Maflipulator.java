@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.ConditionalCommand;
+import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.command.PIDCommand;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.interfaces.Potentiometer;
@@ -20,15 +21,15 @@ public class Maflipulator extends Subsystem {
     }
 
     // private final static double FRONT_LOWER_ANGLE = 0.94;
-    private final static double FRONT_SCORING_ANGLE = 0.87;
+    private final static double FRONT_SCORING_ANGLE = 0.94;
     private final static double FLIP_TO_FRONT_POSITION = FRONT_SCORING_ANGLE;
-    private final static double FRONT_UPPER_ANGLE = 0.73;
+    private final static double FRONT_UPPER_ANGLE = 0.85;
     private final static double FRONT_LOWER_ANGLE = FRONT_SCORING_ANGLE;
 
     // private final static double BACK_LOWER_ANGLE = .14;
-    private final static double BACK_SCORING_ANGLE = 0.2;
+    private final static double BACK_SCORING_ANGLE = 0.3;
     private final static double FLIP_TO_BACK_POSITION = BACK_SCORING_ANGLE;
-    private final static double BACK_UPPER_ANGLE = .42;
+    private final static double BACK_UPPER_ANGLE = .45;
     private final static double BACK_LOWER_ANGLE = BACK_SCORING_ANGLE;
 
     private final static double VERTICAL_ANGLE = .55;
@@ -74,7 +75,7 @@ public class Maflipulator extends Subsystem {
     @Override
     public void initDefaultCommand() {
         // Set the default command for a subsystem here.
-        setDefaultCommand(manualRotate());
+        setDefaultCommand(pressRotate());
     }
 
     protected double restrict(double flipSpeed) {
@@ -264,5 +265,10 @@ public class Maflipulator extends Subsystem {
             }
 
         };
+    }
+
+    public Command cancel() {
+        return new InstantCommand("cancel", this, () -> {
+        });
     }
 }
