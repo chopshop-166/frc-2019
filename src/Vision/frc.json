@@ -1,0 +1,58 @@
+{
+    "cameras": [
+        {
+            "brightness": 0,
+            "exposure": "auto",
+            "fps": 30,
+            "height": 120,
+            "name": "",
+            "path": "/dev/v4l/by-path/platform-3f980000.usb-usb-0:1.1.2:1.0-video-index0",
+            "pixel format": "mjpeg",
+            "properties": [
+                {
+                    "name": "connect_verbose",
+                    "value": 1
+                },
+                {
+                    "name": "contrast",
+                    "value": 50
+                },
+                {
+                    "name": "saturation",
+                    "value": 41
+                },
+                {
+                    "name": "power_line_frequency",
+                    "value": 2
+                },
+                {
+                    "name": "sharpness",
+                    "value": 50
+                },
+                {
+                    "name": "backlight_compensation",
+                    "value": 0
+                },
+                {
+                    "name": "pan_absolute",
+                    "value": 0
+                },
+                {
+                    "name": "tilt_absolute",
+                    "value": 0
+                },
+                {
+                    "name": "zoom_absolute",
+                    "value": 0
+                }
+            ],
+            "stream": {
+                "properties": []
+            },
+            "white balance": "auto",
+            "width": 160
+        }
+    ],
+    "ntmode": "client",
+    "team": 166
+}
