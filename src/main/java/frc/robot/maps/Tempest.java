@@ -48,6 +48,11 @@ public class Tempest implements RobotMap {
             public DoubleSolenoid getBrake() {
                 return new DoubleSolenoid(2, 7);
             }
+
+            @Override
+            public DoubleSolenoid getArmsPiston() {
+                return null;
+            }
         };
     }
 
@@ -78,11 +83,6 @@ public class Tempest implements RobotMap {
             @Override
             public DigitalInput getGamepieceLimitSwitch() {
                 return new DigitalInput(3);
-            }
-
-            @Override
-            public DoubleSolenoid getArmsPiston() {
-                return new DoubleSolenoid(0, 1);
             }
         };
     }

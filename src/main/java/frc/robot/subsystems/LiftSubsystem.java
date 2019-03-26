@@ -16,6 +16,7 @@ import frc.robot.Robot;
 import frc.robot.RobotMap;
 
 public class LiftSubsystem extends Subsystem {
+    private DoubleSolenoid armsPiston;
     private CANSparkMax motor;
     private DoubleSolenoid brake;
     private SparkMaxCounter heightEncoder;
@@ -24,6 +25,7 @@ public class LiftSubsystem extends Subsystem {
 
     public LiftSubsystem(final RobotMap.LiftMap map) {
         super();
+        armsPiston = map.getArmsPiston();
         motor = map.getMotor();
         brake = map.getBrake();
         heightEncoder = new SparkMaxCounter(motor.getEncoder());
@@ -34,6 +36,7 @@ public class LiftSubsystem extends Subsystem {
     }
 
     public void addChildren() {
+        addChild(armsPiston);
         addChild(motor);
         addChild(brake);
         addChild(heightEncoder);
@@ -121,6 +124,18 @@ public class LiftSubsystem extends Subsystem {
     public void initDefaultCommand() {
         // Set the default command for a subsystem here.
         setDefaultCommand(moveLift());
+    }
+
+    public Command deployArms() {
+        return new InstantCommand("Extend Arms", this, () -> {
+            armsPiston.set(Value.kForward);
+        });
+    }
+
+    public Command retractArms() {
+        return new InstantCommand("Retract Arms", this, () -> {
+            armsPiston.set(Value.kReverse);
+        });
     }
 
     protected boolean isAtUpperLimit() {

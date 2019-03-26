@@ -53,6 +53,11 @@ public class CurrentRobot implements RobotMap {
             public DoubleSolenoid getBrake() {
                 return new DoubleSolenoid(0, 1);
             }
+
+            @Override
+            public DoubleSolenoid getArmsPiston() {
+                return null;
+            }
         };
     }
 
@@ -85,11 +90,6 @@ public class CurrentRobot implements RobotMap {
             @Override
             public DigitalInput getGamepieceLimitSwitch() {
                 return new DigitalInput(4);
-            }
-
-            @Override
-            public DoubleSolenoid getArmsPiston() {
-                return new DoubleSolenoid(2, 3);
             }
         };
     }

@@ -33,6 +33,8 @@ public interface RobotMap {
         DigitalInput getLowerLimit();
 
         DigitalInput getUpperLimit();
+
+        DoubleSolenoid getArmsPiston();
     }
 
     ManipulatorMap getManipulatorMap();
@@ -42,8 +44,6 @@ public interface RobotMap {
         SendableSpeedController getrollersMotor();
 
         DoubleSolenoid getbeaksPiston();
-
-        DoubleSolenoid getArmsPiston();
 
         DigitalInput getGamepieceLimitSwitch();
 
