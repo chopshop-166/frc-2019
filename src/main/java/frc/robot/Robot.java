@@ -113,8 +113,16 @@ public class Robot extends CommandRobot {
         return retValue;
     }
 
+    public CommandChain LEDVision() {
+        CommandChain retValue = new CommandChain("Vision and Green Leds");
+        retValue.then(drive.visionPID()).then(leds.turnOnGreen(1, 2));
+        return retValue;
+    }
+
     public void assignButtons() {
-        driveController.getButton(XBoxButton.A).whileHeld(drive.visionPID());
+        // driveController.getButton(XBoxButton.A).whileHeld(drive.visionPID());
+        // driveController.getButton(XBoxButton.A).whileHeld(leds.blinkVisionLights(10));
+        driveController.getButton(XBoxButton.A).whileHeld(LEDVision());
         driveController.getButton(XBoxButton.BUMPER_RIGHT).whileHeld(drive.leftSlowTurn());
         driveController.getButton(XBoxButton.BUMPER_LEFT).whileHeld(drive.rightSlowTurn());
         driveController.getButton(XBoxButton.Y).toggleWhenPressed(drive.driveBackwards());
