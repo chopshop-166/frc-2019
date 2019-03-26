@@ -31,10 +31,10 @@ import com.chopshop166.chopshoplib.controls.ButtonXboxController.XBoxButton;
  */
 public class Robot extends CommandRobot {
 
-    final private RobotMap robotMap = new Tempest();
+    final private RobotMap robotMap = new CurrentRobot();
     final public static ButtonXboxController xBoxCoPilot = new ButtonXboxController(1);
     final private Drive drive = new Drive(robotMap.getDriveMap());
-    // final private LiftSubsystem lift = new LiftSubsystem(robotMap.getLiftMap());
+    final private LiftSubsystem lift = new LiftSubsystem(robotMap.getLiftMap());
     final private Manipulator manipulator = new Manipulator(robotMap.getManipulatorMap());
     public static ButtonXboxController driveController = new ButtonXboxController(5);
     POVButton povDown = new POVButton(xBoxCoPilot, 180);
@@ -121,8 +121,8 @@ public class Robot extends CommandRobot {
         driveController.getButton(XBoxButton.X).whenPressed(manipulator.extendArms());
         driveController.getButton(XBoxButton.B).whenPressed(manipulator.retractArms());
 
-        // xBoxCoPilot.getButton(XBoxButton.B).whenPressed(lift.goToHeight(Heights.kRocketHatchMid));
-        // xBoxCoPilot.getButton(XBoxButton.X).whenPressed(lift.goToHeight(Heights.kRocketHatchHigh));
+        xBoxCoPilot.getButton(XBoxButton.B).whenPressed(lift.goToHeight(Heights.kRocketHatchMid));
+        xBoxCoPilot.getButton(XBoxButton.X).whenPressed(lift.goToHeight(Heights.kRocketHatchHigh));
         xBoxCoPilot.getButton(XBoxButton.BUMPER_LEFT).whenPressed(LEDOpenBeak());
         xBoxCoPilot.getButton(XBoxButton.BUMPER_RIGHT.get()).whenPressed(LEDCloseBeak());
 
