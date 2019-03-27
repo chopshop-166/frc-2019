@@ -56,7 +56,7 @@ public class CurrentRobot implements RobotMap {
 
             @Override
             public DoubleSolenoid getArmsPiston() {
-                return null;
+                return new DoubleSolenoid(2, 3);
             }
         };
     }

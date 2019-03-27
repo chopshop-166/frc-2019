@@ -15,6 +15,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 import frc.robot.RobotMap;
 
+//when arms piston is extended, the arms are locked in starting position
+
 public class LiftSubsystem extends Subsystem {
     private DoubleSolenoid armsPiston;
     private CANSparkMax motor;
@@ -31,6 +33,7 @@ public class LiftSubsystem extends Subsystem {
         heightEncoder = new SparkMaxCounter(motor.getEncoder());
         lowerLimit = map.getLowerLimit();
         upperLimit = map.getUpperLimit();
+        armsPiston.set(Value.kForward);
         addChildren();
         registeredCommands();
     }
@@ -67,7 +70,6 @@ public class LiftSubsystem extends Subsystem {
 
     }
 
-    // urgay
     public enum Heights {
         // Loading Station 19"
         kLoadingStation(7.2),
@@ -100,14 +102,15 @@ public class LiftSubsystem extends Subsystem {
     }
 
     protected void restrictedMotorSet(double liftSpeed) {
+        if (armsPiston.get() == Value.kForward) {
+            liftSpeed = 0;
+        }
         if (liftSpeed > 0 && !upperLimit.get()) {
             liftSpeed = 0;
-
         }
         if (liftSpeed < 0 && !lowerLimit.get()) {
             liftSpeed = 0;
             heightEncoder.reset();
-
         }
         if (Math.abs(liftSpeed) <= 0.05) {
             brake.set(Value.kForward);
