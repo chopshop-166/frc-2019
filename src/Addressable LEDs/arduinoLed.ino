@@ -2,9 +2,9 @@
 
 //change pin based off where we plug into the arduino (signal port)
 #define LED_PIN 5
-//entire strip is 150 leds, only using around 40ish per lift side
 //using y harness for date cable to mirror sides
-#define NUM_LEDS 150
+#define NUM_LEDS 42
+//brightness *should* be 255 for max, we need to test
 #define BRIGHTNESS 255
 #define LED_TYPE WS2812
 #define COLOR_ORDER GRB
