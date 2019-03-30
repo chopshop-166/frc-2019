@@ -47,7 +47,7 @@ public class Manipulator extends Subsystem {
         addChild(intakePositionLimitSwitch);
     }
 
-    double rollerspeed = .7;
+    double rollerspeed = 1;
 
     @Override
     public void initDefaultCommand() {
@@ -56,12 +56,12 @@ public class Manipulator extends Subsystem {
 
     }
 
-    // #region Command Chains
-    public Command pickUpCargo() {
-        CommandChain retValue = new CommandChain("Pick up Cargo");
-        retValue.then(openBeak()).then(rollerIntake()).then(gamepieceCheck()).then(rollerStop());
-        return retValue;
-    }
+    // // #region Command Chains
+    // public Command pickUpCargo() {
+    // CommandChain retValue = new CommandChain("Pick up Cargo");
+    // retValue.then(openBeak()).then(rollerIntake()).then(gamepieceCheck()).then(rollerStop());
+    // return retValue;
+    // }
 
     /*
      * public Command ledHatchPanel() { if (gamepieceLimitSwitch.get()) { return new
@@ -71,11 +71,12 @@ public class Manipulator extends Subsystem {
      * } }
      */
 
-    public Command releaseCargo() {
-        CommandChain retValue = new CommandChain("Release Cargo");
-        retValue.then(rollerEject()).then(gamepieceCheck()).then(new WaitCommand(.5)).then(rollerStop());
-        return retValue;
-    }
+    // public Command releaseCargo() {
+    // CommandChain retValue = new CommandChain("Release Cargo");
+    // retValue.then(rollerEject()).then(gamepieceCheck()).then(new
+    // WaitCommand(.5)).then(rollerStop());
+    // return retValue;
+    // }
 
     public Command pickUpHatch() {
         CommandChain retValue = new CommandChain("Pick Up Hatch");
@@ -95,18 +96,6 @@ public class Manipulator extends Subsystem {
     public Command closeBeak() {
         return new InstantCommand("Close Beak", this, () -> {
             beaksPiston.set(Value.kReverse);
-        });
-    }
-
-    public Command rollerIntake() {
-        return new InstantCommand("intake Rollers", this, () -> {
-            rollersMotor.set(rollerspeed);
-        });
-    }
-
-    public Command rollerEject() {
-        return new InstantCommand("eject Rollers", this, () -> {
-            rollersMotor.set(-rollerspeed);
         });
     }
 

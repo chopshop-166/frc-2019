@@ -21,6 +21,7 @@ import frc.robot.subsystems.LiftSubsystem;
 import frc.robot.subsystems.LiftSubsystem.Heights;
 import frc.robot.subsystems.Manipulator;
 import com.chopshop166.chopshoplib.controls.ButtonXboxController.XBoxButton;
+import com.mach.LightDrive.Color;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -115,7 +116,7 @@ public class Robot extends CommandRobot {
 
     public CommandChain LEDVision() {
         CommandChain retValue = new CommandChain("Vision and Green Leds");
-        retValue.then(drive.visionPID()).then(leds.turnOnGreen(1, 2));
+        retValue.then(leds.turnOnGreen(1, 2)).then(drive.visionPID());
         return retValue;
     }
 
@@ -124,15 +125,18 @@ public class Robot extends CommandRobot {
         // driveController.getButton(XBoxButton.A).whileHeld(leds.blinkVisionLights(10));
         driveController.getButton(XBoxButton.A).whileHeld(LEDVision());
         driveController.getButton(XBoxButton.BUMPER_RIGHT).whileHeld(drive.leftSlowTurn());
+        driveController.getButton(XBoxButton.BUMPER_RIGHT).whileHeld(leds.blinkLights(Leds.fuschia, 1, 2));
         driveController.getButton(XBoxButton.BUMPER_LEFT).whileHeld(drive.rightSlowTurn());
+        driveController.getButton(XBoxButton.BUMPER_LEFT).whileHeld(leds.blinkLights(Leds.fuschia, 1, 1));
         driveController.getButton(XBoxButton.Y).toggleWhenPressed(drive.driveBackwards());
-        driveController.getButton(XBoxButton.X).whenPressed(lift.deployArms());
         driveController.getButton(XBoxButton.B).whenPressed(lift.retractArms());
 
         xBoxCoPilot.getButton(XBoxButton.B).whenPressed(lift.goToHeight(Heights.kRocketHatchMid));
         xBoxCoPilot.getButton(XBoxButton.X).whenPressed(lift.goToHeight(Heights.kRocketHatchHigh));
         xBoxCoPilot.getButton(XBoxButton.BUMPER_LEFT).whenPressed(LEDOpenBeak());
         xBoxCoPilot.getButton(XBoxButton.BUMPER_RIGHT.get()).whenPressed(LEDCloseBeak());
+        xBoxCoPilot.getButton(XBoxButton.Y).whileHeld(manipulator.intake());
+        xBoxCoPilot.getButton(XBoxButton.A).whenPressed(manipulator.eject());
 
     }
 

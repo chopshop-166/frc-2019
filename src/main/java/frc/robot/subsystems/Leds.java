@@ -12,10 +12,10 @@ import edu.wpi.first.wpilibj.command.Subsystem;
 
 public class Leds extends Subsystem {
     LightDriveCAN ldrive_can;
-    Color seafoam = new Color(150, 238, 150);
-    Color amber = new Color(255, 191, 0);
-    Color harlequin = new Color(43, 255, 0);
-    Color fuschia = new Color(255, 0, 255);
+    public final static Color seafoam = new Color(150, 238, 150);
+    public final static Color amber = new Color(255, 191, 0);
+    public final static Color harlequin = new Color(43, 255, 0);
+    public final static Color fuschia = new Color(255, 0, 255);
     private final static int LEFT_BANK = 1;
     private final static int RIGHT_BANK = 2;
     private final static int VISION_BANK = 3;
@@ -32,7 +32,7 @@ public class Leds extends Subsystem {
 
     @Override
     public void initDefaultCommand() {
-        setDefaultCommand(setTeamColor());
+        setDefaultCommand(setTeamColor(1, 2));
     }
 
     private boolean isBlueTeam() {
@@ -143,7 +143,7 @@ public class Leds extends Subsystem {
         };
     }
 
-    public Command blinkLights(Color color, int frequency, Integer... banks) {
+    public Command blinkLights(Color aColor, int frequency, Integer... banks) {
         return new Command("Blink Lights", this) {
             int counter = 0;
             boolean lightsOn = true;
@@ -158,13 +158,13 @@ public class Leds extends Subsystem {
 
             @Override
             protected void execute() {
-                if (counter % frequency == 0) {
+                if ((counter % frequency) == 0) {
                     if (lightsOn == true) {
-                        color = Color.BLUE;
-                        lightsOn = false;
-                    } else {
                         color = Color.OFF;
                         lightsOn = false;
+                    } else {
+                        color = aColor;
+                        lightsOn = true;
                     }
                 }
                 for (Integer currentBank : banks) {

@@ -68,6 +68,8 @@ public class LiftSubsystem extends Subsystem {
         SmartDashboard.putData("Rocket Hatch Mid Auto", autoMoveLift(Heights.kRocketHatchMid));
         SmartDashboard.putData("Rocket Hatch High Auto", autoMoveLift(Heights.kRocketHatchHigh));
 
+        SmartDashboard.putData("Deploy Arms", deployArms());
+
     }
 
     public enum Heights {
