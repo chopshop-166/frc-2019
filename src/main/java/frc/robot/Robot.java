@@ -121,9 +121,9 @@ public class Robot extends CommandRobot {
     }
 
     public void assignButtons() {
-        // driveController.getButton(XBoxButton.A).whileHeld(drive.visionPID());
+        driveController.getButton(XBoxButton.A).whileHeld(drive.visionPID());
         // driveController.getButton(XBoxButton.A).whileHeld(leds.blinkVisionLights(10));
-        driveController.getButton(XBoxButton.A).whileHeld(LEDVision());
+        // driveController.getButton(XBoxButton.A).whileHeld(LEDVision());
         driveController.getButton(XBoxButton.BUMPER_RIGHT).whileHeld(drive.leftSlowTurn());
         driveController.getButton(XBoxButton.BUMPER_RIGHT).whileHeld(leds.blinkLights(Leds.fuschia, 1, 2));
         driveController.getButton(XBoxButton.BUMPER_LEFT).whileHeld(drive.rightSlowTurn());

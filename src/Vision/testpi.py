@@ -58,9 +58,9 @@ class gripV2:
         """initializes all values to presets or None if need to be set
         """
 
-        self.__hsl_threshold_hue = [66, 92]
-        self.__hsl_threshold_saturation = [172, 255.0]
-        self.__hsl_threshold_luminance = [53, 255.0]
+        self.__hsl_threshold_hue = [70, 101]
+        self.__hsl_threshold_saturation = [147, 255.0]
+        self.__hsl_threshold_luminance = [37, 255.0]
 
         self.hsl_threshold_output = None
 
