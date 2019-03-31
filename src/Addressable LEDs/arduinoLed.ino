@@ -18,7 +18,7 @@ void CylonBounce(byte red, byte green, byte blue, int EyeSize, int SpeedDelay, i
 
     for (int i = 0; i < NUM_LEDS - EyeSize - 2; i++)
     {
-        setAll(0, 0, 0);
+        setAll(255, 255, 255);
         setPixel(i, red / 10, green / 10, blue / 10);
         for (int j = 1; j <= EyeSize; j++)
         {
@@ -33,7 +33,7 @@ void CylonBounce(byte red, byte green, byte blue, int EyeSize, int SpeedDelay, i
 
     for (int i = NUM_LEDS - EyeSize - 2; i > 0; i--)
     {
-        setAll(0, 0, 0);
+        setAll(255, 255, 255);
         setPixel(i, red / 10, green / 10, blue / 10);
         for (int j = 1; j <= EyeSize; j++)
         {
