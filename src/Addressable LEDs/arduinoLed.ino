@@ -1,16 +1,16 @@
 #include "FastLED.h"
 #define NUM_LEDS 42
 CRGB leds[NUM_LEDS];
-#define PIN 13
+#define PIN 4
 
 void setup()
 {
-    FastLED.addLeds<WS2811, PIN, GRB>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
+    FastLED.addLeds<WS2812, PIN, GRB>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
 }
 
 void loop()
 {
-    CylonBounce(0xff, 0, 0, 4, 10, 50);
+    CylonBounce(0, 0, 0xff, 6, 8, 30);
 }
 
 void CylonBounce(byte red, byte green, byte blue, int EyeSize, int SpeedDelay, int ReturnDelay)
