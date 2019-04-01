@@ -24,8 +24,8 @@ public class LiftLEDS extends Subsystem {
     }
 
     public Command blue() {
-        return new InstantCommand("be blue", this, () -> {
-            arduino.writeBulk(new byte[] { 'c' });
+        return new InstantCommand("lift leds blue", this, () -> {
+            arduino.writeBulk(new byte[] { 'b' });
         });
     }
 
