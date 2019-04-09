@@ -68,7 +68,7 @@ public class LiftSubsystem extends Subsystem {
         SmartDashboard.putData("Rocket Hatch Mid Auto", autoMoveLift(Heights.kRocketHatchMid));
         SmartDashboard.putData("Rocket Hatch High Auto", autoMoveLift(Heights.kRocketHatchHigh));
 
-        SmartDashboard.putData("Deploy Arms", deployArms());
+        SmartDashboard.putData("Fold Arms", foldArms());
 
     }
 
@@ -131,14 +131,14 @@ public class LiftSubsystem extends Subsystem {
         setDefaultCommand(moveLift());
     }
 
-    public Command deployArms() {
-        return new InstantCommand("Extend Arms", this, () -> {
+    public Command foldArms() {
+        return new InstantCommand("Fold Arms", this, () -> {
             armsPiston.set(Value.kForward);
         });
     }
 
-    public Command retractArms() {
-        return new InstantCommand("Retract Arms", this, () -> {
+    public Command deployArms() {
+        return new InstantCommand("Deploy Arms", this, () -> {
             armsPiston.set(Value.kReverse);
         });
     }

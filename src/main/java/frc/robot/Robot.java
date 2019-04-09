@@ -104,7 +104,7 @@ public class Robot extends CommandRobot {
 
     public CommandChain rocketAuto() {
         CommandChain retValue = new CommandChain("Rocket Auto");
-        retValue.then(drive.visionPID(), leds.turnOnGreen(1, 2), lift.retractArms());
+        retValue.then(drive.visionPID(), leds.turnOnGreen(1, 2), lift.deployArms());
         return retValue;
     }
 
@@ -135,7 +135,7 @@ public class Robot extends CommandRobot {
         driveController.getButton(XBoxButton.BUMPER_LEFT).whileHeld(drive.rightSlowTurn());
         driveController.getButton(XBoxButton.BUMPER_LEFT).whileHeld(leds.blinkLights(Leds.fuschia, 1, 1));
         driveController.getButton(XBoxButton.Y).toggleWhenPressed(drive.driveBackwards());
-        driveController.getButton(XBoxButton.B).whenPressed(lift.retractArms());
+        driveController.getButton(XBoxButton.B).whenPressed(lift.deployArms());
 
         xBoxCoPilot.getButton(XBoxButton.B).whenPressed(lift.goToHeight(Heights.kRocketHatchMid));
         xBoxCoPilot.getButton(XBoxButton.X).whenPressed(lift.goToHeight(Heights.kRocketHatchHigh));
