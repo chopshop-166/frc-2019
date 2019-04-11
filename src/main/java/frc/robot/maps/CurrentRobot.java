@@ -36,7 +36,7 @@ public class CurrentRobot implements RobotMap {
             @Override
             public CANSparkMax getMotor() {
                 liftMotor.setInverted(true);
-                liftMotor.setOpenLoopRampRate(1);
+                liftMotor.setOpenLoopRampRate(.5);
                 return liftMotor;
             }
 
@@ -69,7 +69,7 @@ public class CurrentRobot implements RobotMap {
             @Override
             public SendableSpeedController getrollersMotor() {
                 WPI_TalonSRX cargoMotorController = new WPI_TalonSRX(10);
-                cargoMotorController.configContinuousCurrentLimit(20);
+                cargoMotorController.configContinuousCurrentLimit(15);
                 cargoMotorController.setInverted(true);
                 cargoMotorController.setNeutralMode(NeutralMode.Brake);
                 return SendableSpeedController.wrap(cargoMotorController);
