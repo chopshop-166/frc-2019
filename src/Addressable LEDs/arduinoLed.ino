@@ -10,9 +10,9 @@ void setup()
 
 void loop()
 {
-    //meteorRain(0xff, 0xff, 0xff, 10, 64, true, 35);
+    meteorRain(0xff, 0xff, 0xff, 10, 64, true, 15);
     //Fire(30, 200, 0);
-    rainbowCycle(5);
+    // rainbowCycle(5);
 }
 
 void meteorRain(byte red, byte green, byte blue, byte meteorSize, byte meteorTrailDecay, boolean meteorRandomDecay, int SpeedDelay)
