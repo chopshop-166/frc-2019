@@ -11,8 +11,8 @@ void setup()
 void loop()
 {
 
-    colorWipe(0x00, 0x00, 0xff, 25);
-    colorWipe(0xff, 0xff, 0xff, 25);
+    colorWipe(0x00, 0x00, 0xff, 20);
+    colorWipe(0x00, 0x00, 0x00, 20);
     // meteorRain(0xff, 0xff, 0xff, 10, 64, true, 15);
     //Fire(30, 200, 0);
     // rainbowCycle(5);
