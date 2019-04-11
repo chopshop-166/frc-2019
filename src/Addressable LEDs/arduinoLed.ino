@@ -10,9 +10,21 @@ void setup()
 
 void loop()
 {
-    meteorRain(0xff, 0xff, 0xff, 10, 64, true, 15);
+
+    colorWipe(0x00, 0x00, 0xff, 25);
+    colorWipe(0xff, 0xff, 0xff, 25);
+    // meteorRain(0xff, 0xff, 0xff, 10, 64, true, 15);
     //Fire(30, 200, 0);
     // rainbowCycle(5);
+}
+void colorWipe(byte red, byte green, byte blue, int SpeedDelay)
+{
+    for (uint16_t i = 0; i < NUM_LEDS; i++)
+    {
+        setPixel(i, red, green, blue);
+        showStrip();
+        delay(SpeedDelay);
+    }
 }
 
 void meteorRain(byte red, byte green, byte blue, byte meteorSize, byte meteorTrailDecay, boolean meteorRandomDecay, int SpeedDelay)

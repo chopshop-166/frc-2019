@@ -74,15 +74,15 @@ public class LiftSubsystem extends Subsystem {
 
     public enum Heights {
         // Loading Station 19"
-        kLoadingStation(7.2),
+        kLoadingStation(5.8),
         // Low rocket cargo 27.5"
-        kRocketCargoLow(13.4),
+        kRocketCargoLow(10.7),
         // Middle rocket hatch 47"
-        kRocketHatchMid(45.1),
+        kRocketHatchMid(36.1),
         // Middle rocket cargo 55.5"
-        kRocketCargoMid(63.4),
+        kRocketCargoMid(44.4),
         // Top rocket hatch 75" (MAX HEIGHT)
-        kRocketHatchHigh(90),
+        kRocketHatchHigh(72),
         // Top rocket cargo 83.5"
         kRocketCargoHigh(0),
         // floor load 0"
@@ -90,7 +90,7 @@ public class LiftSubsystem extends Subsystem {
         // cargo ship cargo 39.75"
         kCargoShipCargo(0),
         // Height needed to flip over
-        kLiftFlipHeight(35);
+        kLiftFlipHeight(28);
 
         private double value;
 
