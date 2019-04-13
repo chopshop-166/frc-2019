@@ -76,11 +76,11 @@ public class LiftSubsystem extends Subsystem {
         // Loading Station 19"
         kLoadingStation(5.8),
         // Low rocket cargo 27.5"
-        kRocketCargoLow(10.7),
+        kRocketCargoLow(46),
         // Middle rocket hatch 47"
         kRocketHatchMid(36.1),
         // Middle rocket cargo 55.5"
-        kRocketCargoMid(44.4),
+        kRocketCargoMid(100),
         // Top rocket hatch 75" (MAX HEIGHT)
         kRocketHatchHigh(72),
         // Top rocket cargo 83.5"
@@ -89,8 +89,8 @@ public class LiftSubsystem extends Subsystem {
         kFloorLoad(0.0),
         // cargo ship cargo 39.75"
         kCargoShipCargo(0),
-        // Height needed to flip over
-        kLiftFlipHeight(28);
+        // Height limit for speed limiting
+        kSpeedLimitHeight(40);
 
         private double value;
 
@@ -141,6 +141,10 @@ public class LiftSubsystem extends Subsystem {
         return new InstantCommand("Deploy Arms", this, () -> {
             armsPiston.set(Value.kReverse);
         });
+    }
+
+    public boolean isSpeedLimitHeight() {
+        return (heightEncoder.getDistance() > Heights.kSpeedLimitHeight.value);
     }
 
     protected boolean isAtUpperLimit() {

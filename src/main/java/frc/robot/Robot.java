@@ -34,8 +34,8 @@ public class Robot extends CommandRobot {
 
     final private RobotMap robotMap = new CurrentRobot();
     final public static ButtonXboxController xBoxCoPilot = new ButtonXboxController(1);
-    final private Drive drive = new Drive(robotMap.getDriveMap());
-    final private LiftSubsystem lift = new LiftSubsystem(robotMap.getLiftMap());
+    final private Drive drive = new Drive(robotMap.getDriveMap(), this);
+    final public LiftSubsystem lift = new LiftSubsystem(robotMap.getLiftMap());
     final private Manipulator manipulator = new Manipulator(robotMap.getManipulatorMap());
     public static ButtonXboxController driveController = new ButtonXboxController(5);
     POVButton povDown = new POVButton(xBoxCoPilot, 180);

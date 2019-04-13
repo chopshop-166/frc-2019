@@ -32,10 +32,11 @@ public class Drive extends Subsystem {
     private Encoder rightEncoder;
     private PIDGyro gyro;
     private DifferentialDrive drive;
+    private Robot robot;
     NetworkTableInstance inst;
     NetworkTable table;
 
-    public Drive(final RobotMap.DriveMap map) { // NOPMD
+    public Drive(final RobotMap.DriveMap map, final Robot robotObj) { // NOPMD
         super();
         // Take values that the subsystem needs from the map, and store them in the
         // class
@@ -51,6 +52,7 @@ public class Drive extends Subsystem {
             gyroCorrection = value;
         });
         drive = new DifferentialDrive(left, right);
+        robot = robotObj;
         addChildren();
 
         inst = NetworkTableInstance.getDefault();
@@ -86,13 +88,19 @@ public class Drive extends Subsystem {
 
     public Command driveNormal() {
         return new Command("driveNormal", this) {
+            private double triggerSpeed = 0;
+            private double thumbstickSpeed = 0;
 
             @Override
             protected void execute() {
-                drive.arcadeDrive(
-                        -Robot.driveController.getTriggerAxis(Hand.kRight)
-                                + Robot.driveController.getTriggerAxis(Hand.kLeft),
-                        Robot.driveController.getX(Hand.kLeft));
+                triggerSpeed = -Robot.driveController.getTriggerAxis(Hand.kRight)
+                        + Robot.driveController.getTriggerAxis(Hand.kLeft);
+                thumbstickSpeed = Robot.driveController.getX(Hand.kLeft);
+                if (robot.lift.isSpeedLimitHeight()) {
+                    triggerSpeed = Math.max(Math.min(triggerSpeed, .5), -.5);
+                    thumbstickSpeed = Math.max(Math.min(thumbstickSpeed, .75), -.75);
+                }
+                drive.arcadeDrive(triggerSpeed, thumbstickSpeed);
             }
 
             @Override
@@ -104,13 +112,19 @@ public class Drive extends Subsystem {
 
     public Command driveBackwards() {
         return new Command("Drive Backwards", this) {
+            private double triggerSpeed = 0;
+            private double thumbstickSpeed = 0;
 
             @Override
             protected void execute() {
-                drive.arcadeDrive(
-                        +Robot.driveController.getTriggerAxis(Hand.kRight)
-                                - Robot.driveController.getTriggerAxis(Hand.kLeft),
-                        Robot.driveController.getX(Hand.kLeft));
+                triggerSpeed = +Robot.driveController.getTriggerAxis(Hand.kRight)
+                        - Robot.driveController.getTriggerAxis(Hand.kLeft);
+                thumbstickSpeed = Robot.driveController.getX(Hand.kLeft);
+                if (robot.lift.isSpeedLimitHeight()) {
+                    triggerSpeed = Math.max(Math.min(triggerSpeed, .5), -.5);
+                    thumbstickSpeed = Math.max(Math.min(thumbstickSpeed, .75), -.75);
+                }
+                drive.arcadeDrive(triggerSpeed, thumbstickSpeed);
             }
 
             @Override
@@ -222,32 +236,6 @@ public class Drive extends Subsystem {
         };
     }
 
-    // public Command turnXDegrees(double degrees) {
-    // return new Command("turnXDegrees", this) {
-    // @Override
-    // protected void initialize() {
-    // // gyroDrivePID.reset();
-    // // gyroDrivePID.setSetpoint(degrees);
-    // // gyroDrivePID.enable();
-    // }
-
-    // @Override
-    // protected void execute() {
-    // drive.arcadeDrive(0, gyroCorrection);
-    // }
-
-    // // @Override
-    // // protected boolean isFinished() {
-    // // return gyroDrivePID.onTarget();
-    // // }
-
-    // // @Override
-    // // protected void end() {
-    // // gyroDrivePID.disable();
-    // // }
-    // };
-    // }
-
     public Command align() {
         return new Command("align", this) {
             double visionCorrectionFactor = table.getEntry("Vision Correction").getDouble(0);
@@ -284,7 +272,7 @@ public class Drive extends Subsystem {
     }
 
     public Command visionPID() {
-        return new PIDCommand("Vision PID", .72, .009, 0.0, this) {
+        return new PIDCommand("Vision PID", .85, .009, 0.0, this) {
             PIDController visionPIDController;
             NetworkTableEntry visionFound;
             NetworkTableEntry visionCorrection;
