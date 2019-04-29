@@ -48,18 +48,36 @@ public class Robot extends CommandRobot {
     private Command autonomousCommand;
     final private SendableChooser<Command> chooser = new SendableChooser<>();
 
+    /**
+     * This function is run when the robot is first started up and should be used
+     * for any initialization code.
+     */
     @Override
     public void robotInit() {
+        // Initialize OI here
         cameraBack = CameraServer.getInstance().startAutomaticCapture(0);
         cameraBack.setResolution(160, 120);
         assignButtons();
     }
 
+    /**
+     * This autonomous (along with the chooser code above) shows how to select
+     * between different autonomous modes using the dashboard. The sendable chooser
+     * code works with the Java SmartDashboard.
+     *
+     * <p>
+     * You can add additional auto modes by adding additional commands to the
+     * chooser code above (like the commented example).
+     */
     @Override
     public void autonomousInit() {
+        // autonomousCommand = lift.homePos();
+
+        // schedule the autonomous command (example)
         if (autonomousCommand != null) {
             autonomousCommand.start();
         }
+        // we can know the match types and event names and match number
         Shuffleboard.startRecording();
         DriverStation ds = DriverStation.getInstance();
         Shuffleboard.addEventMarker(ds.getEventName() + " " + ds.getMatchType() + " " + ds.getMatchNumber(),
@@ -68,6 +86,11 @@ public class Robot extends CommandRobot {
 
     @Override
     public void teleopInit() {
+        // This makes sure that the autonomous stops running when
+        // teleop starts running. If you want the autonomous to
+        // continue until interrupted by another command, remove
+        // this line or comment it out.
+        // This will record the details of the match
         if (autonomousCommand != null) {
             autonomousCommand.cancel();
         }
@@ -105,6 +128,8 @@ public class Robot extends CommandRobot {
 
     public void assignButtons() {
         driveController.getButton(XBoxButton.A).whileHeld(drive.visionPID());
+        // driveController.getButton(XBoxButton.A).whileHeld(leds.blinkVisionLights(10));
+        // driveController.getButton(XBoxButton.A).whileHeld(LEDVision());
         driveController.getButton(XBoxButton.BUMPER_RIGHT).whileHeld(drive.leftSlowTurn());
         driveController.getButton(XBoxButton.BUMPER_RIGHT).whileHeld(leds.blinkLights(Leds.fuschia, 1, 2));
         driveController.getButton(XBoxButton.BUMPER_LEFT).whileHeld(drive.rightSlowTurn());

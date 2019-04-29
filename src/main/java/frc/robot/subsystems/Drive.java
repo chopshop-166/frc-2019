@@ -246,6 +246,8 @@ public class Drive extends Subsystem {
             protected void execute() {
                 visionCorrectionFactor = table.getEntry("Vision Correction").getDouble(0);
                 visionConfirmation = table.getEntry("Vision Found").getBoolean(false);
+
+                // drive.arcadeDrive(0, visionCorrectionMultiplier * visionCorrectionFactor);
                 if ((visionCorrectionFactor > driveDeadband) && visionConfirmation)
                     visionTurnSpeed = 0.3;
                 else if ((visionCorrectionFactor < -driveDeadband) && visionConfirmation)

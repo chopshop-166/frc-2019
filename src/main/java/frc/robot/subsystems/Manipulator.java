@@ -52,7 +52,31 @@ public class Manipulator extends Subsystem {
     @Override
     public void initDefaultCommand() {
         // Set the default command for a subsystem here.
+        // setDefaultCommand(new MySpecialCommand());
+
     }
+
+    // // #region Command Chains
+    // public Command pickUpCargo() {
+    // CommandChain retValue = new CommandChain("Pick up Cargo");
+    // retValue.then(openBeak()).then(rollerIntake()).then(gamepieceCheck()).then(rollerStop());
+    // return retValue;
+    // }
+
+    /*
+     * public Command ledHatchPanel() { if (gamepieceLimitSwitch.get()) { return new
+     * InstantCommand("turn on the green color", this, () -> {
+     * Robot.leds.turnOnGreen(true); });
+     * 
+     * } }
+     */
+
+    // public Command releaseCargo() {
+    // CommandChain retValue = new CommandChain("Release Cargo");
+    // retValue.then(rollerEject()).then(gamepieceCheck()).then(new
+    // WaitCommand(.5)).then(rollerStop());
+    // return retValue;
+    // }
 
     public Command pickUpHatch() {
         CommandChain retValue = new CommandChain("Pick Up Hatch");
