@@ -2,7 +2,6 @@ package frc.robot.subsystems;
 
 import com.chopshop166.chopshoplib.commands.CommandChain;
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
-import com.chopshop166.chopshoplib.sensors.Lidar;
 import com.chopshop166.chopshoplib.sensors.PIDGyro;
 
 import edu.wpi.first.networktables.NetworkTable;
@@ -28,7 +27,7 @@ public class Drive extends Subsystem {
     private SendableSpeedController left;
     private SendableSpeedController right;
     private DoubleSolenoid climbPiston;
-    private Lidar lidar;
+
     private Encoder leftEncoder;
     private Encoder rightEncoder;
     private PIDGyro gyro;
@@ -44,7 +43,6 @@ public class Drive extends Subsystem {
         left = map.getLeft();
         right = map.getRight();
         climbPiston = map.getClimbPiston();
-        lidar = map.getLidar();
         leftEncoder = map.getLeftEncoder();
         rightEncoder = map.getRightEncoder();
         gyro = map.getGyro();
@@ -67,10 +65,6 @@ public class Drive extends Subsystem {
         addChild(drive);
         addChild(gyro);
     }
-
-    private final double visionCorrectionMultiplier = 2;
-    private final double visionCorrectionSpeed = 0.2;
-    private final double visionCorrectionRange = 0.1;
 
     private final double slowTurnSpeed = 0.475;
 
