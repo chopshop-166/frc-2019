@@ -3,6 +3,7 @@ package frc.robot;
 import com.chopshop166.chopshoplib.CommandRobot;
 import com.chopshop166.chopshoplib.commands.CommandChain;
 import com.chopshop166.chopshoplib.controls.ButtonXboxController;
+import com.chopshop166.chopshoplib.controls.ButtonXboxController.XBoxButton;
 
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.cameraserver.CameraServer;
@@ -11,17 +12,12 @@ import edu.wpi.first.wpilibj.buttons.POVButton;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.maps.CurrentRobot;
-import frc.robot.maps.Tempest;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Leds;
 import frc.robot.subsystems.LiftSubsystem;
 import frc.robot.subsystems.LiftSubsystem.Heights;
 import frc.robot.subsystems.Manipulator;
-import com.chopshop166.chopshoplib.controls.ButtonXboxController.XBoxButton;
-import com.mach.LightDrive.Color;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -46,7 +42,6 @@ public class Robot extends CommandRobot {
     private UsbCamera cameraBack;
 
     private Command autonomousCommand;
-    final private SendableChooser<Command> chooser = new SendableChooser<>();
 
     @Override
     public void robotInit() {

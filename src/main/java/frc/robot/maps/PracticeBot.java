@@ -3,17 +3,14 @@ package frc.robot.maps;
 import com.chopshop166.chopshoplib.outputs.MockSpeedController;
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 import com.chopshop166.chopshoplib.sensors.Lidar;
-import com.chopshop166.chopshoplib.sensors.MockPotentiometer;
 import com.chopshop166.chopshoplib.sensors.PIDGyro;
 import com.chopshop166.chopshoplib.sensors.SparkMaxCounter;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.revrobotics.CANSparkMax;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.I2C.Port;
-import edu.wpi.first.wpilibj.interfaces.Potentiometer;
 import frc.robot.RobotMap;
 
 public class PracticeBot implements RobotMap {
