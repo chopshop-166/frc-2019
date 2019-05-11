@@ -96,12 +96,6 @@ public class Robot extends CommandRobot {
         Shuffleboard.stopRecording();
     }
 
-    public CommandChain rocketAuto() {
-        CommandChain retValue = new CommandChain("Rocket Auto");
-        retValue.then(drive.visionPID(), leds.turnOnGreen(1, 2), lift.deployArms());
-        return retValue;
-    }
-
     public CommandChain LEDOpenBeak() {
         CommandChain retValue = new CommandChain("Beak Open & Green LED");
         retValue.then(manipulator.openBeak()).then(leds.turnOnGreen(1, 2));
