@@ -31,7 +31,7 @@ public class Robot extends CommandRobot {
     final private RobotMap robotMap = new CurrentRobot();
     final public static ButtonXboxController xBoxCoPilot = new ButtonXboxController(1);
     final private Drive drive = new Drive(robotMap.getDriveMap());
-    final public LiftSubsystem lift = new LiftSubsystem(robotMap.getLiftMap());
+    final private LiftSubsystem lift = new LiftSubsystem(robotMap.getLiftMap());
     final private Manipulator manipulator = new Manipulator(robotMap.getManipulatorMap());
     public static ButtonXboxController driveController = new ButtonXboxController(5);
     POVButton povDown = new POVButton(xBoxCoPilot, 180);
@@ -94,12 +94,6 @@ public class Robot extends CommandRobot {
     @Override
     public void disabledInit() {
         Shuffleboard.stopRecording();
-    }
-
-    public CommandChain rocketAuto() {
-        CommandChain retValue = new CommandChain("Rocket Auto");
-        retValue.then(drive.visionPID(), leds.turnOnGreen(1, 2), lift.deployArms());
-        return retValue;
     }
 
     public CommandChain LEDOpenBeak() {
