@@ -30,7 +30,7 @@ public class Robot extends CommandRobot {
 
     final private RobotMap robotMap = new CurrentRobot();
     final public static ButtonXboxController xBoxCoPilot = new ButtonXboxController(1);
-    final private Drive drive = new Drive(robotMap.getDriveMap(), this);
+    final private Drive drive = new Drive(robotMap.getDriveMap());
     final public LiftSubsystem lift = new LiftSubsystem(robotMap.getLiftMap());
     final private Manipulator manipulator = new Manipulator(robotMap.getManipulatorMap());
     public static ButtonXboxController driveController = new ButtonXboxController(5);
@@ -43,18 +43,35 @@ public class Robot extends CommandRobot {
 
     private Command autonomousCommand;
 
+    /**
+     * This function is run when the robot is first started up and should be used
+     * for any initialization code.
+     */
     @Override
     public void robotInit() {
+        // Initialize OI here
         cameraBack = CameraServer.getInstance().startAutomaticCapture(0);
         cameraBack.setResolution(160, 120);
         assignButtons();
     }
 
+    /**
+     * This autonomous (along with the chooser code above) shows how to select
+     * between different autonomous modes using the dashboard. The sendable chooser
+     * code works with the Java SmartDashboard.
+     *
+     * <p>
+     * You can add additional auto modes by adding additional commands to the
+     * chooser code above (like the commented example).
+     */
     @Override
     public void autonomousInit() {
+
+        // schedule the autonomous command (example)
         if (autonomousCommand != null) {
             autonomousCommand.start();
         }
+        // we can know the match types and event names and match number
         Shuffleboard.startRecording();
         DriverStation ds = DriverStation.getInstance();
         Shuffleboard.addEventMarker(ds.getEventName() + " " + ds.getMatchType() + " " + ds.getMatchNumber(),
@@ -63,6 +80,11 @@ public class Robot extends CommandRobot {
 
     @Override
     public void teleopInit() {
+        // This makes sure that the autonomous stops running when
+        // teleop starts running. If you want the autonomous to
+        // continue until interrupted by another command, remove
+        // this line or comment it out.
+        // This will record the details of the match
         if (autonomousCommand != null) {
             autonomousCommand.cancel();
         }
@@ -110,7 +132,7 @@ public class Robot extends CommandRobot {
         xBoxCoPilot.getButton(XBoxButton.B).whenPressed(lift.goToHeight(Heights.kRocketHatchMid));
         xBoxCoPilot.getButton(XBoxButton.X).whenPressed(lift.goToHeight(Heights.kRocketHatchHigh));
         xBoxCoPilot.getButton(XBoxButton.BUMPER_LEFT).whenPressed(LEDOpenBeak());
-        xBoxCoPilot.getButton(XBoxButton.BUMPER_RIGHT.get()).whenPressed(LEDCloseBeak());
+        xBoxCoPilot.getButton(XBoxButton.BUMPER_RIGHT).whenPressed(LEDCloseBeak());
         xBoxCoPilot.getButton(XBoxButton.Y).whileHeld(manipulator.intake());
         xBoxCoPilot.getButton(XBoxButton.A).whenPressed(manipulator.eject());
 

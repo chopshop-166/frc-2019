@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import com.chopshop166.chopshoplib.sensors.SparkMaxCounter;
 import com.revrobotics.CANSparkMax;
 
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
@@ -11,6 +12,7 @@ import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.command.PIDCommand;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 import frc.robot.RobotMap;
@@ -24,6 +26,8 @@ public class LiftSubsystem extends Subsystem {
     private SparkMaxCounter heightEncoder;
     private DigitalInput lowerLimit;
     private DigitalInput upperLimit;
+    NetworkTableInstance inst;
+    NetworkTable table;
 
     public LiftSubsystem(final RobotMap.LiftMap map) {
         super();
@@ -143,8 +147,9 @@ public class LiftSubsystem extends Subsystem {
         });
     }
 
-    public boolean isSpeedLimitHeight() {
-        return (heightEncoder.getDistance() > Heights.kSpeedLimitHeight.value);
+    public void periodic() {
+        SmartDashboard.putBoolean("isSpeedLimitHeight",
+                (heightEncoder.getDistance() > Heights.kSpeedLimitHeight.value));
     }
 
     protected boolean isAtUpperLimit() {

@@ -51,14 +51,11 @@ public class Manipulator extends Subsystem {
     @Override
     public void initDefaultCommand() {
         // Set the default command for a subsystem here.
+        // setDefaultCommand(new MySpecialCommand());
+
     }
 
-    public Command pickUpHatch() {
-        CommandChain retValue = new CommandChain("Pick Up Hatch");
-        retValue.then(closeBeak()).then(gamepieceCheck()).then(openBeak());
-        return retValue;
-    }
-
+    // // #region Command Chains
     // #endregion
 
     // #region Commands

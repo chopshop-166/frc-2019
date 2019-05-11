@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.PIDController;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.command.PIDCommand;
@@ -31,11 +32,10 @@ public class Drive extends Subsystem {
     private Encoder rightEncoder;
     private PIDGyro gyro;
     private DifferentialDrive drive;
-    private Robot robot;
     NetworkTableInstance inst;
     NetworkTable table;
 
-    public Drive(final RobotMap.DriveMap map, final Robot robotObj) { // NOPMD
+    public Drive(final RobotMap.DriveMap map) { // NOPMD
         super();
         // Take values that the subsystem needs from the map, and store them in the
         // class
@@ -50,13 +50,13 @@ public class Drive extends Subsystem {
             gyroCorrection = value;
         });
         drive = new DifferentialDrive(left, right);
-        robot = robotObj;
         addChildren();
 
         inst = NetworkTableInstance.getDefault();
         table = inst.getTable("Vision Correction Table");
 
         SmartDashboard.putData("VISIONNNNN", visionPID());
+
     }
 
     private void addChildren() {
@@ -82,15 +82,15 @@ public class Drive extends Subsystem {
 
     public Command driveNormal() {
         return new Command("driveNormal", this) {
-            private double triggerSpeed = 0;
-            private double thumbstickSpeed = 0;
 
             @Override
             protected void execute() {
-                triggerSpeed = -Robot.driveController.getTriggerAxis(Hand.kRight)
-                        + Robot.driveController.getTriggerAxis(Hand.kLeft);
-                thumbstickSpeed = Robot.driveController.getX(Hand.kLeft);
-                if (robot.lift.isSpeedLimitHeight()) {
+                XboxController c = Robot.driveController;
+                double triggerSpeed = 0;
+                double thumbstickSpeed = 0;
+                triggerSpeed = -c.getTriggerAxis(Hand.kRight) + c.getTriggerAxis(Hand.kLeft);
+                thumbstickSpeed = c.getX(Hand.kLeft);
+                if (SmartDashboard.getBoolean("isSpeedLimitHeight", false)) {
                     triggerSpeed = Math.max(Math.min(triggerSpeed, .5), -.5);
                     thumbstickSpeed = Math.max(Math.min(thumbstickSpeed, .75), -.75);
                 }
@@ -106,15 +106,15 @@ public class Drive extends Subsystem {
 
     public Command driveBackwards() {
         return new Command("Drive Backwards", this) {
-            private double triggerSpeed = 0;
-            private double thumbstickSpeed = 0;
 
             @Override
             protected void execute() {
-                triggerSpeed = +Robot.driveController.getTriggerAxis(Hand.kRight)
-                        - Robot.driveController.getTriggerAxis(Hand.kLeft);
-                thumbstickSpeed = Robot.driveController.getX(Hand.kLeft);
-                if (robot.lift.isSpeedLimitHeight()) {
+                XboxController c = Robot.driveController;
+                double triggerSpeed = 0;
+                double thumbstickSpeed = 0;
+                triggerSpeed = c.getTriggerAxis(Hand.kRight) - c.getTriggerAxis(Hand.kLeft);
+                thumbstickSpeed = c.getX(Hand.kLeft);
+                if (SmartDashboard.getBoolean("isSpeedLimitHeight", false)) {
                     triggerSpeed = Math.max(Math.min(triggerSpeed, .5), -.5);
                     thumbstickSpeed = Math.max(Math.min(thumbstickSpeed, .75), -.75);
                 }
@@ -172,9 +172,6 @@ public class Drive extends Subsystem {
         return new Command("GoXDistance", this) {
             @Override
             protected void initialize() {
-                // gyroDrivePID.reset();
-                // gyroDrivePID.setSetpoint(gyro.getAngle());
-                // gyroDrivePID.enable();
                 leftEncoder.reset();
                 rightEncoder.reset();
             }
@@ -194,7 +191,6 @@ public class Drive extends Subsystem {
 
             @Override
             protected void end() {
-                // gyroDrivePID.disable();
             }
         };
     }
@@ -203,9 +199,6 @@ public class Drive extends Subsystem {
         return new Command("GoXDistance", this) {
             @Override
             protected void initialize() {
-                // gyroDrivePID.reset();
-                // gyroDrivePID.setSetpoint(gyro.getAngle());
-                // gyroDrivePID.enable();
                 leftEncoder.reset();
                 rightEncoder.reset();
             }
@@ -225,7 +218,6 @@ public class Drive extends Subsystem {
 
             @Override
             protected void end() {
-                // gyroDrivePID.disable();
             }
         };
     }
@@ -240,6 +232,7 @@ public class Drive extends Subsystem {
             protected void execute() {
                 visionCorrectionFactor = table.getEntry("Vision Correction").getDouble(0);
                 visionConfirmation = table.getEntry("Vision Found").getBoolean(false);
+
                 if ((visionCorrectionFactor > driveDeadband) && visionConfirmation)
                     visionTurnSpeed = 0.3;
                 else if ((visionCorrectionFactor < -driveDeadband) && visionConfirmation)
