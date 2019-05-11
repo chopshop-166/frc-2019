@@ -57,33 +57,6 @@ public class Manipulator extends Subsystem {
     }
 
     // // #region Command Chains
-    // public Command pickUpCargo() {
-    // CommandChain retValue = new CommandChain("Pick up Cargo");
-    // retValue.then(openBeak()).then(rollerIntake()).then(gamepieceCheck()).then(rollerStop());
-    // return retValue;
-    // }
-
-    /*
-     * public Command ledHatchPanel() { if (gamepieceLimitSwitch.get()) { return new
-     * InstantCommand("turn on the green color", this, () -> {
-     * Robot.leds.turnOnGreen(true); });
-     * 
-     * } }
-     */
-
-    // public Command releaseCargo() {
-    // CommandChain retValue = new CommandChain("Release Cargo");
-    // retValue.then(rollerEject()).then(gamepieceCheck()).then(new
-    // WaitCommand(.5)).then(rollerStop());
-    // return retValue;
-    // }
-
-    public Command pickUpHatch() {
-        CommandChain retValue = new CommandChain("Pick Up Hatch");
-        retValue.then(closeBeak()).then(gamepieceCheck()).then(openBeak());
-        return retValue;
-    }
-
     // #endregion
 
     // #region Commands

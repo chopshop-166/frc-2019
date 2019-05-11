@@ -34,7 +34,7 @@ public class Robot extends CommandRobot {
 
     final private RobotMap robotMap = new CurrentRobot();
     final public static ButtonXboxController xBoxCoPilot = new ButtonXboxController(1);
-    final private Drive drive = new Drive(robotMap.getDriveMap(), this);
+    final private Drive drive = new Drive(robotMap.getDriveMap());
     final public LiftSubsystem lift = new LiftSubsystem(robotMap.getLiftMap());
     final private Manipulator manipulator = new Manipulator(robotMap.getManipulatorMap());
     public static ButtonXboxController driveController = new ButtonXboxController(5);
@@ -71,7 +71,6 @@ public class Robot extends CommandRobot {
      */
     @Override
     public void autonomousInit() {
-        // autonomousCommand = lift.homePos();
 
         // schedule the autonomous command (example)
         if (autonomousCommand != null) {
@@ -128,8 +127,6 @@ public class Robot extends CommandRobot {
 
     public void assignButtons() {
         driveController.getButton(XBoxButton.A).whileHeld(drive.visionPID());
-        // driveController.getButton(XBoxButton.A).whileHeld(leds.blinkVisionLights(10));
-        // driveController.getButton(XBoxButton.A).whileHeld(LEDVision());
         driveController.getButton(XBoxButton.BUMPER_RIGHT).whileHeld(drive.leftSlowTurn());
         driveController.getButton(XBoxButton.BUMPER_RIGHT).whileHeld(leds.blinkLights(Leds.fuschia, 1, 2));
         driveController.getButton(XBoxButton.BUMPER_LEFT).whileHeld(drive.rightSlowTurn());
@@ -140,7 +137,7 @@ public class Robot extends CommandRobot {
         xBoxCoPilot.getButton(XBoxButton.B).whenPressed(lift.goToHeight(Heights.kRocketHatchMid));
         xBoxCoPilot.getButton(XBoxButton.X).whenPressed(lift.goToHeight(Heights.kRocketHatchHigh));
         xBoxCoPilot.getButton(XBoxButton.BUMPER_LEFT).whenPressed(LEDOpenBeak());
-        xBoxCoPilot.getButton(XBoxButton.BUMPER_RIGHT.get()).whenPressed(LEDCloseBeak());
+        xBoxCoPilot.getButton(XBoxButton.BUMPER_RIGHT).whenPressed(LEDCloseBeak());
         xBoxCoPilot.getButton(XBoxButton.Y).whileHeld(manipulator.intake());
         xBoxCoPilot.getButton(XBoxButton.A).whenPressed(manipulator.eject());
 
