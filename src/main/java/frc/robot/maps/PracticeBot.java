@@ -42,12 +42,12 @@ public class PracticeBot implements RobotMap {
 
             @Override
             public DoubleSolenoid getBrake() {
-                return new DoubleSolenoid(2, 7);
+                return new DoubleSolenoid(0, 1);
             }
 
             @Override
             public DoubleSolenoid getArmsPiston() {
-                return null;
+                return new DoubleSolenoid(2, 3);
             }
         };
     }
@@ -73,7 +73,7 @@ public class PracticeBot implements RobotMap {
 
             @Override
             public DoubleSolenoid getbeaksPiston() {
-                return new DoubleSolenoid(2, 3);
+                return new DoubleSolenoid(4, 5);
             }
 
             @Override
@@ -114,7 +114,7 @@ public class PracticeBot implements RobotMap {
 
             @Override
             public DoubleSolenoid getClimbPiston() {
-                return new DoubleSolenoid(4, 5);
+                return new DoubleSolenoid(6, 7);
             }
 
             @Override
