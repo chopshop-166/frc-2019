@@ -33,18 +33,17 @@ public interface RobotMap {
         DigitalInput getLowerLimit();
 
         DigitalInput getUpperLimit();
+
+        DoubleSolenoid getArmsPiston();
     }
 
     ManipulatorMap getManipulatorMap();
 
     interface ManipulatorMap {
 
-
         SendableSpeedController getrollersMotor();
 
         DoubleSolenoid getbeaksPiston();
-
-        DoubleSolenoid getArmsPiston();
 
         DigitalInput getGamepieceLimitSwitch();
 
@@ -69,14 +68,5 @@ public interface RobotMap {
         Encoder getRightEncoder();
 
         PIDGyro getGyro();
-    }
-
-    MaflipulatorMap getMaflipulatorMap();
-
-    public interface MaflipulatorMap {
-
-        SendableSpeedController getFlipMotor();
-
-        Potentiometer getMaflipulatorPot();
     }
 }

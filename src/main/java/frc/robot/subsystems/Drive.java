@@ -2,7 +2,6 @@ package frc.robot.subsystems;
 
 import com.chopshop166.chopshoplib.commands.CommandChain;
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
-import com.chopshop166.chopshoplib.sensors.Lidar;
 import com.chopshop166.chopshoplib.sensors.PIDGyro;
 
 import edu.wpi.first.networktables.NetworkTable;
@@ -13,6 +12,7 @@ import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.PIDController;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.command.PIDCommand;
@@ -27,7 +27,7 @@ public class Drive extends Subsystem {
     private SendableSpeedController left;
     private SendableSpeedController right;
     private DoubleSolenoid climbPiston;
-    private Lidar lidar;
+
     private Encoder leftEncoder;
     private Encoder rightEncoder;
     private PIDGyro gyro;
@@ -43,7 +43,6 @@ public class Drive extends Subsystem {
         left = map.getLeft();
         right = map.getRight();
         climbPiston = map.getClimbPiston();
-        lidar = map.getLidar();
         leftEncoder = map.getLeftEncoder();
         rightEncoder = map.getRightEncoder();
         gyro = map.getGyro();
@@ -57,6 +56,7 @@ public class Drive extends Subsystem {
         table = inst.getTable("Vision Correction Table");
 
         SmartDashboard.putData("VISIONNNNN", visionPID());
+
     }
 
     private void addChildren() {
@@ -66,11 +66,7 @@ public class Drive extends Subsystem {
         addChild(gyro);
     }
 
-    private final double visionCorrectionMultiplier = 2;
-    private final double visionCorrectionSpeed = 0.2;
-    private final double visionCorrectionRange = 0.1;
-
-    private final double slowTurnSpeed = 0.65;
+    private final double slowTurnSpeed = 0.475;
 
     private final double driveDeadband = 0.05;
 
@@ -89,10 +85,16 @@ public class Drive extends Subsystem {
 
             @Override
             protected void execute() {
-                drive.arcadeDrive(
-                        +Robot.driveController.getTriggerAxis(Hand.kRight)
-                                - Robot.driveController.getTriggerAxis(Hand.kLeft),
-                        Robot.driveController.getX(Hand.kLeft));
+                XboxController c = Robot.driveController;
+                double triggerSpeed = 0;
+                double thumbstickSpeed = 0;
+                triggerSpeed = -c.getTriggerAxis(Hand.kRight) + c.getTriggerAxis(Hand.kLeft);
+                thumbstickSpeed = c.getX(Hand.kLeft);
+                if (SmartDashboard.getBoolean("isSpeedLimitHeight", false)) {
+                    triggerSpeed = Math.max(Math.min(triggerSpeed, .5), -.5);
+                    thumbstickSpeed = Math.max(Math.min(thumbstickSpeed, .75), -.75);
+                }
+                drive.arcadeDrive(triggerSpeed, thumbstickSpeed);
             }
 
             @Override
@@ -107,10 +109,16 @@ public class Drive extends Subsystem {
 
             @Override
             protected void execute() {
-                drive.arcadeDrive(
-                        -Robot.driveController.getTriggerAxis(Hand.kRight)
-                                + Robot.driveController.getTriggerAxis(Hand.kLeft),
-                        Robot.driveController.getX(Hand.kLeft));
+                XboxController c = Robot.driveController;
+                double triggerSpeed = 0;
+                double thumbstickSpeed = 0;
+                triggerSpeed = c.getTriggerAxis(Hand.kRight) - c.getTriggerAxis(Hand.kLeft);
+                thumbstickSpeed = c.getX(Hand.kLeft);
+                if (SmartDashboard.getBoolean("isSpeedLimitHeight", false)) {
+                    triggerSpeed = Math.max(Math.min(triggerSpeed, .5), -.5);
+                    thumbstickSpeed = Math.max(Math.min(thumbstickSpeed, .75), -.75);
+                }
+                drive.arcadeDrive(triggerSpeed, thumbstickSpeed);
             }
 
             @Override
@@ -125,7 +133,7 @@ public class Drive extends Subsystem {
 
             @Override
             protected void execute() {
-                drive.arcadeDrive(0, -slowTurnSpeed);
+                drive.arcadeDrive(0, slowTurnSpeed);
             }
 
             @Override
@@ -145,7 +153,7 @@ public class Drive extends Subsystem {
 
             @Override
             protected void execute() {
-                drive.arcadeDrive(0, slowTurnSpeed);
+                drive.arcadeDrive(0, -slowTurnSpeed);
             }
 
             @Override
@@ -164,9 +172,6 @@ public class Drive extends Subsystem {
         return new Command("GoXDistance", this) {
             @Override
             protected void initialize() {
-                // gyroDrivePID.reset();
-                // gyroDrivePID.setSetpoint(gyro.getAngle());
-                // gyroDrivePID.enable();
                 leftEncoder.reset();
                 rightEncoder.reset();
             }
@@ -186,7 +191,6 @@ public class Drive extends Subsystem {
 
             @Override
             protected void end() {
-                // gyroDrivePID.disable();
             }
         };
     }
@@ -195,9 +199,6 @@ public class Drive extends Subsystem {
         return new Command("GoXDistance", this) {
             @Override
             protected void initialize() {
-                // gyroDrivePID.reset();
-                // gyroDrivePID.setSetpoint(gyro.getAngle());
-                // gyroDrivePID.enable();
                 leftEncoder.reset();
                 rightEncoder.reset();
             }
@@ -217,36 +218,9 @@ public class Drive extends Subsystem {
 
             @Override
             protected void end() {
-                // gyroDrivePID.disable();
             }
         };
     }
-
-    // public Command turnXDegrees(double degrees) {
-    // return new Command("turnXDegrees", this) {
-    // @Override
-    // protected void initialize() {
-    // // gyroDrivePID.reset();
-    // // gyroDrivePID.setSetpoint(degrees);
-    // // gyroDrivePID.enable();
-    // }
-
-    // @Override
-    // protected void execute() {
-    // drive.arcadeDrive(0, gyroCorrection);
-    // }
-
-    // // @Override
-    // // protected boolean isFinished() {
-    // // return gyroDrivePID.onTarget();
-    // // }
-
-    // // @Override
-    // // protected void end() {
-    // // gyroDrivePID.disable();
-    // // }
-    // };
-    // }
 
     public Command align() {
         return new Command("align", this) {
@@ -259,7 +233,6 @@ public class Drive extends Subsystem {
                 visionCorrectionFactor = table.getEntry("Vision Correction").getDouble(0);
                 visionConfirmation = table.getEntry("Vision Found").getBoolean(false);
 
-                // drive.arcadeDrive(0, visionCorrectionMultiplier * visionCorrectionFactor);
                 if ((visionCorrectionFactor > driveDeadband) && visionConfirmation)
                     visionTurnSpeed = 0.3;
                 else if ((visionCorrectionFactor < -driveDeadband) && visionConfirmation)
@@ -284,7 +257,7 @@ public class Drive extends Subsystem {
     }
 
     public Command visionPID() {
-        return new PIDCommand("Vision PID", .72, .009, 0.0, this) {
+        return new PIDCommand("Vision PID", .85, .009, 0.0, this) {
             PIDController visionPIDController;
             NetworkTableEntry visionFound;
             NetworkTableEntry visionCorrection;
@@ -315,7 +288,7 @@ public class Drive extends Subsystem {
 
             @Override
             protected void usePIDOutput(double visionOutput) {
-                drive.arcadeDrive(.55, -visionOutput);
+                drive.arcadeDrive(-.55, -visionOutput);
             }
         };
     }

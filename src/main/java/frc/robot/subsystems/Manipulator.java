@@ -10,7 +10,6 @@ import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.command.TimedCommand;
-import edu.wpi.first.wpilibj.command.WaitCommand;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.RobotMap;
 import frc.robot.triggers.LimitSwitchTrigger;
@@ -19,7 +18,6 @@ public class Manipulator extends Subsystem {
 
     private SendableSpeedController rollersMotor;
     private DoubleSolenoid beaksPiston;
-    private DoubleSolenoid armsPiston;
     private DigitalInput gamepieceLimitSwitch;
     private DigitalInput foldedBackLimitSwitch;
     private DigitalInput intakePositionLimitSwitch;
@@ -31,7 +29,6 @@ public class Manipulator extends Subsystem {
         // class
         rollersMotor = map.getrollersMotor();
         beaksPiston = map.getbeaksPiston();
-        armsPiston = map.getArmsPiston();
         gamepieceLimitSwitch = map.getGamepieceLimitSwitch();
         foldedBackLimitSwitch = map.getfoldedBackLimitSwitch();
         intakePositionLimitSwitch = map.getintakePositionLimitSwitch();
@@ -44,13 +41,12 @@ public class Manipulator extends Subsystem {
     public void addChildren() {
         addChild(rollersMotor);
         addChild(beaksPiston);
-        addChild(armsPiston);
         addChild(gamepieceLimitSwitch);
         addChild(foldedBackLimitSwitch);
         addChild(intakePositionLimitSwitch);
     }
 
-    double rollerspeed = .7;
+    double rollerspeed = 1;
 
     @Override
     public void initDefaultCommand() {
@@ -59,33 +55,7 @@ public class Manipulator extends Subsystem {
 
     }
 
-    // #region Command Chains
-    public Command pickUpCargo() {
-        CommandChain retValue = new CommandChain("Pick up Cargo");
-        retValue.then(openBeak()).then(rollerIntake()).then(retractArms()).then(gamepieceCheck()).then(rollerStop());
-        return retValue;
-    }
-
-    /*
-     * public Command ledHatchPanel() { if (gamepieceLimitSwitch.get()) { return new
-     * InstantCommand("turn on the green color", this, () -> {
-     * Robot.leds.turnOnGreen(true); });
-     * 
-     * } }
-     */
-
-    public Command releaseCargo() {
-        CommandChain retValue = new CommandChain("Release Cargo");
-        retValue.then(rollerEject()).then(gamepieceCheck()).then(new WaitCommand(.5)).then(rollerStop());
-        return retValue;
-    }
-
-    public Command pickUpHatch() {
-        CommandChain retValue = new CommandChain("Pick Up Hatch");
-        retValue.then(closeBeak()).then(retractArms()).then(gamepieceCheck()).then(openBeak());
-        return retValue;
-    }
-
+    // // #region Command Chains
     // #endregion
 
     // #region Commands
@@ -98,30 +68,6 @@ public class Manipulator extends Subsystem {
     public Command closeBeak() {
         return new InstantCommand("Close Beak", this, () -> {
             beaksPiston.set(Value.kReverse);
-        });
-    }
-
-    public Command extendArms() {
-        return new InstantCommand("Extend Arms", this, () -> {
-            armsPiston.set(Value.kForward);
-        });
-    }
-
-    public Command retractArms() {
-        return new InstantCommand("Retract Arms", this, () -> {
-            armsPiston.set(Value.kReverse);
-        });
-    }
-
-    public Command rollerIntake() {
-        return new InstantCommand("intake Rollers", this, () -> {
-            rollersMotor.set(rollerspeed);
-        });
-    }
-
-    public Command rollerEject() {
-        return new InstantCommand("eject Rollers", this, () -> {
-            rollersMotor.set(-rollerspeed);
         });
     }
 
@@ -148,7 +94,6 @@ public class Manipulator extends Subsystem {
 
             @Override
             protected void initialize() {
-                armsPiston.set(Value.kForward);
                 rollersMotor.set(rollerspeed);
             }
 
@@ -159,7 +104,6 @@ public class Manipulator extends Subsystem {
 
             @Override
             protected void end() {
-                armsPiston.set(Value.kReverse);
                 rollersMotor.set(0);
             }
         };

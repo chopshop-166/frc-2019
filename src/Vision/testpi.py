@@ -58,9 +58,9 @@ class gripV2:
         """initializes all values to presets or None if need to be set
         """
 
-        self.__hsl_threshold_hue = [66, 92]
-        self.__hsl_threshold_saturation = [172, 255.0]
-        self.__hsl_threshold_luminance = [53, 255.0]
+        self.__hsl_threshold_hue = [70, 101]
+        self.__hsl_threshold_saturation = [147, 255.0]
+        self.__hsl_threshold_luminance = [37, 255.0]
 
         self.hsl_threshold_output = None
 
@@ -269,12 +269,8 @@ def findPairs(contourList):
     leftRectList = []
     rectPairList = []
 
-    # print ("Number of Rectangles: {}".format(len(contourList)))
-
     for contour in contourList:
         rectangleBox = cv2.minAreaRect(contour)
-
-        # if Math.abs(rectangleBox[2] - rightAngle) > deadzone:
         if rectangleBox[2] > rightAngle - deadzone and rectangleBox[2] < rightAngle + deadzone:
             rightRectList.append(rectangleBox)
 
@@ -293,7 +289,6 @@ def findPairs(contourList):
 
     closestCenterPair = None
     for pair in rectPairList:
-        # print ("rectangle pair coordinates: {}, {}".format(pair[0][0][0],pair[1][0][0]))
         if closestCenterPair is None or findPairOffset(pair) < findPairOffset(closestCenterPair):
             closestCenterPair = pair
 
@@ -347,14 +342,9 @@ if __name__ == "__main__":
     while True:
         # capture image
         cvSink.grabFrame(frame)
-        # cv2.waitKey(1)
 
         width = frame.shape[1]
         height = frame.shape[0]
-        # M is used for rotational value of the image and is put in after frame in the line below
-        # M = cv2.getRotationMatrix2D((width/2, height/2), 90, 1)
-        # frame = cv2.warpAffine(frame, M, (width, height))
-
         # process with GRIP stuff
         goalFinder.process(frame)
 

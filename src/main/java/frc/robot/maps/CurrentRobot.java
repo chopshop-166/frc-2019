@@ -5,6 +5,7 @@ import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 import com.chopshop166.chopshoplib.sensors.Lidar;
 import com.chopshop166.chopshoplib.sensors.PIDGyro;
 import com.chopshop166.chopshoplib.sensors.SparkMaxCounter;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 import com.revrobotics.CANSparkMax;
@@ -53,6 +54,11 @@ public class CurrentRobot implements RobotMap {
             public DoubleSolenoid getBrake() {
                 return new DoubleSolenoid(0, 1);
             }
+
+            @Override
+            public DoubleSolenoid getArmsPiston() {
+                return new DoubleSolenoid(2, 3);
+            }
         };
     }
 
@@ -63,7 +69,9 @@ public class CurrentRobot implements RobotMap {
             @Override
             public SendableSpeedController getrollersMotor() {
                 WPI_TalonSRX cargoMotorController = new WPI_TalonSRX(10);
-                cargoMotorController.configContinuousCurrentLimit(20);
+                cargoMotorController.configContinuousCurrentLimit(15);
+                cargoMotorController.setInverted(true);
+                cargoMotorController.setNeutralMode(NeutralMode.Brake);
                 return SendableSpeedController.wrap(cargoMotorController);
             }
 
@@ -79,17 +87,12 @@ public class CurrentRobot implements RobotMap {
 
             @Override
             public DoubleSolenoid getbeaksPiston() {
-                return new DoubleSolenoid(6, 7);
+                return new DoubleSolenoid(7, 6);
             }
 
             @Override
             public DigitalInput getGamepieceLimitSwitch() {
                 return new DigitalInput(4);
-            }
-
-            @Override
-            public DoubleSolenoid getArmsPiston() {
-                return new DoubleSolenoid(2, 3);
             }
         };
     }
@@ -137,24 +140,6 @@ public class CurrentRobot implements RobotMap {
             @Override
             public DoubleSolenoid getClimbPiston() {
                 return new DoubleSolenoid(4, 5);
-            }
-        };
-    }
-
-    @Override
-    public MaflipulatorMap getMaflipulatorMap() {
-        return new MaflipulatorMap() {
-
-            @Override
-            public SendableSpeedController getFlipMotor() {
-                return SendableSpeedController.wrap(new WPI_VictorSPX(9));
-            }
-
-            @Override
-            public Potentiometer getMaflipulatorPot() {
-                AnalogPotentiometer potentiometer = new AnalogPotentiometer(3);
-                return potentiometer;
-
             }
         };
     }

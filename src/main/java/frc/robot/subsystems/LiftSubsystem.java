@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import com.chopshop166.chopshoplib.sensors.SparkMaxCounter;
 import com.revrobotics.CANSparkMax;
 
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
@@ -11,29 +12,38 @@ import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.command.PIDCommand;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 import frc.robot.RobotMap;
 
+//when arms piston is extended, the arms are locked in starting position
+
 public class LiftSubsystem extends Subsystem {
+    private DoubleSolenoid armsPiston;
     private CANSparkMax motor;
     private DoubleSolenoid brake;
     private SparkMaxCounter heightEncoder;
     private DigitalInput lowerLimit;
     private DigitalInput upperLimit;
+    NetworkTableInstance inst;
+    NetworkTable table;
 
     public LiftSubsystem(final RobotMap.LiftMap map) {
         super();
+        armsPiston = map.getArmsPiston();
         motor = map.getMotor();
         brake = map.getBrake();
         heightEncoder = new SparkMaxCounter(motor.getEncoder());
         lowerLimit = map.getLowerLimit();
         upperLimit = map.getUpperLimit();
+        armsPiston.set(Value.kForward);
         addChildren();
         registeredCommands();
     }
 
     public void addChildren() {
+        addChild(armsPiston);
         addChild(motor);
         addChild(brake);
         addChild(heightEncoder);
@@ -62,28 +72,29 @@ public class LiftSubsystem extends Subsystem {
         SmartDashboard.putData("Rocket Hatch Mid Auto", autoMoveLift(Heights.kRocketHatchMid));
         SmartDashboard.putData("Rocket Hatch High Auto", autoMoveLift(Heights.kRocketHatchHigh));
 
+        SmartDashboard.putData("Lock Arms", lockArms());
+
     }
 
-    // urgay
     public enum Heights {
         // Loading Station 19"
-        kLoadingStation(7.2),
+        kLoadingStation(5.8),
         // Low rocket cargo 27.5"
-        kRocketCargoLow(13.4),
+        kRocketCargoLow(46),
         // Middle rocket hatch 47"
-        kRocketHatchMid(45.1),
+        kRocketHatchMid(36.1),
         // Middle rocket cargo 55.5"
-        kRocketCargoMid(63.4),
+        kRocketCargoMid(100),
         // Top rocket hatch 75" (MAX HEIGHT)
-        kRocketHatchHigh(90),
+        kRocketHatchHigh(72),
         // Top rocket cargo 83.5"
         kRocketCargoHigh(0),
         // floor load 0"
         kFloorLoad(0.0),
         // cargo ship cargo 39.75"
         kCargoShipCargo(0),
-        // Height needed to flip over
-        kLiftFlipHeight(35);
+        // Height limit for speed limiting
+        kSpeedLimitHeight(40);
 
         private double value;
 
@@ -97,14 +108,15 @@ public class LiftSubsystem extends Subsystem {
     }
 
     protected void restrictedMotorSet(double liftSpeed) {
+        if (armsPiston.get() == Value.kForward) {
+            liftSpeed = 0;
+        }
         if (liftSpeed > 0 && !upperLimit.get()) {
             liftSpeed = 0;
-
         }
         if (liftSpeed < 0 && !lowerLimit.get()) {
             liftSpeed = 0;
             heightEncoder.reset();
-
         }
         if (Math.abs(liftSpeed) <= 0.05) {
             brake.set(Value.kForward);
@@ -121,6 +133,23 @@ public class LiftSubsystem extends Subsystem {
     public void initDefaultCommand() {
         // Set the default command for a subsystem here.
         setDefaultCommand(moveLift());
+    }
+
+    public Command lockArms() {
+        return new InstantCommand("Lock Arms", this, () -> {
+            armsPiston.set(Value.kForward);
+        });
+    }
+
+    public Command deployArms() {
+        return new InstantCommand("Deploy Arms", this, () -> {
+            armsPiston.set(Value.kReverse);
+        });
+    }
+
+    public void periodic() {
+        SmartDashboard.putBoolean("isSpeedLimitHeight",
+                (heightEncoder.getDistance() > Heights.kSpeedLimitHeight.value));
     }
 
     protected boolean isAtUpperLimit() {
