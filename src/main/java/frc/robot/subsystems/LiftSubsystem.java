@@ -34,7 +34,7 @@ public class LiftSubsystem extends Subsystem {
         armsPiston = map.getArmsPiston();
         motor = map.getMotor();
         brake = map.getBrake();
-        heightEncoder = new SparkMaxEncoder(motor.getEncoder());
+        heightEncoder = map.getHeightEncoder();
         lowerLimit = map.getLowerLimit();
         upperLimit = map.getUpperLimit();
         armsPiston.set(Value.kForward);
