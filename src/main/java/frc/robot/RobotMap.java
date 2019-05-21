@@ -3,13 +3,12 @@ package frc.robot;
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 import com.chopshop166.chopshoplib.sensors.Lidar;
 import com.chopshop166.chopshoplib.sensors.PIDGyro;
-import com.chopshop166.chopshoplib.sensors.SparkMaxCounter;
+import com.chopshop166.chopshoplib.sensors.SparkMaxEncoder;
 import com.revrobotics.CANSparkMax;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.interfaces.Potentiometer;
 
 /**
  * The RobotMap is an interface that contains the instructions on how to make a
@@ -28,7 +27,7 @@ public interface RobotMap {
 
         DoubleSolenoid getBrake();
 
-        SparkMaxCounter getHeightEncoder();
+        SparkMaxEncoder getHeightEncoder();
 
         DigitalInput getLowerLimit();
 

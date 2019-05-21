@@ -52,7 +52,7 @@ dependencies {
     nativeZip wpi.deps.vendor.jni(wpi.platforms.roborio)
     nativeDesktopZip wpi.deps.vendor.jni(wpi.platforms.desktop)
 
-    compile group: 'com.chopshop166', name: 'chopshoplib', version: '2019.2.2'
+    compile group: 'com.chopshop166', name: 'chopshoplib', version: '2019.3.0'
     compile group: 'com.chopshop166', name: 'lightdrive-mirror', version: '2019.0.0'
 
     testCompile 'junit:junit:4.12'

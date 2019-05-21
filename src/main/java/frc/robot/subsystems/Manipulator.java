@@ -1,6 +1,5 @@
 package frc.robot.subsystems;
 
-import com.chopshop166.chopshoplib.commands.CommandChain;
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 
 import edu.wpi.first.wpilibj.DigitalInput;
