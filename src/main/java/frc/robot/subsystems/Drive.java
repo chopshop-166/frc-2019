@@ -257,7 +257,7 @@ public class Drive extends Subsystem {
     }
 
     public Command visionPID() {
-        return new PIDCommand("Vision PID", .85, .009, 0.0, this) {
+        return new PIDCommand("Vision PID", 1.8, 0.065, 0.0, this) {
             PIDController visionPIDController;
             NetworkTableEntry visionFound;
             NetworkTableEntry visionCorrection;
@@ -288,7 +288,7 @@ public class Drive extends Subsystem {
 
             @Override
             protected void usePIDOutput(double visionOutput) {
-                drive.arcadeDrive(-.55, -visionOutput);
+                drive.arcadeDrive(-.45, -visionOutput);
             }
         };
     }
