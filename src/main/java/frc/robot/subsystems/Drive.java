@@ -133,7 +133,7 @@ public class Drive extends Subsystem {
 
             @Override
             protected void execute() {
-                drive.arcadeDrive(0, slowTurnSpeed);
+                drive.arcadeDrive(0, -slowTurnSpeed);
             }
 
             @Override
@@ -153,7 +153,7 @@ public class Drive extends Subsystem {
 
             @Override
             protected void execute() {
-                drive.arcadeDrive(0, -slowTurnSpeed);
+                drive.arcadeDrive(0, slowTurnSpeed);
             }
 
             @Override
