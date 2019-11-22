@@ -77,7 +77,7 @@ public class Drive extends Subsystem {
 
     @Override
     public void initDefaultCommand() {
-        setDefaultCommand(driveNormal());
+        setDefaultCommand(demoDrive());
     }
 
     public Command driveNormal() {
@@ -119,6 +119,58 @@ public class Drive extends Subsystem {
                     thumbstickSpeed = Math.max(Math.min(thumbstickSpeed, .75), -.75);
                 }
                 drive.arcadeDrive(triggerSpeed, thumbstickSpeed);
+            }
+
+            @Override
+            protected boolean isFinished() {
+                return false;
+            }
+        };
+    }
+
+    public Command demoDrive() {
+        return new Command("demoDrive", this) {
+
+            @Override
+            protected void execute() {
+                XboxController c = Robot.driveController;
+                double triggerSpeed = 0;
+                double thumbstickSpeed = 0;
+                triggerSpeed = -c.getTriggerAxis(Hand.kRight) + c.getTriggerAxis(Hand.kLeft);
+                triggerSpeed /= 2;
+
+                thumbstickSpeed = c.getX(Hand.kLeft);
+                thumbstickSpeed *= .75;
+
+                if (SmartDashboard.getBoolean("isSpeedLimitHeight", false)) {
+                    triggerSpeed = Math.max(Math.min(triggerSpeed, .5), -.5);
+                    thumbstickSpeed = Math.max(Math.min(thumbstickSpeed, .75), -.75);
+                }
+                drive.arcadeDrive(triggerSpeed, thumbstickSpeed);
+            }
+
+            @Override
+            protected boolean isFinished() {
+                return false;
+            }
+        };
+    }
+
+    public Command copilotDrive() {
+        return new Command("copilotDrive", this) {
+
+            @Override
+            protected void execute() {
+                XboxController c = Robot.xBoxCoPilot;
+                double forwardSpeed = 0;
+                double turnSpeed = 0;
+                forwardSpeed = c.getY(Hand.kLeft);
+                turnSpeed = c.getX(Hand.kLeft);
+                if (SmartDashboard.getBoolean("isSpeedLimitHeight", false)) {
+                    forwardSpeed = Math.max(Math.min(forwardSpeed, .5), -.5);
+                    turnSpeed = Math.max(Math.min(turnSpeed, .75), -.75);
+                }
+                drive.arcadeDrive(forwardSpeed, turnSpeed);
             }
 
             @Override
