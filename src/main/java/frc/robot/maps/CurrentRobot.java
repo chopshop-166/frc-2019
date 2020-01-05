@@ -2,9 +2,10 @@ package frc.robot.maps;
 
 import com.chopshop166.chopshoplib.outputs.MockSpeedController;
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
+import com.chopshop166.chopshoplib.sensors.IEncoder;
 import com.chopshop166.chopshoplib.sensors.Lidar;
 import com.chopshop166.chopshoplib.sensors.PIDGyro;
-import com.chopshop166.chopshoplib.sensors.SparkMaxCounter;
+import com.chopshop166.chopshoplib.sensors.SparkMaxEncoder;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
@@ -46,8 +47,8 @@ public class CurrentRobot implements RobotMap {
             }
 
             @Override
-            public SparkMaxCounter getHeightEncoder() {
-                return new SparkMaxCounter(liftMotor.getEncoder());
+            public IEncoder getHeightEncoder() {
+                return new SparkMaxEncoder(liftMotor.getEncoder());
             }
 
             @Override

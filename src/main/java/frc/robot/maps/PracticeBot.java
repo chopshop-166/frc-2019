@@ -2,9 +2,11 @@ package frc.robot.maps;
 
 import com.chopshop166.chopshoplib.outputs.MockSpeedController;
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
+import com.chopshop166.chopshoplib.sensors.IEncoder;
 import com.chopshop166.chopshoplib.sensors.Lidar;
+import com.chopshop166.chopshoplib.sensors.MockEncoder;
+import com.chopshop166.chopshoplib.sensors.MockGyro;
 import com.chopshop166.chopshoplib.sensors.PIDGyro;
-import com.chopshop166.chopshoplib.sensors.SparkMaxCounter;
 import com.revrobotics.CANSparkMax;
 
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -36,8 +38,8 @@ public class PracticeBot implements RobotMap {
             }
 
             @Override
-            public SparkMaxCounter getHeightEncoder() {
-                return null;
+            public IEncoder getHeightEncoder() {
+                return new MockEncoder();
             }
 
             @Override
@@ -104,7 +106,7 @@ public class PracticeBot implements RobotMap {
 
             @Override
             public PIDGyro getGyro() {
-                return PIDGyro.mock();
+                return new MockGyro();
             }
 
             @Override
