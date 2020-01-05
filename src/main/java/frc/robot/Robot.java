@@ -116,9 +116,9 @@ public class Robot extends CommandRobot {
 
     public void assignButtons() {
         driveController.getButton(XBoxButton.A).whileHeld(drive.visionPID());
-        driveController.getButton(XBoxButton.BUMPER_RIGHT).whileHeld(drive.leftSlowTurn());
+        driveController.getButton(XBoxButton.BUMPER_RIGHT).whileHeld(drive.rightSlowTurn());
         driveController.getButton(XBoxButton.BUMPER_RIGHT).whileHeld(leds.blinkLights(Leds.fuschia, 1, 2));
-        driveController.getButton(XBoxButton.BUMPER_LEFT).whileHeld(drive.rightSlowTurn());
+        driveController.getButton(XBoxButton.BUMPER_LEFT).whileHeld(drive.leftSlowTurn());
         driveController.getButton(XBoxButton.BUMPER_LEFT).whileHeld(leds.blinkLights(Leds.fuschia, 1, 1));
         driveController.getButton(XBoxButton.Y).toggleWhenPressed(drive.driveBackwards());
         driveController.getButton(XBoxButton.B).whenPressed(lift.deployArms());
@@ -129,6 +129,7 @@ public class Robot extends CommandRobot {
         xBoxCoPilot.getButton(XBoxButton.BUMPER_RIGHT).whenPressed(LEDCloseBeak());
         xBoxCoPilot.getButton(XBoxButton.Y).whileHeld(manipulator.intake());
         xBoxCoPilot.getButton(XBoxButton.A).whenPressed(manipulator.eject());
+        xBoxCoPilot.getButton(XBoxButton.START).toggleWhenPressed(drive.copilotDrive());
 
     }
 

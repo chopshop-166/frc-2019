@@ -300,7 +300,7 @@ def normalizeImage(pairMidpoint):
     fullPairMidpoint = (pairPointOrient / imageMidpoint)
     # prints after ewww math THIS IS THE CONTOUR MIDPOINT from...
     # Contour Midpoint Scale (-1 to 1)
-    return fullPairMidpoint
+    return fullPairMidpoint 
 
 
 if __name__ == "__main__":
