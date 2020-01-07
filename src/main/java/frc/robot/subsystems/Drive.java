@@ -6,7 +6,6 @@ import java.util.function.DoubleConsumer;
 import java.util.function.DoubleSupplier;
 
 import com.chopshop166.chopshoplib.RobotUtils;
-import com.chopshop166.chopshoplib.controls.ButtonXboxController;
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 import com.chopshop166.chopshoplib.sensors.PIDGyro;
 
@@ -16,8 +15,6 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.GenericHID.Hand;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SendableRegistry;
@@ -29,7 +26,6 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PIDCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Robot;
 import frc.robot.RobotMap;
 
 public class Drive extends SubsystemBase {
@@ -45,7 +41,7 @@ public class Drive extends SubsystemBase {
     NetworkTableInstance inst;
     NetworkTable table;
 
-    public Drive(final RobotMap.DriveMap map) { // NOPMD
+    public Drive(final RobotMap.DriveMap map) {
         super();
         // Take values that the subsystem needs from the map, and store them in the
         // class
@@ -64,8 +60,6 @@ public class Drive extends SubsystemBase {
         table = inst.getTable("Vision Correction Table");
 
         SmartDashboard.putData("VISIONNNNN", visionPID());
-
-        setDefaultCommand(demoDrive());
     }
 
     private void addChildren() {
@@ -92,38 +86,34 @@ public class Drive extends SubsystemBase {
         drive.arcadeDrive(forwardSpeed, turnSpeed);
     }
 
-    public RunCommand driveNormal() {
+    public RunCommand driveNormal(DoubleSupplier forward, DoubleSupplier turn) {
         return new RunCommand(() -> {
-            ButtonXboxController c = Robot.driveController;
-            double triggerSpeed = -c.getTriggers();
-            double thumbstickSpeed = c.getX(Hand.kLeft);
+            double triggerSpeed = -forward.getAsDouble();
+            double thumbstickSpeed = turn.getAsDouble();
             safeArcadeDrive(triggerSpeed, thumbstickSpeed);
         });
     }
 
-    public RunCommand driveBackwards() {
+    public RunCommand driveBackwards(DoubleSupplier forward, DoubleSupplier turn) {
         return new RunCommand(() -> {
-            ButtonXboxController c = Robot.driveController;
-            double triggerSpeed = c.getTriggers();
-            double thumbstickSpeed = c.getX(Hand.kLeft);
+            double triggerSpeed = forward.getAsDouble();
+            double thumbstickSpeed = turn.getAsDouble();
             safeArcadeDrive(triggerSpeed, thumbstickSpeed);
         }, this);
     }
 
-    public RunCommand demoDrive() {
+    public RunCommand demoDrive(DoubleSupplier forward, DoubleSupplier turn) {
         return new RunCommand(() -> {
-            ButtonXboxController c = Robot.driveController;
-            double triggerSpeed = -c.getTriggers() / 2;
-            double thumbstickSpeed = c.getX(Hand.kLeft) * 0.75;
+            double triggerSpeed = -forward.getAsDouble() / 2;
+            double thumbstickSpeed = turn.getAsDouble() * 0.75;
             safeArcadeDrive(triggerSpeed, thumbstickSpeed);
         }, this);
     }
 
-    public RunCommand copilotDrive() {
+    public RunCommand copilotDrive(DoubleSupplier forward, DoubleSupplier turn) {
         return new RunCommand(() -> {
-            XboxController c = Robot.xBoxCoPilot;
-            double forwardSpeed = c.getY(Hand.kLeft);
-            double turnSpeed = c.getX(Hand.kLeft);
+            double forwardSpeed = forward.getAsDouble();
+            double turnSpeed = turn.getAsDouble();
             safeArcadeDrive(forwardSpeed, turnSpeed);
         }, this);
     }
@@ -162,7 +152,7 @@ public class Drive extends SubsystemBase {
         }, () -> (Math.abs(leftEncoder.get() + rightEncoder.get()) / 2 > distance), this);
     }
 
-    public FunctionalCommand align() {
+    public FunctionalCommand align(DoubleSupplier forward) {
         return new FunctionalCommand(() -> {
         }, () -> {
             double visionCorrectionFactor = table.getEntry("Vision Correction").getDouble(0);
@@ -177,8 +167,7 @@ public class Drive extends SubsystemBase {
             else
                 visionTurnSpeed = 0;
 
-            drive.arcadeDrive(Robot.driveController.getTriggerAxis(Hand.kRight)
-                    - Robot.driveController.getTriggerAxis(Hand.kLeft), visionTurnSpeed);
+            drive.arcadeDrive(forward.getAsDouble(), visionTurnSpeed);
         }, this::stopCommand, () -> false, this);
     }
 

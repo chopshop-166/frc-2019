@@ -2,6 +2,8 @@ package frc.robot;
 
 import static edu.wpi.first.wpilibj2.command.CommandGroupBase.sequence;
 
+import java.util.function.DoubleSupplier;
+
 import com.chopshop166.chopshoplib.CommandRobot;
 import com.chopshop166.chopshoplib.controls.ButtonXboxController;
 import com.chopshop166.chopshoplib.controls.ButtonXboxController.XBoxButton;
@@ -9,6 +11,7 @@ import com.chopshop166.chopshoplib.controls.ButtonXboxController.XBoxButton;
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -111,21 +114,26 @@ public class Robot extends CommandRobot {
     }
 
     public void assignButtons() {
+        DoubleSupplier driveTurn = () -> driveController.getX(Hand.kLeft);
         driveController.getButton(XBoxButton.A).whileHeld(drive.visionPID());
         driveController.getButton(XBoxButton.BUMPER_RIGHT).whileHeld(drive.rightSlowTurn());
         driveController.getButton(XBoxButton.BUMPER_RIGHT).whileHeld(leds.blinkLights(Leds.fuschia, 1, 2));
         driveController.getButton(XBoxButton.BUMPER_LEFT).whileHeld(drive.leftSlowTurn());
         driveController.getButton(XBoxButton.BUMPER_LEFT).whileHeld(leds.blinkLights(Leds.fuschia, 1, 1));
-        driveController.getButton(XBoxButton.Y).toggleWhenPressed(drive.driveBackwards());
+        driveController.getButton(XBoxButton.Y)
+                .toggleWhenPressed(drive.driveBackwards(driveController::getTriggers, driveTurn));
         driveController.getButton(XBoxButton.B).whenPressed(lift.deployArms());
+        drive.setDefaultCommand(drive.driveNormal(driveController::getTriggers, driveTurn));
 
+        DoubleSupplier copilotForward = () -> xBoxCoPilot.getY(Hand.kLeft);
+        DoubleSupplier copilotTurn = () -> xBoxCoPilot.getX(Hand.kLeft);
         xBoxCoPilot.getButton(XBoxButton.B).whenPressed(lift.goToHeight(Heights.kRocketHatchMid));
         xBoxCoPilot.getButton(XBoxButton.X).whenPressed(lift.goToHeight(Heights.kRocketHatchHigh));
         xBoxCoPilot.getButton(XBoxButton.BUMPER_LEFT).whenPressed(LEDOpenBeak());
         xBoxCoPilot.getButton(XBoxButton.BUMPER_RIGHT).whenPressed(LEDCloseBeak());
         xBoxCoPilot.getButton(XBoxButton.Y).whileHeld(manipulator.intake());
         xBoxCoPilot.getButton(XBoxButton.A).whenPressed(manipulator.eject());
-        xBoxCoPilot.getButton(XBoxButton.START).toggleWhenPressed(drive.copilotDrive());
+        xBoxCoPilot.getButton(XBoxButton.START).toggleWhenPressed(drive.copilotDrive(copilotForward, copilotTurn));
 
     }
 
