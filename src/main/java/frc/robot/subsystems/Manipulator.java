@@ -1,20 +1,21 @@
 package frc.robot.subsystems;
 
-import com.chopshop166.chopshoplib.commands.CommandChain;
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
-import edu.wpi.first.wpilibj.command.Command;
-import edu.wpi.first.wpilibj.command.InstantCommand;
-import edu.wpi.first.wpilibj.command.Subsystem;
-import edu.wpi.first.wpilibj.command.TimedCommand;
+import edu.wpi.first.wpilibj.smartdashboard.SendableRegistry;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.RobotMap;
 import frc.robot.triggers.LimitSwitchTrigger;
 
-public class Manipulator extends Subsystem {
+public class Manipulator extends SubsystemBase {
 
     private SendableSpeedController rollersMotor;
     private DoubleSolenoid beaksPiston;
@@ -39,88 +40,61 @@ public class Manipulator extends Subsystem {
     }
 
     public void addChildren() {
-        addChild(rollersMotor);
-        addChild(beaksPiston);
-        addChild(gamepieceLimitSwitch);
-        addChild(foldedBackLimitSwitch);
-        addChild(intakePositionLimitSwitch);
+        SendableRegistry.addChild(this, rollersMotor);
+        SendableRegistry.addChild(this, beaksPiston);
+        SendableRegistry.addChild(this, gamepieceLimitSwitch);
+        SendableRegistry.addChild(this, foldedBackLimitSwitch);
+        SendableRegistry.addChild(this, intakePositionLimitSwitch);
     }
 
     double rollerspeed = 1;
-
-    @Override
-    public void initDefaultCommand() {
-        // Set the default command for a subsystem here.
-        // setDefaultCommand(new MySpecialCommand());
-
-    }
 
     // // #region Command Chains
     // #endregion
 
     // #region Commands
-    public Command openBeak() {
-        return new InstantCommand("Open Beak", this, () -> {
+    public InstantCommand openBeak() {
+        return new InstantCommand(() -> {
             beaksPiston.set(Value.kForward);
-        });
+        }, this);
     }
 
-    public Command closeBeak() {
-        return new InstantCommand("Close Beak", this, () -> {
+    public InstantCommand closeBeak() {
+        return new InstantCommand(() -> {
             beaksPiston.set(Value.kReverse);
-        });
+        }, this);
     }
 
-    public Command rollerStop() {
-        return new InstantCommand("Stop Rollers", this, () -> {
+    public InstantCommand rollerStop() {
+        return new InstantCommand(() -> {
             rollersMotor.set(0);
-        });
+        }, this);
     }
 
-    public Command gamepieceCheck() {
+    public WaitUntilCommand gamepieceCheck() {
         // This command will check if a gamepiece is held
-        return new Command("Check for Gamepiece", this) {
-
-            @Override
-            protected boolean isFinished() {
-                return gamepieceLimitSwitch.get();
+        return new WaitUntilCommand(gamepieceLimitSwitch::get) {
+            {
+                addRequirements(Manipulator.this);
             }
         };
+
     }
     // #endregion
 
-    public Command intake() {
-        return new Command("intake Ball", this) {
-
-            @Override
-            protected void initialize() {
-                rollersMotor.set(rollerspeed);
-            }
-
-            @Override
-            protected boolean isFinished() {
-                return false;
-            }
-
-            @Override
-            protected void end() {
-                rollersMotor.set(0);
-            }
-        };
+    public StartEndCommand intake() {
+        return new StartEndCommand(() -> {
+            rollersMotor.set(rollerspeed);
+        }, () -> {
+            rollersMotor.set(0);
+        }, this);
     }
 
-    public TimedCommand eject() {
-        return new TimedCommand("eject Ball", 1, this) {
-
-            @Override
-            protected void initialize() {
-                rollersMotor.set(-rollerspeed);
-            }
-
-            @Override
-            protected void end() {
-                rollersMotor.set(0);
-            }
-        };
+    public ParallelRaceGroup eject() {
+        return new StartEndCommand(() -> {
+            rollersMotor.set(-rollerspeed);
+        }, () -> {
+            rollersMotor.set(0);
+        }, this).withTimeout(1.0);
     }
 }

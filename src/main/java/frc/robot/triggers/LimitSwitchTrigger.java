@@ -1,7 +1,7 @@
 package frc.robot.triggers;
 
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.buttons.Trigger;
+import edu.wpi.first.wpilibj2.command.button.Trigger;;
 
 public class LimitSwitchTrigger extends Trigger {
     private DigitalInput limitSwitch;
