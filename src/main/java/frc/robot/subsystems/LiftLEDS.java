@@ -1,12 +1,10 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-import edu.wpi.first.wpilibj.command.Command;
-import edu.wpi.first.wpilibj.command.InstantCommand;
-import edu.wpi.first.wpilibj.command.Subsystem;
-
-public class LiftLEDS extends Subsystem {
+public class LiftLEDS extends SubsystemBase {
 
     I2C arduino;
 
@@ -17,15 +15,10 @@ public class LiftLEDS extends Subsystem {
 
     }
 
-    @Override
-    public void initDefaultCommand() {
-
-    }
-
-    public Command blue() {
-        return new InstantCommand("lift leds blue", this, () -> {
+    public InstantCommand blue() {
+        return new InstantCommand(() -> {
             arduino.writeBulk(new byte[] { 'b' });
-        });
+        }, this);
     }
 
 }

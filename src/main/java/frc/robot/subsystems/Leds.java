@@ -37,7 +37,7 @@ public class Leds extends SubsystemBase {
         return (team == DriverStation.Alliance.Blue);
     }
 
-    public CommandBase setTeamColor(Integer... banks) {
+    public InstantCommand setTeamColor(Integer... banks) {
         return new InstantCommand(() -> {
             Color color;
             if (isBlueTeam()) {
@@ -53,7 +53,7 @@ public class Leds extends SubsystemBase {
         }, this);
     }
 
-    public CommandBase turnOnGreen(Integer... banks) {
+    public RunCommand turnOnGreen(Integer... banks) {
         return new RunCommand(() -> {
             for (Integer currentBank : banks) {
                 ldrive_can.SetColor(currentBank, Color.GREEN, 1.0);
@@ -62,7 +62,7 @@ public class Leds extends SubsystemBase {
         }, this);
     }
 
-    public CommandBase turnOnRed(Integer... banks) {
+    public RunCommand turnOnRed(Integer... banks) {
         return new RunCommand(() -> {
             for (Integer currentBank : banks) {
                 ldrive_can.SetColor(currentBank, Color.RED, 1.0);
@@ -71,7 +71,7 @@ public class Leds extends SubsystemBase {
         }, this);
     }
 
-    public CommandBase turnOnBlue(Integer... banks) {
+    public RunCommand turnOnBlue(Integer... banks) {
         return new RunCommand(() -> {
             for (Integer currentBank : banks) {
                 ldrive_can.SetColor(currentBank, Color.BLUE, 1.0);
@@ -80,7 +80,7 @@ public class Leds extends SubsystemBase {
         }, this);
     }
 
-    public CommandBase killAllLights(Integer... banks) {
+    public RunCommand killAllLights(Integer... banks) {
         return new RunCommand(() -> {
             for (Integer currentBank : banks) {
                 ldrive_can.SetColor(currentBank, Color.OFF, 1.0);
@@ -158,13 +158,13 @@ public class Leds extends SubsystemBase {
         };
     }
 
-    public CommandBase turnOnVisionLights() {
+    public InstantCommand turnOnVisionLights() {
         return new InstantCommand(() -> {
             ldrive_can.SetColor(VISION_BANK, Color.GREEN, 1);
         }, this);
     }
 
-    public CommandBase turnOffVisionLights() {
+    public InstantCommand turnOffVisionLights() {
         return new InstantCommand(() -> {
             ldrive_can.SetColor(VISION_BANK, Color.OFF, 1);
         }, this);

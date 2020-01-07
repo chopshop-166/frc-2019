@@ -1,29 +1,30 @@
 package frc.robot.subsystems;
 
-import com.chopshop166.chopshoplib.sensors.SparkMaxCounter;
+import com.chopshop166.chopshoplib.sensors.SparkMaxEncoder;
 import com.revrobotics.CANSparkMax;
 
+import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
-import edu.wpi.first.wpilibj.command.Command;
-import edu.wpi.first.wpilibj.command.InstantCommand;
-import edu.wpi.first.wpilibj.command.PIDCommand;
-import edu.wpi.first.wpilibj.command.Subsystem;
-import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.wpilibj.smartdashboard.SendableRegistry;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.PIDCommand;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import frc.robot.RobotMap;
 
 //when arms piston is extended, the arms are locked in starting position
 
-public class LiftSubsystem extends Subsystem {
+public class LiftSubsystem extends SubsystemBase {
     private DoubleSolenoid armsPiston;
     private CANSparkMax motor;
     private DoubleSolenoid brake;
-    private SparkMaxCounter heightEncoder;
+    private SparkMaxEncoder heightEncoder;
     private DigitalInput lowerLimit;
     private DigitalInput upperLimit;
     NetworkTableInstance inst;
@@ -34,21 +35,22 @@ public class LiftSubsystem extends Subsystem {
         armsPiston = map.getArmsPiston();
         motor = map.getMotor();
         brake = map.getBrake();
-        heightEncoder = new SparkMaxCounter(motor.getEncoder());
+        heightEncoder = new SparkMaxEncoder(motor.getEncoder());
         lowerLimit = map.getLowerLimit();
         upperLimit = map.getUpperLimit();
         armsPiston.set(Value.kForward);
         addChildren();
         registeredCommands();
+        setDefaultCommand(moveLift());
     }
 
     public void addChildren() {
-        addChild(armsPiston);
-        addChild(motor);
-        addChild(brake);
-        addChild(heightEncoder);
-        addChild(lowerLimit);
-        addChild(upperLimit);
+        SendableRegistry.addChild(this, armsPiston);
+        SendableRegistry.addChild(this, motor);
+        SendableRegistry.addChild(this, brake);
+        SendableRegistry.addChild(this, heightEncoder);
+        SendableRegistry.addChild(this, lowerLimit);
+        SendableRegistry.addChild(this, upperLimit);
     }
 
     private void registeredCommands() {
@@ -129,24 +131,19 @@ public class LiftSubsystem extends Subsystem {
     private final static double AUTO_LIFT_SPEED_UP = 0.5;
     private final static double AUTO_LIFT_SPEED_DOWN = -0.4;
 
-    @Override
-    public void initDefaultCommand() {
-        // Set the default command for a subsystem here.
-        setDefaultCommand(moveLift());
-    }
-
-    public Command lockArms() {
-        return new InstantCommand("Lock Arms", this, () -> {
+    public InstantCommand lockArms() {
+        return new InstantCommand(() -> {
             armsPiston.set(Value.kForward);
-        });
+        }, this);
     }
 
-    public Command deployArms() {
-        return new InstantCommand("Deploy Arms", this, () -> {
+    public InstantCommand deployArms() {
+        return new InstantCommand(() -> {
             armsPiston.set(Value.kReverse);
-        });
+        }, this);
     }
 
+    @Override
     public void periodic() {
         SmartDashboard.putBoolean("isSpeedLimitHeight",
                 (heightEncoder.getDistance() > Heights.kSpeedLimitHeight.value));
@@ -160,19 +157,19 @@ public class LiftSubsystem extends Subsystem {
         return !lowerLimit.get();
     }
 
-    public Command engageBrake() {
-        return new InstantCommand("Engage Brake", this, () -> {
+    public InstantCommand engageBrake() {
+        return new InstantCommand(() -> {
             brake.set(Value.kForward);
-        });
+        }, this);
     }
 
-    public Command disengageBrake() {
-        return new InstantCommand("Disengage Brake", this, () -> {
+    public InstantCommand disengageBrake() {
+        return new InstantCommand(() -> {
             brake.set(Value.kReverse);
-        });
+        }, this);
     }
 
-    public Command autoMoveLift(Heights target) {
+    public PIDCommand autoMoveLift(Heights target) {
         return new PIDCommand("Auto Move Lift", .0016, 0.0002, 0, 0, this) {
             @Override
             protected void initialize() {

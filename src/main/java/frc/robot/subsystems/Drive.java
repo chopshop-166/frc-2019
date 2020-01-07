@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PIDCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import frc.robot.RobotMap;
@@ -79,7 +80,7 @@ public class Drive extends SubsystemBase {
 
     double sandstormSpeed = .2;
 
-    public CommandBase driveNormal() {
+    public RunCommand driveNormal() {
         return new RunCommand(() -> {
             XboxController c = Robot.driveController;
             double triggerSpeed = 0;
@@ -94,7 +95,7 @@ public class Drive extends SubsystemBase {
         });
     }
 
-    public CommandBase driveBackwards() {
+    public RunCommand driveBackwards() {
         return new RunCommand(() -> {
             XboxController c = Robot.driveController;
             double triggerSpeed = c.getTriggerAxis(Hand.kRight) - c.getTriggerAxis(Hand.kLeft);
@@ -107,7 +108,7 @@ public class Drive extends SubsystemBase {
         }, this);
     }
 
-    public CommandBase demoDrive() {
+    public RunCommand demoDrive() {
         return new RunCommand(() -> {
             XboxController c = Robot.driveController;
             double thumbstickSpeed = 0;
@@ -125,7 +126,7 @@ public class Drive extends SubsystemBase {
         }, this);
     }
 
-    public CommandBase copilotDrive() {
+    public RunCommand copilotDrive() {
         return new RunCommand(() -> {
             XboxController c = Robot.xBoxCoPilot;
             double forwardSpeed = 0;
@@ -140,7 +141,7 @@ public class Drive extends SubsystemBase {
         }, this);
     }
 
-    public CommandBase leftSlowTurn() {
+    public FunctionalCommand leftSlowTurn() {
         return new FunctionalCommand(() -> {
         }, () -> {
             drive.arcadeDrive(0, -slowTurnSpeed);
@@ -149,7 +150,7 @@ public class Drive extends SubsystemBase {
         }, () -> false, this);
     }
 
-    public CommandBase rightSlowTurn() {
+    public FunctionalCommand rightSlowTurn() {
         return new FunctionalCommand(() -> {
         }, () -> {
             drive.arcadeDrive(0, slowTurnSpeed);
@@ -158,91 +159,49 @@ public class Drive extends SubsystemBase {
         }, () -> false, this);
     }
 
-    public CommandBase goXDistanceForward(double distance) {
-        return new CommandBase() {
-            {
-                addRequirements(Drive.this);
-            }
-
-            @Override
-            public void initialize() {
-                leftEncoder.reset();
-                rightEncoder.reset();
-            }
-
-            @Override
-            public void execute() {
-                drive.arcadeDrive(sandstormSpeed, gyroCorrection);
-            }
-
-            @Override
-            public boolean isFinished() {
-                return ((leftEncoder.get() + rightEncoder.get()) / 2 > distance);
-            }
-        };
+    public FunctionalCommand goXDistanceForward(double distance) {
+        return new FunctionalCommand(() -> {
+            leftEncoder.reset();
+            rightEncoder.reset();
+        }, () -> {
+            drive.arcadeDrive(sandstormSpeed, gyroCorrection);
+        }, (Boolean interrupted) -> {
+        }, () -> ((leftEncoder.get() + rightEncoder.get()) / 2 > distance), this);
     }
 
     public CommandBase goXDistanceBackward(double distance) {
-        return new CommandBase() {
-            {
-                addRequirements(Drive.this);
-            }
-
-            @Override
-            public void initialize() {
-                leftEncoder.reset();
-                rightEncoder.reset();
-            }
-
-            @Override
-            public void execute() {
-                drive.arcadeDrive(-sandstormSpeed, gyroCorrection);
-            }
-
-            @Override
-            public boolean isFinished() {
-                return (Math.abs(leftEncoder.get() + rightEncoder.get()) / 2 > distance);
-            }
-        };
+        return new FunctionalCommand(() -> {
+            leftEncoder.reset();
+            rightEncoder.reset();
+        }, () -> {
+            drive.arcadeDrive(sandstormSpeed, gyroCorrection);
+        }, (Boolean interrupted) -> {
+        }, () -> (Math.abs(leftEncoder.get() + rightEncoder.get()) / 2 > distance), this);
     }
 
-    public CommandBase align() {
-        return new CommandBase() {
-            {
-                addRequirements(Drive.this);
-            }
+    public FunctionalCommand align() {
+        return new FunctionalCommand(() -> {
+        }, () -> {
+            double visionCorrectionFactor = table.getEntry("Vision Correction").getDouble(0);
+            boolean visionConfirmation = table.getEntry("Vision Found").getBoolean(false);
 
-            @Override
-            public void execute() {
-                double visionCorrectionFactor = table.getEntry("Vision Correction").getDouble(0);
-                boolean visionConfirmation = table.getEntry("Vision Found").getBoolean(false);
+            double visionTurnSpeed;
 
-                double visionTurnSpeed;
+            if ((visionCorrectionFactor > driveDeadband) && visionConfirmation)
+                visionTurnSpeed = 0.3;
+            else if ((visionCorrectionFactor < -driveDeadband) && visionConfirmation)
+                visionTurnSpeed = -0.3;
+            else
+                visionTurnSpeed = 0;
 
-                if ((visionCorrectionFactor > driveDeadband) && visionConfirmation)
-                    visionTurnSpeed = 0.3;
-                else if ((visionCorrectionFactor < -driveDeadband) && visionConfirmation)
-                    visionTurnSpeed = -0.3;
-                else
-                    visionTurnSpeed = 0;
-
-                drive.arcadeDrive(Robot.driveController.getTriggerAxis(Hand.kRight)
-                        - Robot.driveController.getTriggerAxis(Hand.kLeft), visionTurnSpeed);
-            }
-
-            @Override
-            public boolean isFinished() {
-                return false;
-            }
-
-            @Override
-            public void end(boolean interrupted) {
-                drive.stopMotor();
-            }
-        };
+            drive.arcadeDrive(Robot.driveController.getTriggerAxis(Hand.kRight)
+                    - Robot.driveController.getTriggerAxis(Hand.kLeft), visionTurnSpeed);
+        }, (Boolean interrupted) -> {
+            drive.stopMotor();
+        }, () -> false, this);
     }
 
-    public CommandBase visionPID() {
+    public PIDCommand visionPID() {
         PIDController controller = new PIDController(1.8, 0.065, 0.0);
         controller.setTolerance(0.05);
         NetworkTableEntry visionFound = table.getEntry("Vision Found");
@@ -269,19 +228,19 @@ public class Drive extends SubsystemBase {
         };
     }
 
-    public CommandBase extendPiston() {
+    public InstantCommand extendPiston() {
         return new InstantCommand(() -> {
             climbPiston.set(Value.kForward);
         }, this);
     }
 
-    public CommandBase retractPiston() {
+    public InstantCommand retractPiston() {
         return new InstantCommand(() -> {
             climbPiston.set(Value.kReverse);
         }, this);
     }
 
-    public CommandBase downOffDrop() {
+    public SequentialCommandGroup downOffDrop() {
         return goXDistanceForward(1).andThen(extendPiston()).andThen(goXDistanceForward(1)).andThen(retractPiston())
                 .andThen(goXDistanceForward(1));
     }
