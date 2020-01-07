@@ -9,11 +9,14 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
+import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableRegistry;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PIDCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import frc.robot.RobotMap;
@@ -170,119 +173,79 @@ public class LiftSubsystem extends SubsystemBase {
     }
 
     public PIDCommand autoMoveLift(Heights target) {
-        return new PIDCommand("Auto Move Lift", .0016, 0.0002, 0, 0, this) {
+        PIDController controller = new PIDController(.0016, 0.0002, 0, 0);
+        controller.setTolerance(4);
+        return new PIDCommand(controller, heightEncoder::getDistance, target.value, this::restrictedMotorSet, this) {
             @Override
-            protected void initialize() {
+            public void initialize() {
+                super.initialize();
                 brake.set(Value.kReverse);
-                setSetpoint(target.value);
-                getPIDController().setAbsoluteTolerance(4);
             }
 
             @Override
-            protected void usePIDOutput(final double heightCorrection) {
-                restrictedMotorSet(heightCorrection);
-            }
-
-            @Override
-            protected void end() {
+            public void end(boolean interrupted) {
+                super.end(interrupted);
                 restrictedMotorSet(0);
             }
 
             @Override
-            protected double returnPIDInput() {
-                return heightEncoder.get();
-            }
-
-            @Override
-            protected boolean isFinished() {
-                return getPIDController().onTarget();
+            public boolean isFinished() {
+                return controller.atSetpoint();
             }
         };
     }
 
-    public Command moveLift() {
+    public RunCommand moveLift() {
         // The command is named "Move Lift" and requires this subsystem.
-        return new Command("Move Lift", this) {
-            @Override
-            protected void execute() {
-                SmartDashboard.putNumber("Lift Height", heightEncoder.getDistance());
-                double liftSpeed = Robot.xBoxCoPilot.getTriggerAxis(Hand.kRight)
-                        - Robot.xBoxCoPilot.getTriggerAxis(Hand.kLeft);
-                if (Math.abs(liftSpeed) <= .1) {
-                    liftSpeed = 0;
-                }
-                restrictedMotorSet(liftSpeed);
+        return new RunCommand(() -> {
+            SmartDashboard.putNumber("Lift Height", heightEncoder.getDistance());
+            double liftSpeed = Robot.xBoxCoPilot.getTriggerAxis(Hand.kRight)
+                    - Robot.xBoxCoPilot.getTriggerAxis(Hand.kLeft);
+            if (Math.abs(liftSpeed) <= .1) {
+                liftSpeed = 0;
             }
-
-            @Override
-            protected boolean isFinished() {
-                // Make this return true when this Command no longer needs to run execute()
-                return false;
-            }
-        };
+            restrictedMotorSet(liftSpeed);
+        }, this);
     }
 
     public Command homePos() {
         return goToHeight(Heights.kFloorLoad);
     }
 
-    public Command goToHeight(Heights target) {
+    public FunctionalCommand goToHeight(Heights target) {
         // The command is named "Go to a Specific Height" and requires this subsystem.
-        return new Command("Go to a Specific Height", this) {
-            @Override
-            protected void execute() {
-                double currentHeight = heightEncoder.getDistance();
-                SmartDashboard.putNumber("Lift Height", currentHeight);
-                if (currentHeight < target.get()) {
-                    restrictedMotorSet(AUTO_LIFT_SPEED_UP);
-                } else {
-                    restrictedMotorSet(AUTO_LIFT_SPEED_DOWN);
-                }
+        return new FunctionalCommand(() -> {
+        }, () -> {
+            double currentHeight = heightEncoder.getDistance();
+            SmartDashboard.putNumber("Lift Height", currentHeight);
+            if (currentHeight < target.get()) {
+                restrictedMotorSet(AUTO_LIFT_SPEED_UP);
+            } else {
+                restrictedMotorSet(AUTO_LIFT_SPEED_DOWN);
             }
+        }, (Boolean interrupted) -> {
+            // Called once after isFinished returns true
+            restrictedMotorSet(0);
+        }, () -> {
+            // Make this return true when this Command no longer needs to run execute()
+            double currentHeight = heightEncoder.getDistance();
+            return (Math.abs(target.get() - currentHeight) < 1.0 || (target.get() > currentHeight && !upperLimit.get())
+                    || (target.get() < currentHeight && !lowerLimit.get()));
+        }, this);
 
-            @Override
-            protected boolean isFinished() {
-                // Make this return true when this Command no longer needs to run execute()
-                double currentHeight = heightEncoder.getDistance();
-                if (Math.abs(target.get() - currentHeight) < 1.0 || (target.get() > currentHeight && !upperLimit.get())
-                        || (target.get() < currentHeight && !lowerLimit.get())) {
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-
-            @Override
-            protected void end() {
-                // Called once after isFinished returns true
-                restrictedMotorSet(0);
-            }
-        };
     }
 
-    public Command goToAtLeast(Heights target) {
+    public FunctionalCommand goToAtLeast(Heights target) {
         // The command is named "Go to a Specific Height" and requires this subsystem.
-        return new Command("Go at Least to a Specific Height", this) {
-            @Override
-            protected void execute() {
-                restrictedMotorSet(AUTO_LIFT_SPEED_UP);
-            }
-
-            @Override
-            protected boolean isFinished() {
-                // Make this return true when this Command no longer needs to run execute()
-                double currentHeight = heightEncoder.getDistance();
-                if (currentHeight > target.get()) {
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-
-            @Override
-            protected void end() {
-                restrictedMotorSet(0);
-            }
-        };
+        return new FunctionalCommand(() -> {
+        }, () -> {
+            restrictedMotorSet(AUTO_LIFT_SPEED_UP);
+        }, (Boolean interrupted) -> {
+            restrictedMotorSet(0);
+        }, () -> {
+            // Make this return true when this Command no longer needs to run execute()
+            double currentHeight = heightEncoder.getDistance();
+            return (currentHeight > target.get());
+        }, this);
     }
 }
