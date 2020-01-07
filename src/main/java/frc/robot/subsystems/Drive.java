@@ -1,6 +1,8 @@
 package frc.robot.subsystems;
 
-import com.chopshop166.chopshoplib.commands.CommandChain;
+import java.util.function.DoubleConsumer;
+import java.util.function.DoubleSupplier;
+
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 import com.chopshop166.chopshoplib.sensors.PIDGyro;
 
@@ -11,18 +13,22 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
-import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.command.Command;
-import edu.wpi.first.wpilibj.command.InstantCommand;
-import edu.wpi.first.wpilibj.command.PIDCommand;
-import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.smartdashboard.SendableRegistry;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.PIDCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import frc.robot.RobotMap;
 
-public class Drive extends Subsystem {
+public class Drive extends SubsystemBase {
 
     private SendableSpeedController left;
     private SendableSpeedController right;
@@ -46,9 +52,7 @@ public class Drive extends Subsystem {
         leftEncoder = map.getLeftEncoder();
         rightEncoder = map.getRightEncoder();
         gyro = map.getGyro();
-        gyroDrivePID = new PIDController(.01, .0009, 0.0, 0.0, gyro, (double value) -> {
-            gyroCorrection = value;
-        });
+        gyroDrivePID = new PIDController(.01, .0009, 0.0, 0.0);
         drive = new DifferentialDrive(left, right);
         addChildren();
 
@@ -57,13 +61,14 @@ public class Drive extends Subsystem {
 
         SmartDashboard.putData("VISIONNNNN", visionPID());
 
+        setDefaultCommand(demoDrive());
     }
 
     private void addChildren() {
-        addChild(leftEncoder);
-        addChild(rightEncoder);
-        addChild(drive);
-        addChild(gyro);
+        SendableRegistry.addChild(this, leftEncoder);
+        SendableRegistry.addChild(this, rightEncoder);
+        SendableRegistry.addChild(this, drive);
+        SendableRegistry.addChild(this, gyro);
     }
 
     private final double slowTurnSpeed = 0.475;
@@ -75,215 +80,145 @@ public class Drive extends Subsystem {
 
     double sandstormSpeed = .2;
 
-    @Override
-    public void initDefaultCommand() {
-        setDefaultCommand(demoDrive());
+    public CommandBase driveNormal() {
+        return new RunCommand(() -> {
+            XboxController c = Robot.driveController;
+            double triggerSpeed = 0;
+            double thumbstickSpeed = 0;
+            triggerSpeed = -c.getTriggerAxis(Hand.kRight) + c.getTriggerAxis(Hand.kLeft);
+            thumbstickSpeed = c.getX(Hand.kLeft);
+            if (SmartDashboard.getBoolean("isSpeedLimitHeight", false)) {
+                triggerSpeed = Math.max(Math.min(triggerSpeed, .5), -.5);
+                thumbstickSpeed = Math.max(Math.min(thumbstickSpeed, .75), -.75);
+            }
+            drive.arcadeDrive(triggerSpeed, thumbstickSpeed);
+        });
     }
 
-    public Command driveNormal() {
-        return new Command("driveNormal", this) {
-
-            @Override
-            protected void execute() {
-                XboxController c = Robot.driveController;
-                double triggerSpeed = 0;
-                double thumbstickSpeed = 0;
-                triggerSpeed = -c.getTriggerAxis(Hand.kRight) + c.getTriggerAxis(Hand.kLeft);
-                thumbstickSpeed = c.getX(Hand.kLeft);
-                if (SmartDashboard.getBoolean("isSpeedLimitHeight", false)) {
-                    triggerSpeed = Math.max(Math.min(triggerSpeed, .5), -.5);
-                    thumbstickSpeed = Math.max(Math.min(thumbstickSpeed, .75), -.75);
-                }
-                drive.arcadeDrive(triggerSpeed, thumbstickSpeed);
+    public CommandBase driveBackwards() {
+        return new RunCommand(() -> {
+            XboxController c = Robot.driveController;
+            double triggerSpeed = c.getTriggerAxis(Hand.kRight) - c.getTriggerAxis(Hand.kLeft);
+            double thumbstickSpeed = c.getX(Hand.kLeft);
+            if (SmartDashboard.getBoolean("isSpeedLimitHeight", false)) {
+                triggerSpeed = Math.max(Math.min(triggerSpeed, .5), -.5);
+                thumbstickSpeed = Math.max(Math.min(thumbstickSpeed, .75), -.75);
             }
-
-            @Override
-            protected boolean isFinished() {
-                return false;
-            }
-        };
+            drive.arcadeDrive(triggerSpeed, thumbstickSpeed);
+        }, this);
     }
 
-    public Command driveBackwards() {
-        return new Command("Drive Backwards", this) {
+    public CommandBase demoDrive() {
+        return new RunCommand(() -> {
+            XboxController c = Robot.driveController;
+            double thumbstickSpeed = 0;
+            double triggerSpeed = -c.getTriggerAxis(Hand.kRight) + c.getTriggerAxis(Hand.kLeft);
+            triggerSpeed /= 2;
 
-            @Override
-            protected void execute() {
-                XboxController c = Robot.driveController;
-                double triggerSpeed = 0;
-                double thumbstickSpeed = 0;
-                triggerSpeed = c.getTriggerAxis(Hand.kRight) - c.getTriggerAxis(Hand.kLeft);
-                thumbstickSpeed = c.getX(Hand.kLeft);
-                if (SmartDashboard.getBoolean("isSpeedLimitHeight", false)) {
-                    triggerSpeed = Math.max(Math.min(triggerSpeed, .5), -.5);
-                    thumbstickSpeed = Math.max(Math.min(thumbstickSpeed, .75), -.75);
-                }
-                drive.arcadeDrive(triggerSpeed, thumbstickSpeed);
-            }
+            thumbstickSpeed = c.getX(Hand.kLeft);
+            thumbstickSpeed *= .75;
 
-            @Override
-            protected boolean isFinished() {
-                return false;
+            if (SmartDashboard.getBoolean("isSpeedLimitHeight", false)) {
+                triggerSpeed = Math.max(Math.min(triggerSpeed, .5), -.5);
+                thumbstickSpeed = Math.max(Math.min(thumbstickSpeed, .75), -.75);
             }
-        };
+            drive.arcadeDrive(triggerSpeed, thumbstickSpeed);
+        }, this);
     }
 
-    public Command demoDrive() {
-        return new Command("demoDrive", this) {
-
-            @Override
-            protected void execute() {
-                XboxController c = Robot.driveController;
-                double triggerSpeed = 0;
-                double thumbstickSpeed = 0;
-                triggerSpeed = -c.getTriggerAxis(Hand.kRight) + c.getTriggerAxis(Hand.kLeft);
-                triggerSpeed /= 2;
-
-                thumbstickSpeed = c.getX(Hand.kLeft);
-                thumbstickSpeed *= .75;
-
-                if (SmartDashboard.getBoolean("isSpeedLimitHeight", false)) {
-                    triggerSpeed = Math.max(Math.min(triggerSpeed, .5), -.5);
-                    thumbstickSpeed = Math.max(Math.min(thumbstickSpeed, .75), -.75);
-                }
-                drive.arcadeDrive(triggerSpeed, thumbstickSpeed);
+    public CommandBase copilotDrive() {
+        return new RunCommand(() -> {
+            XboxController c = Robot.xBoxCoPilot;
+            double forwardSpeed = 0;
+            double turnSpeed = 0;
+            forwardSpeed = c.getY(Hand.kLeft);
+            turnSpeed = c.getX(Hand.kLeft);
+            if (SmartDashboard.getBoolean("isSpeedLimitHeight", false)) {
+                forwardSpeed = Math.max(Math.min(forwardSpeed, .5), -.5);
+                turnSpeed = Math.max(Math.min(turnSpeed, .75), -.75);
             }
-
-            @Override
-            protected boolean isFinished() {
-                return false;
-            }
-        };
+            drive.arcadeDrive(forwardSpeed, turnSpeed);
+        }, this);
     }
 
-    public Command copilotDrive() {
-        return new Command("copilotDrive", this) {
-
-            @Override
-            protected void execute() {
-                XboxController c = Robot.xBoxCoPilot;
-                double forwardSpeed = 0;
-                double turnSpeed = 0;
-                forwardSpeed = c.getY(Hand.kLeft);
-                turnSpeed = c.getX(Hand.kLeft);
-                if (SmartDashboard.getBoolean("isSpeedLimitHeight", false)) {
-                    forwardSpeed = Math.max(Math.min(forwardSpeed, .5), -.5);
-                    turnSpeed = Math.max(Math.min(turnSpeed, .75), -.75);
-                }
-                drive.arcadeDrive(forwardSpeed, turnSpeed);
-            }
-
-            @Override
-            protected boolean isFinished() {
-                return false;
-            }
-        };
-    }
-
-    public Command leftSlowTurn() {
-        return new Command("Left Slow Turn", this) {
-
-            @Override
-            protected void execute() {
-                drive.arcadeDrive(0, -slowTurnSpeed);
-            }
-
-            @Override
-            protected boolean isFinished() {
-                return false;
-            }
-
-            @Override
-            protected void end() {
-                drive.arcadeDrive(0, 0);
-            }
-        };
+    public CommandBase leftSlowTurn() {
+        return new FunctionalCommand(() -> {
+        }, () -> {
+            drive.arcadeDrive(0, -slowTurnSpeed);
+        }, (Boolean interrupted) -> {
+            drive.arcadeDrive(0, 0);
+        }, () -> false, this);
     }
 
     public Command rightSlowTurn() {
-        return new Command("Right Slow Turn", this) {
-
-            @Override
-            protected void execute() {
-                drive.arcadeDrive(0, slowTurnSpeed);
-            }
-
-            @Override
-            protected boolean isFinished() {
-                return false;
-            }
-
-            @Override
-            protected void end() {
-                drive.arcadeDrive(0, 0);
-            }
-        };
+        return new FunctionalCommand(() -> {
+        }, () -> {
+            drive.arcadeDrive(0, slowTurnSpeed);
+        }, (Boolean interrupted) -> {
+            drive.arcadeDrive(0, 0);
+        }, () -> false, this);
     }
 
-    public Command goXDistanceForward(double distance) {
-        return new Command("GoXDistance", this) {
+    public CommandBase goXDistanceForward(double distance) {
+        return new CommandBase() {
+            {
+                addRequirements(Drive.this);
+            }
+
             @Override
-            protected void initialize() {
+            public void initialize() {
                 leftEncoder.reset();
                 rightEncoder.reset();
             }
 
             @Override
-            protected void execute() {
+            public void execute() {
                 drive.arcadeDrive(sandstormSpeed, gyroCorrection);
             }
 
             @Override
-            protected boolean isFinished() {
-                if ((leftEncoder.get() + rightEncoder.get()) / 2 > distance)
-                    return true;
-                else
-                    return false;
-            }
-
-            @Override
-            protected void end() {
+            public boolean isFinished() {
+                return ((leftEncoder.get() + rightEncoder.get()) / 2 > distance);
             }
         };
     }
 
-    public Command goXDistanceBackward(double distance) {
-        return new Command("GoXDistance", this) {
+    public CommandBase goXDistanceBackward(double distance) {
+        return new CommandBase() {
+            {
+                addRequirements(Drive.this);
+            }
+
             @Override
-            protected void initialize() {
+            public void initialize() {
                 leftEncoder.reset();
                 rightEncoder.reset();
             }
 
             @Override
-            protected void execute() {
+            public void execute() {
                 drive.arcadeDrive(-sandstormSpeed, gyroCorrection);
             }
 
             @Override
-            protected boolean isFinished() {
-                if ((Math.abs(leftEncoder.get() + rightEncoder.get()) / 2 > distance))
-                    return true;
-                else
-                    return false;
-            }
-
-            @Override
-            protected void end() {
+            public boolean isFinished() {
+                return (Math.abs(leftEncoder.get() + rightEncoder.get()) / 2 > distance);
             }
         };
     }
 
-    public Command align() {
-        return new Command("align", this) {
-            double visionCorrectionFactor = table.getEntry("Vision Correction").getDouble(0);
-            boolean visionConfirmation = table.getEntry("Vision Found").getBoolean(false);
-            double visionTurnSpeed;
+    public CommandBase align() {
+        return new CommandBase() {
+            {
+                addRequirements(Drive.this);
+            }
 
             @Override
-            protected void execute() {
-                visionCorrectionFactor = table.getEntry("Vision Correction").getDouble(0);
-                visionConfirmation = table.getEntry("Vision Found").getBoolean(false);
+            public void execute() {
+                double visionCorrectionFactor = table.getEntry("Vision Correction").getDouble(0);
+                boolean visionConfirmation = table.getEntry("Vision Found").getBoolean(false);
+
+                double visionTurnSpeed;
 
                 if ((visionCorrectionFactor > driveDeadband) && visionConfirmation)
                     visionTurnSpeed = 0.3;
@@ -297,70 +232,58 @@ public class Drive extends Subsystem {
             }
 
             @Override
-            protected boolean isFinished() {
+            public boolean isFinished() {
                 return false;
             }
 
             @Override
-            protected void end() {
+            public void end(boolean interrupted) {
                 drive.stopMotor();
             }
         };
     }
 
-    public Command visionPID() {
-        return new PIDCommand("Vision PID", 1.8, 0.065, 0.0, this) {
-            PIDController visionPIDController;
-            NetworkTableEntry visionFound;
-            NetworkTableEntry visionCorrection;
+    public CommandBase visionPID() {
+        PIDController controller = new PIDController(1.8, 0.065, 0.0);
+        controller.setTolerance(0.05);
+        NetworkTableEntry visionFound = table.getEntry("Vision Found");
+        NetworkTableEntry visionCorrection = table.getEntry("Vision Correction");
 
-            @Override
-            protected void initialize() {
-                visionPIDController = getPIDController();
-                visionPIDController.setAbsoluteTolerance(0.05);
-                visionFound = table.getEntry("Vision Found");
-                visionCorrection = table.getEntry("Vision Correction");
-
+        DoubleSupplier measurement = () -> {
+            if (visionFound.getBoolean(false) == true) {
+                return visionCorrection.getDouble(0);
+            } else {
+                controller.reset();
+                return 0.0;
             }
+        };
 
-            @Override
-            protected boolean isFinished() {
-                return visionPIDController.onTarget();
-            }
+        DoubleConsumer useOutput = (double output) -> {
+            drive.arcadeDrive(-.45, -output);
+        };
 
+        return new PIDCommand(controller, measurement, 0.0, useOutput, this) {
             @Override
-            protected double returnPIDInput() {
-                if (visionFound.getBoolean(false) == true) {
-                    return visionCorrection.getDouble(0);
-                } else {
-                    visionPIDController.reset();
-                    return 0;
-                }
-            }
-
-            @Override
-            protected void usePIDOutput(double visionOutput) {
-                drive.arcadeDrive(-.45, -visionOutput);
+            public boolean isFinished() {
+                return controller.atSetpoint();
             }
         };
     }
 
     public Command extendPiston() {
-        return new InstantCommand("Extend Piston", this, () -> {
+        return new InstantCommand(() -> {
             climbPiston.set(Value.kForward);
-        });
+        }, this);
     }
 
     public Command retractPiston() {
-        return new InstantCommand("Retract Piston", this, () -> {
+        return new InstantCommand(() -> {
             climbPiston.set(Value.kReverse);
-        });
+        }, this);
     }
 
     public Command downOffDrop() {
-        CommandChain retValue = new CommandChain("Down off Drop");
-        retValue.then(goXDistanceForward(1)).then(extendPiston()).then(goXDistanceForward(1)).then(retractPiston())
-                .then(goXDistanceForward(1));
-        return retValue;
+        return goXDistanceForward(1).andThen(extendPiston()).andThen(goXDistanceForward(1)).andThen(retractPiston())
+                .andThen(goXDistanceForward(1));
     }
 }

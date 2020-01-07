@@ -1,15 +1,15 @@
 package frc.robot;
 
 import com.chopshop166.chopshoplib.CommandRobot;
-import com.chopshop166.chopshoplib.commands.CommandChain;
 import com.chopshop166.chopshoplib.controls.ButtonXboxController;
 import com.chopshop166.chopshoplib.controls.ButtonXboxController.XBoxButton;
 
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.buttons.POVButton;
-import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj2.command.button.POVButton;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import frc.robot.maps.CurrentRobot;
@@ -69,7 +69,7 @@ public class Robot extends CommandRobot {
 
         // schedule the autonomous command (example)
         if (autonomousCommand != null) {
-            autonomousCommand.start();
+            autonomousCommand.schedule();
         }
         // we can know the match types and event names and match number
         Shuffleboard.startRecording();
@@ -96,22 +96,16 @@ public class Robot extends CommandRobot {
         Shuffleboard.stopRecording();
     }
 
-    public CommandChain LEDOpenBeak() {
-        CommandChain retValue = new CommandChain("Beak Open & Green LED");
-        retValue.then(manipulator.openBeak()).then(leds.turnOnGreen(1, 2));
-        return retValue;
+    public CommandBase LEDOpenBeak() {
+        return manipulator.openBeak().andThen(leds.turnOnGreen(1, 2));
     }
 
-    public CommandChain LEDCloseBeak() {
-        CommandChain retValue = new CommandChain("Close Beak and reset LEDs");
-        retValue.then(manipulator.closeBeak()).then(leds.setTeamColor(1, 2));
-        return retValue;
+    public CommandBase LEDCloseBeak() {
+        return manipulator.closeBeak().andThen(leds.setTeamColor(1, 2));
     }
 
-    public CommandChain LEDVision() {
-        CommandChain retValue = new CommandChain("Vision and Green Leds");
-        retValue.then(leds.turnOnGreen(1, 2)).then(drive.visionPID());
-        return retValue;
+    public CommandBase LEDVision() {
+        return leds.turnOnGreen(1, 2).andThen(drive.visionPID());
     }
 
     public void assignButtons() {
