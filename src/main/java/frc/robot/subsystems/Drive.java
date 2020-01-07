@@ -5,6 +5,8 @@ import static edu.wpi.first.wpilibj2.command.CommandGroupBase.sequence;
 import java.util.function.DoubleConsumer;
 import java.util.function.DoubleSupplier;
 
+import com.chopshop166.chopshoplib.RobotUtils;
+import com.chopshop166.chopshoplib.controls.ButtonXboxController;
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 import com.chopshop166.chopshoplib.sensors.PIDGyro;
 
@@ -82,64 +84,47 @@ public class Drive extends SubsystemBase {
 
     double sandstormSpeed = .2;
 
+    private void safeArcadeDrive(double forwardSpeed, double turnSpeed) {
+        if (SmartDashboard.getBoolean("isSpeedLimitHeight", false)) {
+            forwardSpeed = RobotUtils.clamp(-0.5, 0.5, forwardSpeed);
+            turnSpeed = RobotUtils.clamp(-0.75, 0.75, turnSpeed);
+        }
+        drive.arcadeDrive(forwardSpeed, turnSpeed);
+    }
+
     public RunCommand driveNormal() {
         return new RunCommand(() -> {
-            XboxController c = Robot.driveController;
-            double triggerSpeed = 0;
-            double thumbstickSpeed = 0;
-            triggerSpeed = -c.getTriggerAxis(Hand.kRight) + c.getTriggerAxis(Hand.kLeft);
-            thumbstickSpeed = c.getX(Hand.kLeft);
-            if (SmartDashboard.getBoolean("isSpeedLimitHeight", false)) {
-                triggerSpeed = Math.max(Math.min(triggerSpeed, .5), -.5);
-                thumbstickSpeed = Math.max(Math.min(thumbstickSpeed, .75), -.75);
-            }
-            drive.arcadeDrive(triggerSpeed, thumbstickSpeed);
+            ButtonXboxController c = Robot.driveController;
+            double triggerSpeed = -c.getTriggers();
+            double thumbstickSpeed = c.getX(Hand.kLeft);
+            safeArcadeDrive(triggerSpeed, thumbstickSpeed);
         });
     }
 
     public RunCommand driveBackwards() {
         return new RunCommand(() -> {
-            XboxController c = Robot.driveController;
-            double triggerSpeed = c.getTriggerAxis(Hand.kRight) - c.getTriggerAxis(Hand.kLeft);
+            ButtonXboxController c = Robot.driveController;
+            double triggerSpeed = c.getTriggers();
             double thumbstickSpeed = c.getX(Hand.kLeft);
-            if (SmartDashboard.getBoolean("isSpeedLimitHeight", false)) {
-                triggerSpeed = Math.max(Math.min(triggerSpeed, .5), -.5);
-                thumbstickSpeed = Math.max(Math.min(thumbstickSpeed, .75), -.75);
-            }
-            drive.arcadeDrive(triggerSpeed, thumbstickSpeed);
+            safeArcadeDrive(triggerSpeed, thumbstickSpeed);
         }, this);
     }
 
     public RunCommand demoDrive() {
         return new RunCommand(() -> {
-            XboxController c = Robot.driveController;
-            double thumbstickSpeed = 0;
-            double triggerSpeed = -c.getTriggerAxis(Hand.kRight) + c.getTriggerAxis(Hand.kLeft);
-            triggerSpeed /= 2;
-
-            thumbstickSpeed = c.getX(Hand.kLeft);
-            thumbstickSpeed *= .75;
-
-            if (SmartDashboard.getBoolean("isSpeedLimitHeight", false)) {
-                triggerSpeed = Math.max(Math.min(triggerSpeed, .5), -.5);
-                thumbstickSpeed = Math.max(Math.min(thumbstickSpeed, .75), -.75);
-            }
-            drive.arcadeDrive(triggerSpeed, thumbstickSpeed);
+            ButtonXboxController c = Robot.driveController;
+            double triggerSpeed = -c.getTriggers() / 2;
+            double thumbstickSpeed = c.getX(Hand.kLeft) * 0.75;
+            safeArcadeDrive(triggerSpeed, thumbstickSpeed);
         }, this);
     }
 
     public RunCommand copilotDrive() {
         return new RunCommand(() -> {
             XboxController c = Robot.xBoxCoPilot;
-            double forwardSpeed = 0;
-            double turnSpeed = 0;
-            forwardSpeed = c.getY(Hand.kLeft);
-            turnSpeed = c.getX(Hand.kLeft);
-            if (SmartDashboard.getBoolean("isSpeedLimitHeight", false)) {
-                forwardSpeed = Math.max(Math.min(forwardSpeed, .5), -.5);
-                turnSpeed = Math.max(Math.min(turnSpeed, .75), -.75);
-            }
-            drive.arcadeDrive(forwardSpeed, turnSpeed);
+            double forwardSpeed = c.getY(Hand.kLeft);
+            double turnSpeed = c.getX(Hand.kLeft);
+            safeArcadeDrive(forwardSpeed, turnSpeed);
         }, this);
     }
 
