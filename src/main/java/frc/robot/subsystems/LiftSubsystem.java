@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import java.util.function.DoubleSupplier;
+
 import com.chopshop166.chopshoplib.sensors.SparkMaxEncoder;
 import com.revrobotics.CANSparkMax;
 
@@ -8,7 +10,6 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
-import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableRegistry;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -18,7 +19,6 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PIDCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Robot;
 import frc.robot.RobotMap;
 
 //when arms piston is extended, the arms are locked in starting position
@@ -44,7 +44,6 @@ public class LiftSubsystem extends SubsystemBase {
         armsPiston.set(Value.kForward);
         addChildren();
         registeredCommands();
-        setDefaultCommand(moveLift());
     }
 
     public void addChildren() {
@@ -189,12 +188,11 @@ public class LiftSubsystem extends SubsystemBase {
         };
     }
 
-    public RunCommand moveLift() {
+    public RunCommand moveLift(DoubleSupplier speed) {
         // The command is named "Move Lift" and requires this subsystem.
         return new RunCommand(() -> {
             SmartDashboard.putNumber("Lift Height", heightEncoder.getDistance());
-            double liftSpeed = Robot.xBoxCoPilot.getTriggerAxis(Hand.kRight)
-                    - Robot.xBoxCoPilot.getTriggerAxis(Hand.kLeft);
+            double liftSpeed = speed.getAsDouble();
             if (Math.abs(liftSpeed) <= .1) {
                 liftSpeed = 0;
             }
