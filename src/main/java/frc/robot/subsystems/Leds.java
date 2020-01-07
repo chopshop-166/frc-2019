@@ -6,11 +6,12 @@ import com.mach.LightDrive.LightDriveCAN;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.command.Command;
-import edu.wpi.first.wpilibj.command.InstantCommand;
-import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class Leds extends Subsystem {
+public class Leds extends SubsystemBase {
     LightDriveCAN ldrive_can;
     public final static Color seafoam = new Color(150, 238, 150);
     public final static Color amber = new Color(255, 191, 0);
@@ -28,136 +29,84 @@ public class Leds extends Subsystem {
         ldrive_can.SetColor(RIGHT_BANK, Color.BLUE, 1.0);
 
         ldrive_can.Update();
-    }
-
-    @Override
-    public void initDefaultCommand() {
         setDefaultCommand(setTeamColor(1, 2));
     }
 
     private boolean isBlueTeam() {
         Alliance team = DriverStation.getInstance().getAlliance();
-        if (team == DriverStation.Alliance.Blue) {
-            return true;
-        } else {
-            return false;
-        }
+        return (team == DriverStation.Alliance.Blue);
     }
 
-    public Command setTeamColor(Integer... banks) {
-
-        return new Command("Set team color", this) {
-
-            protected void initialize() {
-                Color color;
-
-                if (isBlueTeam()) {
-                    color = Color.BLUE;
-
-                } else {
-                    color = Color.RED;
-                }
-                for (Integer currentBank : banks) {
-                    ldrive_can.SetColor(currentBank, color, 1.0);
-
-                }
-                ldrive_can.Update();
+    public CommandBase setTeamColor(Integer... banks) {
+        return new InstantCommand(() -> {
+            Color color;
+            if (isBlueTeam()) {
+                color = Color.BLUE;
+            } else {
+                color = Color.RED;
             }
+            for (Integer currentBank : banks) {
+                ldrive_can.SetColor(currentBank, color, 1.0);
 
-            @Override
-            protected boolean isFinished() {
-                return false;
             }
-        };
+            ldrive_can.Update();
+        }, this);
     }
 
-    public Command turnOnGreen(Integer... banks) {
-        return new Command("Green On", this) {
-
-            @Override
-            protected void execute() {
-                for (Integer currentBank : banks) {
-                    ldrive_can.SetColor(currentBank, Color.GREEN, 1.0);
-                }
-                ldrive_can.Update();
+    public CommandBase turnOnGreen(Integer... banks) {
+        return new RunCommand(() -> {
+            for (Integer currentBank : banks) {
+                ldrive_can.SetColor(currentBank, Color.GREEN, 1.0);
             }
-
-            @Override
-            protected boolean isFinished() {
-                return false;
-            }
-        };
+            ldrive_can.Update();
+        }, this);
     }
 
-    public Command turnOnRed(Integer... banks) {
-        return new Command("Red On", this) {
-
-            @Override
-            protected void execute() {
-                for (Integer currentBank : banks) {
-                    ldrive_can.SetColor(currentBank, Color.RED, 1.0);
-                }
-                ldrive_can.Update();
+    public CommandBase turnOnRed(Integer... banks) {
+        return new RunCommand(() -> {
+            for (Integer currentBank : banks) {
+                ldrive_can.SetColor(currentBank, Color.RED, 1.0);
             }
-
-            @Override
-            protected boolean isFinished() {
-                return false;
-            }
-        };
+            ldrive_can.Update();
+        }, this);
     }
 
-    public Command turnOnBlue(Integer... banks) {
-        return new Command("Blue On", this) {
-
-            @Override
-            protected void execute() {
-                for (Integer currentBank : banks) {
-                    ldrive_can.SetColor(currentBank, Color.BLUE, 1.0);
-                }
-                ldrive_can.Update();
+    public CommandBase turnOnBlue(Integer... banks) {
+        return new RunCommand(() -> {
+            for (Integer currentBank : banks) {
+                ldrive_can.SetColor(currentBank, Color.BLUE, 1.0);
             }
-
-            @Override
-            protected boolean isFinished() {
-                return false;
-            }
-        };
+            ldrive_can.Update();
+        }, this);
     }
 
-    public Command killAllLights(Integer... banks) {
-        return new Command("Lights Off", this) {
-
-            @Override
-            protected void execute() {
-                for (Integer currentBank : banks) {
-                    ldrive_can.SetColor(currentBank, Color.OFF, 1.0);
-                }
-                ldrive_can.Update();
+    public CommandBase killAllLights(Integer... banks) {
+        return new RunCommand(() -> {
+            for (Integer currentBank : banks) {
+                ldrive_can.SetColor(currentBank, Color.OFF, 1.0);
             }
-
-            @Override
-            protected boolean isFinished() {
-                return false;
-            }
-        };
+            ldrive_can.Update();
+        }, this);
     }
 
-    public Command blinkLights(Color aColor, int frequency, Integer... banks) {
-        return new Command("Blink Lights", this) {
+    public CommandBase blinkLights(Color aColor, int frequency, Integer... banks) {
+        return new CommandBase() {
+            {
+                addRequirements(Leds.this);
+            }
+
             int counter = 0;
             boolean lightsOn = true;
             Color color;
 
             @Override
-
-            protected void initialize() {
+            public void initialize() {
                 counter = 0;
                 lightsOn = true;
             }
 
             @Override
-            protected void execute() {
+            public void execute() {
                 if ((counter % frequency) == 0) {
                     if (lightsOn == true) {
                         color = Color.OFF;
@@ -173,16 +122,14 @@ public class Leds extends Subsystem {
                 ldrive_can.Update();
                 counter++;
             }
-
-            @Override
-            protected boolean isFinished() {
-                return false;
-            }
         };
     }
 
-    public Command justBreathe(DigitalOutputDutyCycle color, int frequency) {
-        return new Command("Breathe", this) {
+    public CommandBase justBreathe(DigitalOutputDutyCycle color, int frequency) {
+        return new CommandBase() {
+            {
+                addRequirements(Leds.this);
+            }
             boolean isDutyCycleIncreasing = true;
             double period;
             final double executePeriod = 20 * 0.001; // Approx how often execute is called
@@ -190,7 +137,7 @@ public class Leds extends Subsystem {
             double changeAmount;
 
             @Override
-            protected void initialize() {
+            public void initialize() {
                 period = (1.0 / frequency);
                 changeAmount = dutyCycleChangePerPeriod / ((period / executePeriod));
                 color.enablePWM(0);
@@ -198,7 +145,7 @@ public class Leds extends Subsystem {
             }
 
             @Override
-            protected void execute() {
+            public void execute() {
                 if (isDutyCycleIncreasing == true) {
                     color.updateDutyCycle(color.getPWMRate() + changeAmount);
                 } else {
@@ -208,49 +155,38 @@ public class Leds extends Subsystem {
                     isDutyCycleIncreasing = !isDutyCycleIncreasing;
                 }
             }
-
-            @Override
-            protected boolean isFinished() {
-                return false;
-            }
-
-            @Override
-            protected void end() {
-            }
-
-            @Override
-            protected void interrupted() {
-                end();
-            }
         };
     }
 
-    public Command turnOnVisionLights() {
-        return new InstantCommand("Vision Light On", this, () -> {
+    public CommandBase turnOnVisionLights() {
+        return new InstantCommand(() -> {
             ldrive_can.SetColor(VISION_BANK, Color.GREEN, 1);
-        });
+        }, this);
     }
 
-    public Command turnOffVisionLights() {
-        return new InstantCommand("Vision Light Off", this, () -> {
+    public CommandBase turnOffVisionLights() {
+        return new InstantCommand(() -> {
             ldrive_can.SetColor(VISION_BANK, Color.OFF, 1);
-        });
+        }, this);
     }
 
-    public Command blinkVisionLights(int frequency) {
-        return new Command("Blink Vision Lights", this) {
+    public CommandBase blinkVisionLights(int frequency) {
+        return new CommandBase() {
+            {
+                addRequirements(Leds.this);
+            }
             int counter = 0;
             boolean lightsOn = true;
 
             @Override
-            protected void initialize() {
+            public void initialize() {
                 counter = 0;
                 ldrive_can.SetColor(VISION_BANK, Color.GREEN, 1.0);
                 lightsOn = true;
             }
 
             @Override
-            protected void execute() {
+            public void execute() {
                 if (counter % frequency == 0) {
                     if (lightsOn == true) {
                         ldrive_can.SetColor(VISION_BANK, Color.OFF, 1.0);
@@ -262,11 +198,6 @@ public class Leds extends Subsystem {
                 }
                 ldrive_can.Update();
                 counter++;
-            }
-
-            @Override
-            protected boolean isFinished() {
-                return false;
             }
         };
     }

@@ -18,7 +18,6 @@ import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SendableRegistry;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -150,7 +149,7 @@ public class Drive extends SubsystemBase {
         }, () -> false, this);
     }
 
-    public Command rightSlowTurn() {
+    public CommandBase rightSlowTurn() {
         return new FunctionalCommand(() -> {
         }, () -> {
             drive.arcadeDrive(0, slowTurnSpeed);
@@ -270,19 +269,19 @@ public class Drive extends SubsystemBase {
         };
     }
 
-    public Command extendPiston() {
+    public CommandBase extendPiston() {
         return new InstantCommand(() -> {
             climbPiston.set(Value.kForward);
         }, this);
     }
 
-    public Command retractPiston() {
+    public CommandBase retractPiston() {
         return new InstantCommand(() -> {
             climbPiston.set(Value.kReverse);
         }, this);
     }
 
-    public Command downOffDrop() {
+    public CommandBase downOffDrop() {
         return goXDistanceForward(1).andThen(extendPiston()).andThen(goXDistanceForward(1)).andThen(retractPiston())
                 .andThen(goXDistanceForward(1));
     }
