@@ -67,11 +67,11 @@ public class LiftSubsystem extends SubsystemBase {
         SmartDashboard.putData("Rocket Cargo High", goToHeight(Heights.kRocketCargoHigh));
         SmartDashboard.putData("Cargo Ship Cargo", goToHeight(Heights.kCargoShipCargo));
 
-        SmartDashboard.putData("Floor Load Cargo Auto", goToHeight(Heights.kFloorLoad));
-        SmartDashboard.putData("Rocket Cargo Load Auto", goToHeight(Heights.kRocketCargoLow));
-        SmartDashboard.putData("Rocket Cargo Middle Auto", goToHeight(Heights.kRocketCargoMid));
-        SmartDashboard.putData("Rocket Cargo High Auto", goToHeight(Heights.kRocketCargoHigh));
-        SmartDashboard.putData("Cargo Ship Cargo Auto", goToHeight(Heights.kCargoShipCargo));
+        SmartDashboard.putData("Floor Load Cargo Auto", autoMoveLift(Heights.kFloorLoad));
+        SmartDashboard.putData("Rocket Cargo Load Auto", autoMoveLift(Heights.kRocketCargoLow));
+        SmartDashboard.putData("Rocket Cargo Middle Auto", autoMoveLift(Heights.kRocketCargoMid));
+        SmartDashboard.putData("Rocket Cargo High Auto", autoMoveLift(Heights.kRocketCargoHigh));
+        SmartDashboard.putData("Cargo Ship Cargo Auto", autoMoveLift(Heights.kCargoShipCargo));
 
         SmartDashboard.putData("Loading Station Auto", autoMoveLift(Heights.kLoadingStation));
         SmartDashboard.putData("Rocket Hatch Mid Auto", autoMoveLift(Heights.kRocketHatchMid));
@@ -116,10 +116,10 @@ public class LiftSubsystem extends SubsystemBase {
         if (armsPiston.get() == Value.kForward) {
             liftSpeed = 0;
         }
-        if (liftSpeed > 0 && !upperLimit.get()) {
+        if (liftSpeed > 0 && isAtUpperLimit()) {
             liftSpeed = 0;
         }
-        if (liftSpeed < 0 && !lowerLimit.get()) {
+        if (liftSpeed < 0 && isAtLowerLimit()) {
             liftSpeed = 0;
             heightEncoder.reset();
         }
@@ -183,12 +183,6 @@ public class LiftSubsystem extends SubsystemBase {
             }
 
             @Override
-            public void end(boolean interrupted) {
-                super.end(interrupted);
-                restrictedMotorSet(0);
-            }
-
-            @Override
             public boolean isFinished() {
                 return controller.atSetpoint();
             }
@@ -213,7 +207,6 @@ public class LiftSubsystem extends SubsystemBase {
     }
 
     public FunctionalCommand goToHeight(Heights target) {
-        // The command is named "Go to a Specific Height" and requires this subsystem.
         return new FunctionalCommand(() -> {
         }, () -> {
             double currentHeight = heightEncoder.getDistance();
@@ -229,14 +222,13 @@ public class LiftSubsystem extends SubsystemBase {
         }, () -> {
             // Make this return true when this Command no longer needs to run execute()
             double currentHeight = heightEncoder.getDistance();
-            return (Math.abs(target.get() - currentHeight) < 1.0 || (target.get() > currentHeight && !upperLimit.get())
-                    || (target.get() < currentHeight && !lowerLimit.get()));
+            return (Math.abs(target.get() - currentHeight) < 1.0 || (target.get() > currentHeight && isAtUpperLimit())
+                    || (target.get() < currentHeight && isAtLowerLimit()));
         }, this);
 
     }
 
     public FunctionalCommand goToAtLeast(Heights target) {
-        // The command is named "Go to a Specific Height" and requires this subsystem.
         return new FunctionalCommand(() -> {
         }, () -> {
             restrictedMotorSet(AUTO_LIFT_SPEED_UP);

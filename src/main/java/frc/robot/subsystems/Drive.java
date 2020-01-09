@@ -147,18 +147,14 @@ public class Drive extends SubsystemBase {
         return new FunctionalCommand(() -> {
         }, () -> {
             drive.arcadeDrive(0, -slowTurnSpeed);
-        }, (Boolean interrupted) -> {
-            drive.arcadeDrive(0, 0);
-        }, () -> false, this);
+        }, this::stopCommand, () -> false, this);
     }
 
     public FunctionalCommand rightSlowTurn() {
         return new FunctionalCommand(() -> {
         }, () -> {
             drive.arcadeDrive(0, slowTurnSpeed);
-        }, (Boolean interrupted) -> {
-            drive.arcadeDrive(0, 0);
-        }, () -> false, this);
+        }, this::stopCommand, () -> false, this);
     }
 
     public FunctionalCommand goXDistanceForward(double distance) {
@@ -198,9 +194,7 @@ public class Drive extends SubsystemBase {
 
             drive.arcadeDrive(Robot.driveController.getTriggerAxis(Hand.kRight)
                     - Robot.driveController.getTriggerAxis(Hand.kLeft), visionTurnSpeed);
-        }, (Boolean interrupted) -> {
-            drive.stopMotor();
-        }, () -> false, this);
+        }, this::stopCommand, () -> false, this);
     }
 
     public PIDCommand visionPID() {
