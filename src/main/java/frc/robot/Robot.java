@@ -1,5 +1,7 @@
 package frc.robot;
 
+import static edu.wpi.first.wpilibj2.command.CommandGroupBase.sequence;
+
 import com.chopshop166.chopshoplib.CommandRobot;
 import com.chopshop166.chopshoplib.controls.ButtonXboxController;
 import com.chopshop166.chopshoplib.controls.ButtonXboxController.XBoxButton;
@@ -7,11 +9,11 @@ import com.chopshop166.chopshoplib.controls.ButtonXboxController.XBoxButton;
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj2.command.button.POVButton;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.maps.CurrentRobot;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Leds;
@@ -97,15 +99,15 @@ public class Robot extends CommandRobot {
     }
 
     public CommandBase LEDOpenBeak() {
-        return manipulator.openBeak().andThen(leds.turnOnGreen(1, 2));
+        return sequence(manipulator.openBeak(), leds.turnOnGreen(1, 2));
     }
 
     public CommandBase LEDCloseBeak() {
-        return manipulator.closeBeak().andThen(leds.setTeamColor(1, 2));
+        return sequence(manipulator.closeBeak(), leds.setTeamColor(1, 2));
     }
 
     public CommandBase LEDVision() {
-        return leds.turnOnGreen(1, 2).andThen(drive.visionPID());
+        return sequence(leds.turnOnGreen(1, 2), drive.visionPID());
     }
 
     public void assignButtons() {

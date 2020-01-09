@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import static edu.wpi.first.wpilibj2.command.CommandGroupBase.sequence;
+
 import java.util.function.DoubleConsumer;
 import java.util.function.DoubleSupplier;
 
@@ -19,11 +21,11 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SendableRegistry;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.CommandGroupBase;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PIDCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import frc.robot.RobotMap;
@@ -240,8 +242,12 @@ public class Drive extends SubsystemBase {
         }, this);
     }
 
-    public SequentialCommandGroup downOffDrop() {
-        return goXDistanceForward(1).andThen(extendPiston()).andThen(goXDistanceForward(1)).andThen(retractPiston())
-                .andThen(goXDistanceForward(1));
+    public CommandGroupBase downOffDrop() {
+        return sequence(goXDistanceForward(1), extendPiston(), goXDistanceForward(1), retractPiston(),
+                goXDistanceForward(1));
+    }
+
+    private void stopCommand(Boolean interrupted) {
+        drive.stopMotor();
     }
 }
