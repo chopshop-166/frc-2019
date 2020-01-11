@@ -23,7 +23,7 @@ public interface RobotMap {
 
     public interface LiftMap {
 
-        CANSparkMax getMotor();
+        SendableSpeedController getMotor();
 
         DoubleSolenoid getBrake();
 

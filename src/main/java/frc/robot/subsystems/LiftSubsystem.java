@@ -2,8 +2,8 @@ package frc.robot.subsystems;
 
 import java.util.function.DoubleSupplier;
 
-import com.chopshop166.chopshoplib.sensors.SparkMaxEncoder;
-import com.revrobotics.CANSparkMax;
+import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
+import com.chopshop166.chopshoplib.sensors.IEncoder;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -25,9 +25,9 @@ import frc.robot.RobotMap;
 
 public class LiftSubsystem extends SubsystemBase {
     private DoubleSolenoid armsPiston;
-    private CANSparkMax motor;
+    private SendableSpeedController motor;
     private DoubleSolenoid brake;
-    private SparkMaxEncoder heightEncoder;
+    private IEncoder heightEncoder;
     private DigitalInput lowerLimit;
     private DigitalInput upperLimit;
     NetworkTableInstance inst;
@@ -38,7 +38,7 @@ public class LiftSubsystem extends SubsystemBase {
         armsPiston = map.getArmsPiston();
         motor = map.getMotor();
         brake = map.getBrake();
-        heightEncoder = new SparkMaxEncoder(motor.getEncoder());
+        heightEncoder = map.getHeightEncoder();
         lowerLimit = map.getLowerLimit();
         upperLimit = map.getUpperLimit();
         armsPiston.set(Value.kForward);

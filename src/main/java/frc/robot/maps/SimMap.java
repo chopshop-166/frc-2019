@@ -1,31 +1,24 @@
 package frc.robot.maps;
 
 import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
-import com.chopshop166.chopshoplib.outputs.SparkMaxSendable;
 import com.chopshop166.chopshoplib.sensors.IEncoder;
 import com.chopshop166.chopshoplib.sensors.Lidar;
+import com.chopshop166.chopshoplib.sensors.MockEncoder;
 import com.chopshop166.chopshoplib.sensors.PIDGyro;
-import com.chopshop166.chopshoplib.sensors.SparkMaxEncoder;
-import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
-import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.AnalogGyro;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.I2C.Port;
-import edu.wpi.first.wpilibj.SpeedControllerGroup;
+import edu.wpi.first.wpilibj.PWMTalonSRX;
 import frc.robot.RobotMap;
 
-public class CurrentRobot implements RobotMap {
+public class SimMap implements RobotMap {
 
     @Override
     public LiftMap getLiftMap() {
         return new LiftMap() {
-            CANSparkMax liftMotor = new CANSparkMax(15, MotorType.kBrushless);
 
             @Override
             public DigitalInput getUpperLimit() {
@@ -34,9 +27,7 @@ public class CurrentRobot implements RobotMap {
 
             @Override
             public SendableSpeedController getMotor() {
-                liftMotor.setInverted(true);
-                liftMotor.setOpenLoopRampRate(.5);
-                return new SparkMaxSendable(liftMotor);
+                return SendableSpeedController.wrap(new PWMTalonSRX(1));
             }
 
             @Override
@@ -46,7 +37,7 @@ public class CurrentRobot implements RobotMap {
 
             @Override
             public IEncoder getHeightEncoder() {
-                return new SparkMaxEncoder(liftMotor.getEncoder());
+                return new MockEncoder();
             }
 
             @Override
@@ -67,10 +58,8 @@ public class CurrentRobot implements RobotMap {
 
             @Override
             public SendableSpeedController getrollersMotor() {
-                WPI_TalonSRX cargoMotorController = new WPI_TalonSRX(10);
-                cargoMotorController.configContinuousCurrentLimit(15);
+                PWMTalonSRX cargoMotorController = new PWMTalonSRX(10);
                 cargoMotorController.setInverted(true);
-                cargoMotorController.setNeutralMode(NeutralMode.Brake);
                 return SendableSpeedController.wrap(cargoMotorController);
             }
 
@@ -107,14 +96,12 @@ public class CurrentRobot implements RobotMap {
 
             @Override
             public SendableSpeedController getRight() {
-                return SendableSpeedController
-                        .wrap(new SpeedControllerGroup(new WPI_VictorSPX(3), new WPI_VictorSPX(4)));
+                return SendableSpeedController.wrap(new PWMTalonSRX(2));
             }
 
             @Override
             public SendableSpeedController getLeft() {
-                return SendableSpeedController
-                        .wrap(new SpeedControllerGroup(new WPI_VictorSPX(6), new WPI_VictorSPX(5)));
+                return SendableSpeedController.wrap(new PWMTalonSRX(3));
             }
 
             @Override

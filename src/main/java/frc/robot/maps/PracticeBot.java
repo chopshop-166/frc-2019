@@ -7,7 +7,6 @@ import com.chopshop166.chopshoplib.sensors.Lidar;
 import com.chopshop166.chopshoplib.sensors.MockEncoder;
 import com.chopshop166.chopshoplib.sensors.MockGyro;
 import com.chopshop166.chopshoplib.sensors.PIDGyro;
-import com.revrobotics.CANSparkMax;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
@@ -27,9 +26,8 @@ public class PracticeBot implements RobotMap {
             }
 
             @Override
-            public CANSparkMax getMotor() {
-                // return new MockSpeedController();
-                return null;
+            public SendableSpeedController getMotor() {
+                return new MockSpeedController();
             }
 
             @Override

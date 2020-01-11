@@ -16,8 +16,7 @@ import edu.wpi.first.wpilibj.shuffleboard.EventImportance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.button.POVButton;
-import frc.robot.maps.CurrentRobot;
+import frc.robot.maps.SimMap;
 import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Leds;
 import frc.robot.subsystems.LiftSubsystem;
@@ -33,17 +32,13 @@ import frc.robot.subsystems.Manipulator;
  */
 public class Robot extends CommandRobot {
 
-    final private RobotMap robotMap = new CurrentRobot();
+    final private RobotMap robotMap = new SimMap();
     final private ButtonXboxController xBoxCoPilot = new ButtonXboxController(1);
     final private ButtonXboxController driveController = new ButtonXboxController(5);
     final private Drive drive = new Drive(robotMap.getDriveMap());
     final private LiftSubsystem lift = new LiftSubsystem(robotMap.getLiftMap());
     final private Manipulator manipulator = new Manipulator(robotMap.getManipulatorMap());
-    POVButton povDown = new POVButton(xBoxCoPilot, 180);
-    POVButton povUp = new POVButton(xBoxCoPilot, 0);
-    POVButton povRight = new POVButton(xBoxCoPilot, 90);
-    POVButton povLeft = new POVButton(xBoxCoPilot, 270);
-    public static Leds leds = new Leds();
+    final private Leds leds = new Leds();
     private UsbCamera cameraBack;
 
     private Command autonomousCommand;
