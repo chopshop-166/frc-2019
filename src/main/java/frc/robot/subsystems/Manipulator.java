@@ -5,7 +5,6 @@ import com.chopshop166.chopshoplib.outputs.SendableSpeedController;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
-import edu.wpi.first.wpilibj.smartdashboard.SendableRegistry;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
@@ -40,11 +39,11 @@ public class Manipulator extends SubsystemBase {
     }
 
     public void addChildren() {
-        SendableRegistry.addChild(this, rollersMotor);
-        SendableRegistry.addChild(this, beaksPiston);
-        SendableRegistry.addChild(this, gamepieceLimitSwitch);
-        SendableRegistry.addChild(this, foldedBackLimitSwitch);
-        SendableRegistry.addChild(this, intakePositionLimitSwitch);
+        addChild("Rollers", rollersMotor);
+        addChild("Beaks", beaksPiston);
+        addChild("Game Piece", gamepieceLimitSwitch);
+        addChild("Fold", foldedBackLimitSwitch);
+        addChild("Intake", intakePositionLimitSwitch);
     }
 
     double rollerspeed = 1;

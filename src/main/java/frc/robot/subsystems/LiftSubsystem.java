@@ -11,7 +11,6 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.controller.PIDController;
-import edu.wpi.first.wpilibj.smartdashboard.SendableRegistry;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
@@ -47,12 +46,12 @@ public class LiftSubsystem extends SubsystemBase {
     }
 
     public void addChildren() {
-        SendableRegistry.addChild(this, armsPiston);
-        SendableRegistry.addChild(this, motor);
-        SendableRegistry.addChild(this, brake);
-        SendableRegistry.addChild(this, heightEncoder);
-        SendableRegistry.addChild(this, lowerLimit);
-        SendableRegistry.addChild(this, upperLimit);
+        addChild("Arms", armsPiston);
+        addChild("Motor", motor);
+        addChild("Brake", brake);
+        addChild("Height", heightEncoder);
+        addChild("Lower", lowerLimit);
+        addChild("Upper", upperLimit);
     }
 
     private void registeredCommands() {

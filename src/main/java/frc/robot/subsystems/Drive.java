@@ -17,7 +17,6 @@ import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import edu.wpi.first.wpilibj.smartdashboard.SendableRegistry;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandGroupBase;
@@ -63,10 +62,10 @@ public class Drive extends SubsystemBase {
     }
 
     private void addChildren() {
-        SendableRegistry.addChild(this, leftEncoder);
-        SendableRegistry.addChild(this, rightEncoder);
-        SendableRegistry.addChild(this, drive);
-        SendableRegistry.addChild(this, gyro);
+        addChild("Left Enc", leftEncoder);
+        addChild("Right Enc", rightEncoder);
+        addChild("Drive", drive);
+        addChild("Gyro", gyro);
     }
 
     private final double slowTurnSpeed = 0.475;
