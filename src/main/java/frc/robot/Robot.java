@@ -34,11 +34,11 @@ import frc.robot.subsystems.Manipulator;
 public class Robot extends CommandRobot {
 
     final private RobotMap robotMap = new CurrentRobot();
-    final public static ButtonXboxController xBoxCoPilot = new ButtonXboxController(1);
+    final private ButtonXboxController xBoxCoPilot = new ButtonXboxController(1);
+    final private ButtonXboxController driveController = new ButtonXboxController(5);
     final private Drive drive = new Drive(robotMap.getDriveMap());
     final private LiftSubsystem lift = new LiftSubsystem(robotMap.getLiftMap());
     final private Manipulator manipulator = new Manipulator(robotMap.getManipulatorMap());
-    public static ButtonXboxController driveController = new ButtonXboxController(5);
     POVButton povDown = new POVButton(xBoxCoPilot, 180);
     POVButton povUp = new POVButton(xBoxCoPilot, 0);
     POVButton povRight = new POVButton(xBoxCoPilot, 90);
@@ -54,13 +54,15 @@ public class Robot extends CommandRobot {
      */
     @Override
     public void robotInit() {
-        // Initialize OI here
-        cameraBack = CameraServer.getInstance().startAutomaticCapture(0);
-        cameraBack.setResolution(160, 120);
+        if (isReal()) {
+            cameraBack = CameraServer.getInstance().startAutomaticCapture(0);
+            cameraBack.setResolution(160, 120);
+        }
 
         drive.setDefaultCommand(
                 drive.driveNormal(driveController::getTriggers, () -> driveController.getX(Hand.kLeft)));
         lift.setDefaultCommand(lift.moveLift(xBoxCoPilot::getTriggers));
+        leds.setDefaultCommand(leds.setTeamColor(1, 2));
 
         assignButtons();
     }

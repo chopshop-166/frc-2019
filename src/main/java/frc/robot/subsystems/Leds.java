@@ -29,7 +29,6 @@ public class Leds extends SubsystemBase {
         ldrive_can.SetColor(RIGHT_BANK, Color.BLUE, 1.0);
 
         ldrive_can.Update();
-        setDefaultCommand(setTeamColor(1, 2));
     }
 
     private boolean isBlueTeam() {
@@ -37,8 +36,8 @@ public class Leds extends SubsystemBase {
         return (team == DriverStation.Alliance.Blue);
     }
 
-    public InstantCommand setTeamColor(Integer... banks) {
-        return new InstantCommand(() -> {
+    public RunCommand setTeamColor(Integer... banks) {
+        return new RunCommand(() -> {
             Color color;
             if (isBlueTeam()) {
                 color = Color.BLUE;

@@ -91,7 +91,7 @@ public class Drive extends SubsystemBase {
             double triggerSpeed = -forward.getAsDouble();
             double thumbstickSpeed = turn.getAsDouble();
             safeArcadeDrive(triggerSpeed, thumbstickSpeed);
-        });
+        }, this);
     }
 
     public RunCommand driveBackwards(DoubleSupplier forward, DoubleSupplier turn) {
